@@ -4,7 +4,7 @@
 
 Definir los datos mínimos que AgentGuard necesita para controlar agentes, evaluar acciones, registrar decisiones humanas y reconstruir actividad con garantías de auditoría.
 
-El modelo debe ser simple para el MVP, pero suficientemente serio para crecer hacia integraciones reales.
+El modelo empieza acotado, pero está pensado para un producto completo: crece hacia persistencia e integraciones reales sin reescribirse.
 
 ## Principios
 
@@ -20,11 +20,14 @@ El modelo debe ser simple para el MVP, pero suficientemente serio para crecer ha
 
 Representa una empresa o espacio de trabajo.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `name`
 - `slug`
+- `emergencyStop`
+- `emergencyStopById`
+- `emergencyStopAt`
 - `createdAt`
 - `updatedAt`
 
@@ -39,7 +42,7 @@ Relaciones:
 
 Persona que accede a AgentGuard.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `organizationId`
@@ -67,7 +70,7 @@ Estados:
 
 Sistema de IA que propone o ejecuta acciones.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `organizationId`
@@ -101,7 +104,7 @@ Modos:
 
 Herramienta o integración disponible para agentes.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `organizationId`
@@ -123,7 +126,7 @@ Tipos iniciales:
 
 Permiso que conecta un agente con una herramienta y define qué puede hacer.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `agentId`
@@ -150,7 +153,7 @@ Estados:
 
 Regla que decide si una acción se permite, se bloquea o requiere aprobación.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `organizationId`
@@ -160,6 +163,7 @@ Campos MVP:
 - `version`
 - `conditions`
 - `effect`
+- `approvalSlaMinutes`
 - `createdById`
 - `createdAt`
 - `updatedAt`
@@ -182,7 +186,7 @@ Efectos:
 
 Acción propuesta o ejecutada por un agente.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `organizationId`
@@ -196,6 +200,7 @@ Campos MVP:
 - `riskLevel`
 - `payload`
 - `policyResult`
+- `approvalDueAt`
 - `createdAt`
 - `updatedAt`
 - `executedAt`
@@ -212,7 +217,7 @@ Tipos de acción iniciales:
 
 Decisión humana vinculada a una acción.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `actionId`
@@ -225,7 +230,7 @@ Decisiones:
 
 - `approved`
 - `rejected`
-- `requested_changes`
+- `changes_requested`
 - `escalated`
 
 Regla de producto:
@@ -236,7 +241,7 @@ Regla de producto:
 
 Registro inmutable de algo relevante ocurrido en el sistema.
 
-Campos MVP:
+Campos:
 
 - `id`
 - `organizationId`
@@ -251,14 +256,66 @@ Campos MVP:
 Tipos iniciales:
 
 - `agent_created`
+- `agent_paused`
+- `agent_resumed`
 - `permission_changed`
 - `policy_published`
 - `action_proposed`
 - `action_allowed`
 - `action_blocked`
 - `approval_created`
+- `action_escalated`
 - `action_executed`
 - `action_failed`
+- `emergency_stop_engaged`
+- `emergency_stop_released`
+
+### Notification
+
+Aviso in-app dirigido a un usuario (ver `docs/FEATURES.md`).
+
+Campos:
+
+- `id`
+- `organizationId`
+- `userId`
+- `type`
+- `actionId`
+- `message`
+- `readAt`
+- `createdAt`
+
+Tipos:
+
+- `approval_requested`
+- `action_escalated`
+- `agent_error`
+- `emergency_stop`
+
+### ActionComment
+
+Comentario de un usuario en el hilo de una acción (ver `docs/FEATURES.md`).
+
+Campos:
+
+- `id`
+- `actionId`
+- `authorId`
+- `body`
+- `createdAt`
+
+Regla de producto:
+
+- Los comentarios no sustituyen al `reason` obligatorio de una `Approval`; solo añaden contexto.
+
+## Niveles de riesgo (`riskLevel`)
+
+Valores compartidos por `Tool.riskLevel` y `AgentAction.riskLevel` (etiqueta visible en la UI entre paréntesis):
+
+- `low` (Bajo): acción reversible o informativa.
+- `medium` (Medio): cambia datos internos sin impacto económico directo.
+- `high` (Alto): puede afectar dinero, permisos, clientes o cumplimiento.
+- `critical` (Crítico): impacto amplio o irreversible.
 
 ## Relaciones clave
 
@@ -267,8 +324,10 @@ Tipos iniciales:
 - Un `Agent` puede tener permisos sobre muchas `Tool`.
 - Una `AgentAction` pertenece a un `Agent` y normalmente apunta a una `Tool`.
 - Una `AgentAction` puede tener una `Policy` aplicada.
-- Una `AgentAction` puede tener cero o una `Approval` en el MVP.
+- Una `AgentAction` puede tener cero o una `Approval` en la primera versión.
 - Cada cambio relevante genera al menos un `AuditEvent`.
+- Una `Notification` pertenece a una `Organization` y a un `User`, y puede apuntar a una `AgentAction`.
+- Un `ActionComment` pertenece a una `AgentAction` y a su `User` autor.
 
 ## Flujo de estados de acción
 
@@ -293,7 +352,7 @@ allowed
   -> failed
 ```
 
-## Datos simulados del MVP
+## Datos simulados iniciales
 
 La demo inicial debe incluir:
 
@@ -305,6 +364,8 @@ La demo inicial debe incluir:
 - 20 acciones con variedad de estado y riesgo.
 - 8 aprobaciones.
 - 40 eventos de auditoría.
+- 10 notificaciones, algunas sin leer.
+- 12 comentarios repartidos en varias acciones.
 
 ## Decisiones pendientes
 
@@ -313,11 +374,20 @@ La demo inicial debe incluir:
 - Si `payload` y `metadata` se guardarán como JSON plano o con tipos más estrictos.
 - Cuándo separar integraciones reales de herramientas simuladas.
 
-## Fuera del MVP
+## Evolución hacia el producto completo
 
-- Multi-organización avanzada.
-- Facturación del propio AgentGuard.
-- SSO.
-- Webhooks públicos.
+No entran en la primera versión, pero sí forman parte del producto completo y llegan en fases posteriores:
+
+- Persistencia real (PostgreSQL + Prisma) en sustitución de los datos simulados.
+- Multi-organización (multi-tenant) real.
+- SSO y autenticación empresarial.
+- Webhooks e integraciones reales con herramientas externas.
 - Historial completo de versiones de cada política.
-- Motor de reglas complejo.
+- Motor de reglas avanzado.
+
+## No objetivos
+
+Quedan fuera del producto por decisión, no por alcance:
+
+- Facturación del propio AgentGuard.
+- Marketplace de agentes o herramientas.

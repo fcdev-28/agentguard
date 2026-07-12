@@ -141,7 +141,7 @@ Estructura inicial:
 
 ### AppShell
 
-Contiene navegación, top bar y área de contenido. Debe sostener todas las pantallas del MVP sin cambios estructurales.
+Contiene navegación, top bar y área de contenido. Debe sostener todas las pantallas del producto sin cambios estructurales.
 
 ### Sidebar
 

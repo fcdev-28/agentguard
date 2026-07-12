@@ -62,7 +62,7 @@ Antes de fusionar:
 
 ## Ritmo de releases
 
-Para el MVP podemos usar releases ligeras:
+En las primeras versiones podemos usar releases ligeras:
 
 - Trabajo por hitos en ramas.
 - PR hacia `main`.
