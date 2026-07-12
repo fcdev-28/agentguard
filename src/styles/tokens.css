@@ -1,0 +1,93 @@
+/**
+ * Tokens de diseño de AgentGuard.
+ * Colores en OKLCH. Valores definidos en docs/DESIGN_SYSTEM.md.
+ * El primario (rojo) se usa con intención: acción principal, foco, riesgo alto, marca.
+ */
+
+:root {
+  /* Superficies */
+  --color-bg: oklch(1 0 0);
+  --color-bg-subtle: oklch(0.985 0 0);
+  --color-surface: oklch(0.972 0 0);
+  --color-panel: oklch(0.955 0.004 255);
+
+  /* Texto */
+  --color-ink: oklch(0.16 0.006 255);
+  --color-ink-soft: oklch(0.3 0.008 255);
+  --color-muted: oklch(0.47 0.01 255);
+  --color-faint: oklch(0.65 0.008 255);
+
+  /* Bordes */
+  --color-border: oklch(0.9 0.006 255);
+  --color-border-strong: oklch(0.82 0.008 255);
+
+  /* Primario (marca / riesgo alto) */
+  --color-primary: oklch(0.58 0.17 8);
+  --color-primary-hover: oklch(0.53 0.17 8);
+  --color-primary-soft: oklch(0.955 0.03 8);
+  --color-primary-text: oklch(1 0 0);
+
+  /* Acento técnico */
+  --color-accent: oklch(0.36 0.08 246);
+  --color-accent-soft: oklch(0.94 0.02 246);
+  --color-accent-text: oklch(1 0 0);
+
+  /* Semánticos */
+  --color-success: oklch(0.5 0.12 155);
+  --color-success-bg: oklch(0.96 0.035 155);
+  --color-success-text: oklch(0.33 0.09 155);
+
+  --color-warning: oklch(0.7 0.135 80);
+  --color-warning-bg: oklch(0.965 0.045 80);
+  --color-warning-text: oklch(0.39 0.085 75);
+
+  --color-danger: oklch(0.54 0.17 25);
+  --color-danger-bg: oklch(0.955 0.04 25);
+  --color-danger-text: oklch(0.37 0.13 25);
+
+  --color-critical: oklch(0.32 0.12 330);
+  --color-critical-bg: oklch(0.94 0.03 330);
+  --color-critical-text: oklch(0.3 0.115 330);
+
+  --color-info: oklch(0.52 0.11 245);
+  --color-info-bg: oklch(0.955 0.03 245);
+  --color-info-text: oklch(0.34 0.09 245);
+
+  /* Tipografía */
+  --font-sans:
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --text-12: 0.75rem; /* metadatos, timestamps */
+  --text-13: 0.8125rem; /* navegación, tablas densas */
+  --text-14: 0.875rem; /* cuerpo de interfaz */
+  --text-16: 1rem; /* texto destacado, formularios */
+  --text-20: 1.25rem; /* títulos de sección */
+  --text-24: 1.5rem; /* título de pantalla */
+  --text-30: 1.875rem; /* título de dashboard */
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Espaciado (base 4px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* Radios */
+  --radius-control: 6px;
+  --radius-panel: 8px;
+  --radius-pill: 999px;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --duration-fast: 140ms;
+  --duration-base: 190ms;
+  --duration-panel: 240ms;
+}
