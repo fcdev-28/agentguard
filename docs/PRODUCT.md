@@ -38,9 +38,13 @@ Ejemplo: un agente quiere enviar un email de devolución, actualizar un registro
 - Confianza: explicar el riesgo sin saturar al usuario.
 - Velocidad: permitir que las acciones seguras avancen sin cuellos de botella manuales.
 
+## Trayectoria: de MVP a producto completo
+
+AgentGuard **empieza como un MVP y acaba como un producto completo y totalmente funcional**. El MVP entrega valor real desde el principio sobre datos simulados; las fases posteriores lo convierten en un producto de extremo a extremo con persistencia, autenticación e integraciones reales (ver [Roadmap](ROADMAP.md)). Empezar como MVP es deliberado; quedarse en MVP no es el objetivo.
+
 ## Alcance del MVP
 
-La primera versión debe incluir:
+El MVP (primera versión, sobre datos simulados) incluye:
 
 - Registro de agentes.
 - Permisos por herramienta.
@@ -50,15 +54,23 @@ La primera versión debe incluir:
 - Reglas de política.
 - Auditoría básica.
 - Integraciones simuladas para email, CRM, facturación y tareas internas.
+- Parada de emergencia y pausa de agentes.
+- Notificaciones in-app de lo que requiere atención.
+- Command palette (Cmd-K) para navegación y acciones rápidas.
 
-La primera versión no debe incluir:
+Detalle de estas funcionalidades en [Funcionalidades](FEATURES.md).
+
+No objetivos del producto (definen su identidad, no se construirán):
 
 - Una interfaz general de chatbot.
-- SSO empresarial complejo.
-- Decenas de integraciones.
-- Automatización completa de cumplimiento.
 - Funciones de marketplace.
+
+Llegan en fases posteriores del producto completo (no en la primera versión):
+
+- SSO empresarial.
+- Catálogo amplio de integraciones reales.
+- Automatización avanzada de cumplimiento.
 
 ## Criterio de foco
 
-La documentación principal de AgentGuard debe describir solo AgentGuard. Otras ideas de producto no forman parte de este repositorio ni de este MVP.
+La documentación principal de AgentGuard debe describir solo AgentGuard. Otras ideas de producto no forman parte de este repositorio ni de este producto.

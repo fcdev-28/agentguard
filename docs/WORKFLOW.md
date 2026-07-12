@@ -4,6 +4,8 @@
 
 Seguiremos un flujo de trabajo realista de producto, no saltaremos directamente a pantallas.
 
+El proyecto **empieza como un MVP funcional y termina como un producto completo y totalmente funcional**. Las fases reflejan esa trayectoria: primero el MVP con datos simulados, después persistencia, autenticación e integraciones reales.
+
 ## Fase 1: Definición de producto
 
 Decidir exactamente qué es AgentGuard, a quién sirve y qué problema resuelve primero.
