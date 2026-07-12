@@ -12,7 +12,7 @@ Las "fases" del roadmap son un camino de entrega hacia ese producto completo, no
 
 ## Estado actual del repo
 
-Todavía **no existe código**: el repositorio contiene solo documentación de producto/diseño (`README.md` + `docs/`). El primer paso de implementación es andamiar el proyecto Next.js en la rama `feature/setup-proyecto`. Toda la estructura descrita abajo (`src/…`) es el objetivo a crear, no algo existente.
+Fase 0 del roadmap completada: proyecto Next.js andamiado (App Router, TypeScript estricto), tokens OKLCH, tipos de dominio y datos semilla. La app arranca con una página placeholder; el shell, el dashboard y las pantallas operativas llegan en las fases 1+ (ver `docs/ROADMAP.md`). El resto de la estructura descrita abajo se irá creando fase a fase.
 
 ## Documentación fuente
 
@@ -41,7 +41,14 @@ El detalle vive en `docs/`; CLAUDE.md solo resume. Consultar antes de implementa
 
 ## Comandos
 
-*(El proyecto aún no existe. Al crear el proyecto Next.js, documentar aquí `dev`, `build`, `lint` y cómo correr un test aislado.)*
+- `npm run dev` — servidor de desarrollo (http://localhost:3000).
+- `npm run build` — build de producción.
+- `npm start` — sirve el build de producción.
+- `npm run lint` — ESLint (config `eslint-config-next`).
+- `npm run format` / `npm run format:check` — Prettier.
+- `npm test` — Vitest en modo run (una pasada).
+- `npm run test:watch` — Vitest en watch.
+- Test aislado: `npx vitest run src/domain/action.test.ts` (o `npx vitest run -t "nombre del test"`).
 
 ## Estructura de carpetas
 
