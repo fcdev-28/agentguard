@@ -2,7 +2,7 @@
 
 ## Stack elegido
 
-Para un MVP SaaS pulido:
+Para un producto SaaS completo:
 
 - Next.js como framework principal.
 - TypeScript en toda la aplicación.
@@ -48,7 +48,7 @@ El detalle funcional vive en [Modelo funcional de datos](DATA_MODEL.md).
 
 ## Simulación de producto
 
-El MVP puede empezar con integraciones simuladas:
+El producto arranca con integraciones simuladas y evoluciona hacia integraciones reales:
 
 - Email.
 - CRM.
@@ -56,6 +56,16 @@ El MVP puede empezar con integraciones simuladas:
 - Sistema interno de tareas.
 
 Esto nos permite diseñar y validar la experiencia antes de invertir tiempo en APIs externas reales.
+
+## Testing
+
+Estrategia de testing, de dentro hacia fuera:
+
+- **Lógica de dominio pura** (`src/domain/`): tests unitarios con **Vitest**. Prioridad máxima, porque la evaluación de políticas, las transiciones de estado de `AgentAction` y el cálculo de riesgo son el núcleo del producto.
+- **Componentes**: **React Testing Library** sobre Vitest, enfocada en comportamiento y accesibilidad, no en detalles de implementación.
+- **Flujos críticos end-to-end** (revisar y aprobar una acción): **Playwright**, más adelante.
+
+Regla: cada función de dominio nueva llega con su test; la UI se cubre en los flujos que cambian estado.
 
 ## Barra de calidad
 

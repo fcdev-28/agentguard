@@ -2,17 +2,17 @@
 
 ## Objetivo
 
-Definir cómo se organizará AgentGuard en Next.js antes de crear el proyecto. Esta estructura debe permitir construir el MVP con orden, componentes reutilizables y datos simulados desde el primer día.
+Definir cómo se organizará AgentGuard en Next.js antes de crear el proyecto. Esta estructura debe permitir construir el producto con orden, componentes reutilizables y datos simulados desde el primer día.
 
 ## Principios
 
 - Separar rutas, componentes, datos y lógica de dominio.
 - Mantener el dashboard y las pantallas operativas dentro de un mismo shell.
-- Diseñar para datos reales, aunque el MVP empiece con datos simulados.
+- Diseñar para datos reales, aunque el producto empiece con datos simulados.
 - Evitar pantallas aisladas que no compartan sistema visual.
 - Mantener rutas claras y predecibles.
 
-## Rutas del MVP
+## Rutas del producto
 
 ```text
 /
@@ -123,7 +123,7 @@ Debe mostrar:
 
 ### `/settings`
 
-Ajustes mínimos del MVP.
+Ajustes de la organización.
 
 Debe mostrar:
 
@@ -161,7 +161,6 @@ src/
     data-display/
     feedback/
     forms/
-    navigation/
     review/
     agents/
     policies/
@@ -177,6 +176,7 @@ src/
     audit/
     policies/
     permissions/
+    risk/
 
   lib/
     format.ts
@@ -265,7 +265,7 @@ Ejemplos:
 
 ## Datos simulados
 
-El MVP debe arrancar con datos locales en `src/data/demo-data.ts`.
+El producto arranca con datos locales en `src/data/demo-data.ts`.
 
 Debe incluir:
 
@@ -286,7 +286,7 @@ Regla:
 
 ## Estado y filtros
 
-Para el MVP:
+En la primera versión:
 
 - Filtros simples en cliente.
 - Estado local por pantalla.
@@ -295,26 +295,24 @@ Para el MVP:
 
 ## API interna
 
-Primera fase:
+Arranque (andamiaje):
 
-- Sin API real obligatoria.
+- Sin API real todavía.
 - Datos simulados importados desde módulos.
 - Funciones de dominio puras para evaluar políticas y estados.
 
-Fase posterior:
+Producto completo (comprometido, no opcional):
 
 - API routes para acciones, agentes, políticas y auditoría.
 - Prisma conectado a PostgreSQL.
-- Sustitución progresiva de datos simulados por consultas reales.
+- Sustitución progresiva de los datos simulados por consultas reales.
 
 ## Rutas protegidas
 
-En el MVP inicial podemos simular un usuario activo.
-
-Después:
+En la primera versión podemos simular un usuario activo. El producto completo incluye autenticación real:
 
 - Middleware de autenticación.
-- Control por rol.
+- Control por rol (RBAC) sobre `admin`, `reviewer`, `auditor`, `developer`.
 - Redirección a login.
 - Estados de acceso denegado.
 
@@ -347,7 +345,7 @@ Cuando generemos el proyecto, el primer incremento debe incluir:
 
 La estructura será válida si:
 
-- Todas las pantallas del MVP tienen una ruta clara.
+- Todas las pantallas del producto tienen una ruta clara.
 - Los componentes compartidos no dependen de una pantalla concreta.
 - Los datos simulados pueden alimentar dashboard, revisión, agentes y auditoría.
 - El sistema visual puede aplicarse desde `tokens.css`.

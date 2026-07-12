@@ -69,7 +69,7 @@ Necesita:
 
 ## Arquitectura de información
 
-Navegación principal del MVP:
+Navegación principal:
 
 - Dashboard.
 - Revisión.
@@ -149,7 +149,7 @@ Jerarquía recomendada:
 | Alto | Puede afectar dinero, permisos, clientes o cumplimiento | Emitir reembolso |
 | Crítico | Impacto amplio o irreversible | Cambiar permisos masivos |
 
-## Pantallas del MVP
+## Pantallas del producto
 
 ### Dashboard
 
@@ -249,7 +249,7 @@ Cada pantalla importante debe contemplar:
 
 ## Criterios de aceptación UX
 
-El MVP será aceptable si:
+El producto será aceptable si:
 
 - Un revisor puede decidir sobre una acción en menos de un minuto.
 - El motivo de una política se entiende sin abrir documentación externa.
@@ -257,13 +257,22 @@ El MVP será aceptable si:
 - Un administrador puede identificar qué agentes tienen más riesgo.
 - La interfaz evita sensación de chatbot y se siente como software de control.
 
-## Fuera del MVP
+## Aceleradores de control y velocidad
 
-Quedan fuera por ahora:
+Además de las pantallas, el producto incluye funcionalidades transversales (detalle en `docs/FEATURES.md`): parada de emergencia, pausa por agente, escalado por SLA, acciones en lote, command palette (Cmd-K), notificaciones in-app y comentarios en acciones.
 
-- Chat con agentes.
-- Editor visual complejo de reglas.
+## Evolución hacia el producto completo
+
+Llegan en fases posteriores del producto completo (no en la primera versión):
+
 - Integraciones reales con terceros.
+- Editor visual avanzado de reglas.
 - Gestión avanzada de equipos.
 - Reportes ejecutivos extensos.
-- Automatización completa de cumplimiento.
+- Automatización avanzada de cumplimiento.
+
+## No objetivos
+
+Quedan fuera por decisión de producto:
+
+- Chat conversacional con agentes (rompería la identidad de software de control).
