@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { navItems } from "@/lib/navigation";
+import { usePathname } from "next/navigation";
+import { isActiveRoute, navItems } from "@/lib/navigation";
 import { NavIcon } from "./nav-icons";
 import styles from "./sidebar.module.css";
 
@@ -8,6 +11,8 @@ import styles from "./sidebar.module.css";
  * contenido se ofrece a través del drawer de la top bar.
  */
 export function Sidebar() {
+  const pathname = usePathname();
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
@@ -39,14 +44,22 @@ export function Sidebar() {
       </div>
 
       <nav className={styles.nav} aria-label="Navegación principal">
-        {navItems.map((item) => (
-          <Link key={item.href} href={item.href} className={styles.link}>
-            <span className={styles.icon}>
-              <NavIcon name={item.icon} />
-            </span>
-            {item.label}
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          const active = isActiveRoute(pathname, item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={active ? `${styles.link} ${styles.linkActive}` : styles.link}
+              aria-current={active ? "page" : undefined}
+            >
+              <span className={styles.icon}>
+                <NavIcon name={item.icon} />
+              </span>
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
     </aside>
   );

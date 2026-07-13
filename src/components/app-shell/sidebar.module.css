@@ -53,6 +53,17 @@
   color: var(--color-ink);
 }
 
+.linkActive,
+.linkActive:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.linkActive .icon,
+.linkActive:hover .icon {
+  color: var(--color-primary);
+}
+
 .icon {
   flex: none;
   color: var(--color-faint);
