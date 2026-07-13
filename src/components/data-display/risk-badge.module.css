@@ -1,0 +1,28 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+/* Gradiente de severidad: neutro -> ámbar -> rojo contorno -> rojo sólido. */
+.low {
+  background: var(--color-surface);
+  color: var(--color-muted);
+}
+.medium {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+.high {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+.critical {
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+}
