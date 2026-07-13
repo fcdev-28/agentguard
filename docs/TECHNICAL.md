@@ -17,6 +17,27 @@ AgentGuard necesita una interfaz SaaS rica: dashboard, colas de revisión, filtr
 
 La estructura inicial de rutas y carpetas vive en [Estructura de aplicación](APP_STRUCTURE.md).
 
+## Despliegue
+
+Decisión anclada. Todo serverless, un solo deploy, preview por PR y escala a cero. Encaja con lo que el roadmap ya compromete (PostgreSQL + Prisma en la fase 10) sin añadir un backend separado.
+
+| Pieza | Elección | Razón |
+|---|---|---|
+| Hosting de la app | **Vercel** | Soporte nativo de Next.js (mismo equipo), SSR/edge, deploys de preview por cada PR, cero configuración |
+| Base de datos | **Neon** (PostgreSQL serverless) | Postgres gestionado con pooling serverless y ramas de base de datos por PR; encaja con Prisma sin fricción |
+| ORM y migraciones | **Prisma Migrate** | Ya elegido como ORM del producto (fase 10) |
+| Autenticación | **Auth.js** (NextAuth) | Open source y control total del RBAC sobre `admin` / `reviewer` / `auditor` / `developer` (fase 11) |
+| Cron / SLA | **Vercel Cron** | Dispara el proceso temporal de `approvalDueAt` y el auto-escalado por SLA (fase 12) sin infraestructura extra |
+| Ingesta de acciones | **Route Handlers de Next.js** | El endpoint de entrada de acciones vive en el mismo deploy; no hace falta un servicio aparte (fase 12) |
+| Observabilidad | **Sentry** + **Vercel Analytics** | Errores y trazas más métricas básicas (fase 13) |
+| CI | **GitHub Actions** | `lint` + `test` + `build` como check obligatorio de cada PR (ver [Flujo de Git](GIT_WORKFLOW.md), fase 13) |
+
+Regla de dependencia: el MVP (fases 1–9, datos simulados) despliega en Vercel sin base de datos; Neon, Auth.js y Vercel Cron se incorporan al llegar a sus fases respectivas.
+
+### Alternativa self-hosted
+
+Si en algún momento se descarta Vercel: Next.js con `output: "standalone"` en un contenedor Docker sobre Fly.io, Railway o Render, con el PostgreSQL gestionado del mismo proveedor. Da más control a cambio de más operaciones.
+
 ## Modelo de datos inicial
 
 Entidades principales:
