@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/app-shell/page-header";
 import { PendingActionsBlock } from "@/components/dashboard/pending-actions-block";
+import { ActiveAgentsBlock } from "@/components/dashboard/active-agents-block";
 import styles from "@/components/dashboard/dashboard.module.css";
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
       />
       <div className={styles.grid}>
         <PendingActionsBlock />
+        <ActiveAgentsBlock />
       </div>
     </div>
   );

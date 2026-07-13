@@ -128,3 +128,12 @@ a.row:hover {
   background: var(--color-danger-bg);
   color: var(--color-danger-text);
 }
+
+/* Punto de estado (agente activo). */
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success);
+}
