@@ -1,28 +1,11 @@
 import Link from "next/link";
-import type { ActionStatus, AgentAction } from "@/domain";
+import type { AgentAction } from "@/domain";
+import { actionStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { getAgentActions } from "@/lib/agents";
 import { formatRelativeTime } from "@/lib/format";
 import styles from "./agents.module.css";
-
-/**
- * Etiqueta legible del estado de la acción. Simplifica `ActionStatus` para
- * esta vista; si el producto necesita un sistema de estados más rico (con
- * color, orden, etc.) debería vivir junto a `riskLevelLabel` en el dominio.
- */
-const actionStatusLabel: Record<ActionStatus, string> = {
-  proposed: "Propuesta",
-  allowed: "Permitida",
-  blocked: "Bloqueada",
-  needs_approval: "Pendiente de aprobación",
-  approved: "Aprobada",
-  rejected: "Rechazada",
-  changes_requested: "Cambios solicitados",
-  escalated: "Escalada",
-  executed: "Ejecutada",
-  failed: "Fallida",
-};
 
 /** Últimas acciones propuestas o ejecutadas por el agente. */
 export function AgentActions({
