@@ -32,13 +32,13 @@ export function CountUp({
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (prefersReducedMotion()) {
-      setDisplay(value);
-      return;
-    }
+    // Con movimiento reducido saltamos al valor final en un solo frame (sin
+    // contar); si no, animamos de 0 a value. En ambos casos el setState ocurre
+    // dentro del callback de rAF, no en el cuerpo del efecto.
+    const reduced = prefersReducedMotion();
     const start = performance.now();
     const tick = (now: number) => {
-      const progress = Math.min((now - start) / durationMs, 1);
+      const progress = reduced ? 1 : Math.min((now - start) / durationMs, 1);
       setDisplay(Math.round(easeOut(progress) * value));
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(tick);
