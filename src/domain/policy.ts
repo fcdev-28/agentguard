@@ -19,3 +19,11 @@ export interface Policy {
   updatedAt: string;
   publishedAt: string | null;
 }
+
+/** Etiqueta visible en castellano para cada efecto de política. */
+export const policyEffectLabel: Record<PolicyEffect, string> = {
+  allow: "Permitir",
+  block: "Bloquear",
+  require_approval: "Requiere aprobación",
+  escalate: "Escalar",
+};

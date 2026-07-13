@@ -20,6 +20,12 @@ import type {
 
 /** Base temporal fija para que la demo sea determinista. */
 const now = new Date("2026-07-12T09:00:00.000Z");
+/**
+ * Reloj simulado del producto: sirve de "ahora" para tiempos relativos y para
+ * decidir si una aprobación está vencida, mientras los datos vienen de esta
+ * semilla. Se sustituye por el tiempo real al llegar la persistencia (fase 10).
+ */
+export const demoNow = now;
 /** Devuelve un ISO desplazado `minutes` respecto a `now` (negativo = pasado). */
 function at(minutes: number): string {
   return new Date(now.getTime() + minutes * 60_000).toISOString();
