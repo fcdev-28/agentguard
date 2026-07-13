@@ -115,3 +115,16 @@ a.row:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Badge "Vencida" para aprobaciones que superaron approvalDueAt. */
+.overdue {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  line-height: 18px;
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}

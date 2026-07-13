@@ -1,11 +1,17 @@
+import { PageHeader } from "@/components/app-shell/page-header";
+import { PendingActionsBlock } from "@/components/dashboard/pending-actions-block";
+import styles from "@/components/dashboard/dashboard.module.css";
+
 export default function Home() {
   return (
-    <div style={{ maxWidth: "42rem", display: "grid", gap: "var(--space-3)" }}>
-      <h1>AgentGuard</h1>
-      <p style={{ color: "var(--color-muted)", fontSize: "var(--text-16)" }}>
-        Shell y navegación listos. El dashboard y las pantallas operativas
-        llegan en las siguientes fases.
-      </p>
+    <div>
+      <PageHeader
+        title="Panel de control"
+        description="Estado operativo y prioridades del sistema."
+      />
+      <div className={styles.grid}>
+        <PendingActionsBlock />
+      </div>
     </div>
   );
 }
