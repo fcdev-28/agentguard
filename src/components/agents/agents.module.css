@@ -1,0 +1,256 @@
+/* Lista de agentes: filas con grid, apiladas en móvil. */
+.list {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto auto auto auto;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.list .row:last-child {
+  border-bottom: none;
+}
+
+a.row:hover {
+  background: var(--color-surface);
+}
+
+.identity {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.name {
+  font-size: var(--text-14);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.description {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.owner {
+  min-width: 0;
+  font-size: var(--text-13);
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mode {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.activity {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+  white-space: nowrap;
+  text-align: right;
+}
+
+.noRisk {
+  font-size: var(--text-12);
+  color: var(--color-faint);
+}
+
+/* Pill de estado de agente, coherente con RiskBadge pero con paleta propia. */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.statusActive {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+.statusPaused {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+.statusDisabled {
+  background: var(--color-surface);
+  color: var(--color-muted);
+}
+.statusError {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+
+@media (max-width: 900px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .activity {
+    text-align: left;
+  }
+}
+
+/* Esqueleto de carga de la lista. */
+.skeletonRow {
+  padding: var(--space-4);
+}
+
+.skeletonLine {
+  height: 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  margin-bottom: var(--space-2);
+  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+    alternate;
+}
+
+.skeletonLine:nth-child(1) {
+  width: 30%;
+}
+.skeletonLine:nth-child(2) {
+  width: 55%;
+}
+
+@keyframes skeletonPulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+/* Enlace de vuelta (p. ej. desde el estado "no encontrado"). */
+.backLink {
+  display: inline-flex;
+  margin-top: var(--space-4);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.backLink:hover {
+  color: var(--color-ink);
+}
+
+/* Cabecera de detalle de agente. */
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.metaItem {
+  font-size: var(--text-13);
+  color: var(--color-muted);
+}
+
+.metaItem strong {
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-soft);
+}
+
+/* Secciones de detalle (herramientas, acciones). */
+.section {
+  margin-top: var(--space-6);
+}
+
+.sectionTitle {
+  font-size: var(--text-16);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+  margin-bottom: var(--space-3);
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.panelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.panel .panelRow:last-child {
+  border-bottom: none;
+}
+
+a.panelRow:hover {
+  background: var(--color-surface);
+}
+
+.panelRowMain {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.panelRowTitle {
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.panelRowMeta {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+}
+
+.panelRowAside {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (max-width: 600px) {
+  .panelRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .panelRowAside {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
