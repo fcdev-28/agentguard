@@ -8,3 +8,11 @@ export const riskLevelLabel: Record<RiskLevel, string> = {
   high: "Alto",
   critical: "Crítico",
 };
+
+/** Peso de cada nivel de riesgo para ordenar de más a menos urgente. */
+export const riskRank: Record<RiskLevel, number> = {
+  critical: 3,
+  high: 2,
+  medium: 1,
+  low: 0,
+};
