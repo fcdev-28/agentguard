@@ -34,6 +34,35 @@
   gap: var(--space-1);
 }
 
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  color: var(--color-ink-soft);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.link:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.icon {
+  flex: none;
+  color: var(--color-faint);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.link:hover .icon {
+  color: var(--color-muted);
+}
+
 /* La navegación lateral no se muestra en móvil: allí se accede por el drawer. */
 @media (max-width: 768px) {
   .sidebar {

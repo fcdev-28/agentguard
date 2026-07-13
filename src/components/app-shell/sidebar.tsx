@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { navItems } from "@/lib/navigation";
+import { NavIcon } from "./nav-icons";
 import styles from "./sidebar.module.css";
 
 /**
@@ -35,7 +38,16 @@ export function Sidebar() {
         <span className={styles.brandName}>AgentGuard</span>
       </div>
 
-      <nav className={styles.nav} aria-label="Navegación principal" />
+      <nav className={styles.nav} aria-label="Navegación principal">
+        {navItems.map((item) => (
+          <Link key={item.href} href={item.href} className={styles.link}>
+            <span className={styles.icon}>
+              <NavIcon name={item.icon} />
+            </span>
+            {item.label}
+          </Link>
+        ))}
+      </nav>
     </aside>
   );
 }
