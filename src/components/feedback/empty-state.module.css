@@ -1,0 +1,14 @@
+.empty {
+  padding: var(--space-4) var(--space-3);
+}
+
+.title {
+  font-size: var(--text-13);
+  color: var(--color-ink-soft);
+}
+
+.hint {
+  margin-top: 2px;
+  font-size: var(--text-12);
+  color: var(--color-muted);
+}
