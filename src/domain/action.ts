@@ -18,12 +18,35 @@ export type ActionStatus =
   | "executed"
   | "failed";
 
+/** Etiqueta visible en castellano para cada estado de acción. */
+export const actionStatusLabel: Record<ActionStatus, string> = {
+  proposed: "Propuesta",
+  allowed: "Permitida",
+  blocked: "Bloqueada",
+  needs_approval: "Pendiente de aprobación",
+  approved: "Aprobada",
+  rejected: "Rechazada",
+  changes_requested: "Cambios solicitados",
+  escalated: "Escalada",
+  executed: "Ejecutada",
+  failed: "Fallida",
+};
+
 export type ActionType =
   | "send_email"
   | "update_record"
   | "issue_refund"
   | "create_task"
   | "change_permission";
+
+/** Etiqueta visible en castellano para cada tipo de acción. */
+export const actionTypeLabel: Record<ActionType, string> = {
+  send_email: "Enviar email",
+  update_record: "Actualizar registro",
+  issue_refund: "Emitir reembolso",
+  create_task: "Crear tarea",
+  change_permission: "Cambiar permiso",
+};
 
 /** Resultado de evaluar una política sobre la acción. */
 export interface PolicyResult {
