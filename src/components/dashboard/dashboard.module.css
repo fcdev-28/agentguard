@@ -162,3 +162,37 @@ a.row:hover {
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
+
+/* Esqueleto de carga del dashboard. */
+.skeletonBlock {
+  min-height: 160px;
+  padding: var(--space-4);
+}
+
+.skeletonLine {
+  height: 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  margin-bottom: var(--space-3);
+  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+    alternate;
+}
+
+.skeletonLine:nth-child(1) {
+  width: 40%;
+}
+.skeletonLine:nth-child(2) {
+  width: 80%;
+}
+.skeletonLine:nth-child(3) {
+  width: 65%;
+}
+
+@keyframes skeletonPulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
