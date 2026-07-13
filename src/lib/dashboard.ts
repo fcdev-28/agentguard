@@ -1,10 +1,5 @@
-import type {
-  Agent,
-  AgentAction,
-  ActionStatus,
-  Policy,
-  RiskLevel,
-} from "@/domain";
+import type { Agent, AgentAction, ActionStatus, Policy, RiskLevel } from "@/domain";
+import { riskRank } from "@/domain";
 
 /** Estados en los que una acción espera una decisión humana. */
 const PENDING_STATUSES: ReadonlySet<ActionStatus> = new Set([
@@ -12,14 +7,6 @@ const PENDING_STATUSES: ReadonlySet<ActionStatus> = new Set([
   "proposed",
   "escalated",
 ]);
-
-/** Peso de cada nivel de riesgo para ordenar de más a menos urgente. */
-const riskRank: Record<RiskLevel, number> = {
-  critical: 3,
-  high: 2,
-  medium: 1,
-  low: 0,
-};
 
 /** ¿La acción está a la espera de decisión humana? */
 export function isPendingReview(status: ActionStatus): boolean {
