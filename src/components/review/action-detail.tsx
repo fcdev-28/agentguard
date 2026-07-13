@@ -1,12 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import type { PolicyEffect } from "@/domain";
 import { actionStatusLabel, actionTypeLabel, policyEffectLabel } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
-import { actions, agents, tools, policies, actionComments, users } from "@/data/demo-data";
+import { evaluatePolicy } from "@/lib/policy-eval";
+import {
+  actions,
+  agents,
+  tools,
+  policies,
+  permissions,
+  actionComments,
+  users,
+} from "@/data/demo-data";
 import { useReview } from "./review-store";
 import { actionStatusClass } from "./status-style";
 import type { ReviewDecision } from "@/lib/review";
@@ -36,8 +44,11 @@ export function ActionDetail({ actionId }: { actionId: string }) {
 
   const agent = agents.find((a) => a.id === action.agentId);
   const tool = tools.find((t) => t.id === action.toolId);
-  const policy = action.policyResult?.policyId
-    ? policies.find((p) => p.id === action.policyResult?.policyId)
+  // La sección de política refleja el motor de evaluación (lib/policy-eval),
+  // no el policyResult sembrado: así queda vivo si cambian las políticas activas.
+  const policyEvaluation = evaluatePolicy(action, policies, { tools, agents, permissions });
+  const policy = policyEvaluation.policyId
+    ? policies.find((p) => p.id === policyEvaluation.policyId)
     : null;
   const comments = actionComments.filter((c) => c.actionId === action.id);
   const payloadEntries = Object.entries(action.payload);
@@ -110,17 +121,16 @@ export function ActionDetail({ actionId }: { actionId: string }) {
 
       <section className={styles.detailSection}>
         <h3 className={styles.detailSectionTitle}>Política</h3>
-        {action.policyResult ? (
+        {policyEvaluation.policyId ? (
           <>
             <p className={styles.policyEffect}>
               {policy?.name ?? "Política no encontrada"} ·{" "}
-              {policyEffectLabel[action.policyResult.effect as PolicyEffect] ??
-                action.policyResult.effect}
+              {policyEffectLabel[policyEvaluation.effect]}
             </p>
-            <p className={styles.hint}>{action.policyResult.reason}</p>
+            <p className={styles.hint}>{policyEvaluation.reason}</p>
           </>
         ) : (
-          <p className={styles.hint}>Sin política aplicada.</p>
+          <p className={styles.hint}>{policyEvaluation.reason}</p>
         )}
       </section>
 
