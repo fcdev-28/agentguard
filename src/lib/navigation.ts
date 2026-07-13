@@ -4,12 +4,7 @@
  * que añadir o reordenar rutas se hace en un solo sitio.
  */
 export type NavIconName =
-  | "dashboard"
-  | "review"
-  | "agents"
-  | "policies"
-  | "audit"
-  | "settings";
+  "dashboard" | "review" | "agents" | "policies" | "audit" | "settings";
 
 export interface NavItem {
   href: string;

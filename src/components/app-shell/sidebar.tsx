@@ -50,7 +50,9 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={active ? `${styles.link} ${styles.linkActive}` : styles.link}
+              className={
+                active ? `${styles.link} ${styles.linkActive}` : styles.link
+              }
               aria-current={active ? "page" : undefined}
             >
               <span className={styles.icon}>

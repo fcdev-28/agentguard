@@ -13,6 +13,31 @@
   backdrop-filter: blur(8px);
 }
 
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.menu {
+  display: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: calc(var(--space-2) * -1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.menu:hover {
+  background: var(--color-surface);
+}
+
 .org {
   display: flex;
   align-items: center;
@@ -70,6 +95,11 @@
 @media (max-width: 768px) {
   .bar {
     padding: 0 var(--space-4);
+  }
+
+  /* El botón de menú solo aparece cuando el sidebar está colapsado. */
+  .menu {
+    display: grid;
   }
 
   /* En móvil basta con las iniciales; el nombre y rol se omiten por espacio. */

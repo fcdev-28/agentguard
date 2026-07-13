@@ -8,5 +8,6 @@
 import { organization, users } from "@/data/demo-data";
 import type { Organization, User } from "@/domain";
 
-export const currentUser: User = users.find((u) => u.role === "admin") ?? users[0];
+export const currentUser: User =
+  users.find((u) => u.role === "admin") ?? users[0];
 export const currentOrganization: Organization = organization;

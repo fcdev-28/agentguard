@@ -1,0 +1,121 @@
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.rootOpen {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  background: oklch(0.16 0.006 255 / 0.35);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity var(--duration-panel) var(--ease-out);
+}
+
+.rootOpen .backdrop {
+  opacity: 1;
+}
+
+.drawer {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: min(280px, 82vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-4) var(--space-3);
+  background: var(--color-bg);
+  border-right: 1px solid var(--color-border);
+  transform: translateX(-100%);
+  transition: transform var(--duration-panel) var(--ease-out);
+}
+
+.rootOpen .drawer {
+  transform: translateX(0);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+}
+
+.brandName {
+  font-size: var(--text-16);
+  font-weight: var(--weight-semibold);
+  letter-spacing: -0.01em;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.close:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  color: var(--color-ink-soft);
+  font-size: var(--text-14);
+  font-weight: var(--weight-medium);
+}
+
+.link:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.linkActive,
+.linkActive:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.icon {
+  flex: none;
+  color: var(--color-faint);
+}
+
+.linkActive .icon {
+  color: var(--color-primary);
+}
+
+/* El drawer solo existe en móvil; en desktop la navegación vive en el sidebar. */
+@media (min-width: 769px) {
+  .root {
+    display: none;
+  }
+}
