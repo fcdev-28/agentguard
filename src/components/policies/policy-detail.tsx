@@ -1,0 +1,278 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import type { Agent, AgentAction, Permission, Policy, PolicyEffect, Tool } from "@/domain";
+import { policyEffectLabel } from "@/domain";
+import { EmptyState } from "@/components/feedback/empty-state";
+import { RiskBadge } from "@/components/data-display/risk-badge";
+import { getAffectedActions } from "@/lib/policies";
+import { formatRelativeTime } from "@/lib/format";
+import { policyStatusClass, policyStatusLabel, policyEffectClass } from "./policies-style";
+import styles from "./policies.module.css";
+
+/** Etiqueta visible en castellano para cada tipo de herramienta (editor de condición `tool`). */
+const toolTypeLabel: Record<Tool["type"], string> = {
+  email: "Email",
+  crm: "CRM",
+  billing: "Facturación",
+  tasks: "Tareas",
+};
+
+/** Etiqueta visible en castellano para cada alcance de permiso (editor de condición `scope`). */
+const scopeLabel: Record<Permission["scope"], string> = {
+  read: "Lectura",
+  draft: "Borrador",
+  write: "Escritura",
+  execute: "Ejecución",
+};
+
+/** Orden fijo de efectos para el selector, de menos a más severo. */
+const EFFECT_OPTIONS: PolicyEffect[] = ["allow", "require_approval", "escalate", "block"];
+
+/** Copia editable de los campos de una política que admite la "edición simple". */
+interface EditableFields {
+  conditions: Record<string, unknown>;
+  effect: PolicyEffect;
+  approvalSlaMinutes: number | null;
+}
+
+/** Representación legible de un valor de condición, para el resumen de solo lectura. */
+function formatConditionValue(value: unknown): string {
+  if (typeof value === "boolean") return value ? "sí" : "no";
+  return String(value);
+}
+
+/**
+ * Detalle y edición simple de una política: cabecera con su estado y
+ * versión, editor de las condiciones que ya tiene definidas (permisos por
+ * herramienta, umbral de importe, efecto y SLA de aprobación) y una
+ * previsualización en vivo de las acciones recientes a las que afectaría.
+ * La edición es efímera: no persiste, solo sirve para previsualizar.
+ */
+export function PolicyDetail({
+  policy,
+  actions,
+  tools,
+  agents,
+  permissions,
+}: {
+  policy: Policy;
+  actions: AgentAction[];
+  tools: Tool[];
+  agents: Agent[];
+  permissions: Permission[];
+}) {
+  const [edited, setEdited] = useState<EditableFields>({
+    conditions: policy.conditions,
+    effect: policy.effect,
+    approvalSlaMinutes: policy.approvalSlaMinutes,
+  });
+
+  const hasToolCondition = "tool" in policy.conditions;
+  const hasScopeCondition = "scope" in policy.conditions;
+  const hasMaxAmountCondition = "maxAmount" in policy.conditions;
+  const hasToolEditor = hasToolCondition || hasScopeCondition;
+
+  function setCondition(key: string, value: unknown) {
+    setEdited((prev) => ({ ...prev, conditions: { ...prev.conditions, [key]: value } }));
+  }
+
+  const previewPolicy = useMemo<Policy>(
+    () => ({
+      ...policy,
+      conditions: edited.conditions,
+      effect: edited.effect,
+      approvalSlaMinutes: edited.approvalSlaMinutes,
+    }),
+    [policy, edited],
+  );
+
+  const affected = useMemo(
+    () => getAffectedActions(previewPolicy, actions, { tools, agents, permissions }, 8),
+    [previewPolicy, actions, tools, agents, permissions],
+  );
+
+  const agentName = (id: string) => agents.find((a) => a.id === id)?.name ?? id;
+
+  return (
+    <div>
+      <div className={styles.detailHead}>
+        <span className={`${styles.statusBadge} ${policyStatusClass[policy.status]}`}>
+          {policyStatusLabel[policy.status]}
+        </span>
+        <span className={`${styles.effectBadge} ${policyEffectClass[policy.effect]}`}>
+          {policyEffectLabel[policy.effect]}
+        </span>
+      </div>
+
+      <div className={styles.metaRow}>
+        <span className={styles.metaItem}>
+          Versión: <strong>v{policy.version}</strong>
+        </span>
+        <span className={styles.metaItem}>
+          Creada: <strong>{formatRelativeTime(policy.createdAt)}</strong>
+        </span>
+        <span className={styles.metaItem}>
+          Actualizada: <strong>{formatRelativeTime(policy.updatedAt)}</strong>
+        </span>
+        <span className={styles.metaItem}>
+          Publicada:{" "}
+          <strong>{policy.publishedAt ? formatRelativeTime(policy.publishedAt) : "Sin publicar"}</strong>
+        </span>
+      </div>
+
+      <p className={styles.previewNotice}>
+        Los cambios de esta pantalla son una previsualización simulada: no se guardan. Sirven para
+        ver de inmediato cómo cambiaría el efecto de la política sobre las acciones.
+      </p>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Condiciones</h2>
+        <div className={styles.editorPanel}>
+          {hasToolEditor ? (
+            <div className={styles.fieldRow}>
+              {hasToolCondition ? (
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel} htmlFor="condition-tool">
+                    Herramienta
+                  </label>
+                  <select
+                    id="condition-tool"
+                    className={styles.fieldSelect}
+                    value={String(edited.conditions.tool ?? "")}
+                    onChange={(event) => setCondition("tool", event.target.value)}
+                  >
+                    {Object.entries(toolTypeLabel).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+              {hasScopeCondition ? (
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel} htmlFor="condition-scope">
+                    Alcance
+                  </label>
+                  <select
+                    id="condition-scope"
+                    className={styles.fieldSelect}
+                    value={String(edited.conditions.scope ?? "")}
+                    onChange={(event) => setCondition("scope", event.target.value)}
+                  >
+                    {Object.entries(scopeLabel).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
+          {hasMaxAmountCondition ? (
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="condition-max-amount">
+                Importe máximo sin aprobación (EUR)
+              </label>
+              <input
+                id="condition-max-amount"
+                type="number"
+                min={0}
+                className={styles.fieldInput}
+                value={Number(edited.conditions.maxAmount ?? 0)}
+                onChange={(event) => setCondition("maxAmount", Number(event.target.value))}
+              />
+              <span className={styles.fieldHint}>
+                Se aplica a acciones con importe superior a este umbral.
+              </span>
+            </div>
+          ) : null}
+
+          <div className={styles.fieldRow}>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="policy-effect">
+                Efecto
+              </label>
+              <select
+                id="policy-effect"
+                className={styles.fieldSelect}
+                value={edited.effect}
+                onChange={(event) =>
+                  setEdited((prev) => ({ ...prev, effect: event.target.value as PolicyEffect }))
+                }
+              >
+                {EFFECT_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {policyEffectLabel[value]}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={styles.field}>
+              <label className={styles.fieldLabel} htmlFor="policy-sla">
+                SLA de aprobación (minutos)
+              </label>
+              <input
+                id="policy-sla"
+                type="number"
+                min={0}
+                className={styles.fieldInput}
+                value={edited.approvalSlaMinutes ?? ""}
+                placeholder="Sin SLA"
+                onChange={(event) =>
+                  setEdited((prev) => ({
+                    ...prev,
+                    approvalSlaMinutes: event.target.value === "" ? null : Number(event.target.value),
+                  }))
+                }
+              />
+              <span className={styles.fieldHint}>Vacío = sin límite de tiempo para decidir.</span>
+            </div>
+          </div>
+
+          {Object.keys(policy.conditions).length > 0 ? (
+            <div className={styles.field}>
+              <span className={styles.fieldLabel}>Resto de condiciones (no editables aquí)</span>
+              <span className={styles.fieldHint}>
+                {Object.entries(policy.conditions)
+                  .filter(([key]) => !["tool", "scope", "maxAmount"].includes(key))
+                  .map(([key, value]) => `${key}: ${formatConditionValue(value)}`)
+                  .join(" · ") || "—"}
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2 className={styles.sectionTitle}>Acciones afectadas</h2>
+        {affected.length === 0 ? (
+          <EmptyState
+            title="Ninguna acción reciente casa con esta política."
+            hint="Ajusta las condiciones para ver qué acciones se verían afectadas."
+          />
+        ) : (
+          <div className={styles.panel}>
+            {affected.map((action) => (
+              <Link key={action.id} href={`/review/${action.id}`} className={styles.panelRow}>
+                <div className={styles.panelRowMain}>
+                  <span className={styles.panelRowTitle}>{action.title}</span>
+                  <span className={styles.panelRowMeta}>
+                    {agentName(action.agentId)} · {formatRelativeTime(action.createdAt)}
+                  </span>
+                </div>
+                <div className={styles.panelRowAside}>
+                  <RiskBadge level={action.riskLevel} />
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
