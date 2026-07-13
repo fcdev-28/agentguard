@@ -79,10 +79,22 @@ describe("isPendingReview", () => {
 describe("getPendingActions", () => {
   it("filtra pendientes y ordena por riesgo desc, luego fecha asc", () => {
     const input = [
-      action({ id: "med", riskLevel: "medium", createdAt: "2026-07-12T08:00:00.000Z" }),
+      action({
+        id: "med",
+        riskLevel: "medium",
+        createdAt: "2026-07-12T08:00:00.000Z",
+      }),
       action({ id: "done", status: "executed", riskLevel: "critical" }),
-      action({ id: "critA", riskLevel: "critical", createdAt: "2026-07-12T07:00:00.000Z" }),
-      action({ id: "critB", riskLevel: "critical", createdAt: "2026-07-12T06:00:00.000Z" }),
+      action({
+        id: "critA",
+        riskLevel: "critical",
+        createdAt: "2026-07-12T07:00:00.000Z",
+      }),
+      action({
+        id: "critB",
+        riskLevel: "critical",
+        createdAt: "2026-07-12T06:00:00.000Z",
+      }),
     ];
     const result = getPendingActions(input).map((a) => a.id);
     expect(result).toEqual(["critB", "critA", "med"]);
@@ -108,7 +120,12 @@ describe("getRiskBreakdown", () => {
       action({ riskLevel: "high" }),
       action({ riskLevel: "low" }),
     ];
-    expect(getRiskBreakdown(input)).toEqual({ critical: 1, high: 2, medium: 0, low: 1 });
+    expect(getRiskBreakdown(input)).toEqual({
+      critical: 1,
+      high: 2,
+      medium: 0,
+      low: 1,
+    });
   });
 });
 
@@ -116,9 +133,16 @@ describe("getRecentPolicies", () => {
   it("solo activas, ordenadas por publishedAt desc, recortadas al límite", () => {
     const input = [
       policy({ id: "old", publishedAt: "2026-07-01T00:00:00.000Z" }),
-      policy({ id: "draft", status: "draft", publishedAt: "2026-07-10T00:00:00.000Z" }),
+      policy({
+        id: "draft",
+        status: "draft",
+        publishedAt: "2026-07-10T00:00:00.000Z",
+      }),
       policy({ id: "new", publishedAt: "2026-07-05T00:00:00.000Z" }),
     ];
-    expect(getRecentPolicies(input, 4).map((p) => p.id)).toEqual(["new", "old"]);
+    expect(getRecentPolicies(input, 4).map((p) => p.id)).toEqual([
+      "new",
+      "old",
+    ]);
   });
 });

@@ -1,4 +1,10 @@
-import type { Agent, AgentAction, ActionStatus, Policy, RiskLevel } from "@/domain";
+import type {
+  Agent,
+  AgentAction,
+  ActionStatus,
+  Policy,
+  RiskLevel,
+} from "@/domain";
 
 /** Estados en los que una acción espera una decisión humana. */
 const PENDING_STATUSES: ReadonlySet<ActionStatus> = new Set([
@@ -37,7 +43,9 @@ export function getActiveAgents(agents: Agent[]): Agent[] {
 }
 
 /** Conteo de acciones pendientes por nivel de riesgo. */
-export function getRiskBreakdown(pending: AgentAction[]): Record<RiskLevel, number> {
+export function getRiskBreakdown(
+  pending: AgentAction[],
+): Record<RiskLevel, number> {
   const breakdown: Record<RiskLevel, number> = {
     critical: 0,
     high: 0,
