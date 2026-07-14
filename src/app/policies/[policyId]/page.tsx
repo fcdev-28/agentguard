@@ -2,7 +2,13 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app-shell/page-header";
 import { PolicyDetail } from "@/components/policies/policy-detail";
 import { getPolicyById } from "@/lib/policies";
-import { policies, actions, tools, agents, permissions } from "@/data/demo-data";
+import {
+  policies,
+  actions,
+  tools,
+  agents,
+  permissions,
+} from "@/data/demo-data";
 
 export default async function PolicyDetailPage({
   params,

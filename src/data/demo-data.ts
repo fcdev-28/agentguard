@@ -243,7 +243,8 @@ export const agents: Agent[] = [
     organizationId: organization.id,
     ownerId: "usr_developer2",
     name: "Agente de citas",
-    description: "Programa y reprograma citas de clientes como tareas internas.",
+    description:
+      "Programa y reprograma citas de clientes como tareas internas.",
     environment: "production",
     status: "active",
     mode: "enforce",
@@ -279,7 +280,8 @@ export const agents: Agent[] = [
     organizationId: organization.id,
     ownerId: "usr_developer2",
     name: "Puntuación de leads",
-    description: "Actualiza la puntuación de leads en el CRM según su actividad.",
+    description:
+      "Actualiza la puntuación de leads en el CRM según su actividad.",
     environment: "sandbox",
     status: "active",
     mode: "observe",
@@ -316,7 +318,8 @@ export const agents: Agent[] = [
     organizationId: organization.id,
     ownerId: "usr_developer3",
     name: "Publicador social",
-    description: "Programa publicaciones en redes sociales. En error por token caducado.",
+    description:
+      "Programa publicaciones en redes sociales. En error por token caducado.",
     environment: "sandbox",
     status: "error",
     mode: "observe",
@@ -328,7 +331,8 @@ export const agents: Agent[] = [
     organizationId: organization.id,
     ownerId: "usr_admin",
     name: "Revisor de contratos",
-    description: "Marca cláusulas de riesgo y actualiza el estado de contratos en el CRM.",
+    description:
+      "Marca cláusulas de riesgo y actualiza el estado de contratos en el CRM.",
     environment: "production",
     status: "active",
     mode: "enforce",
@@ -729,7 +733,7 @@ export const actions: AgentAction[] = [
     toolId: "tool_crm",
     policyId: "pol_crm_write",
     title: "Actualizar etapa de embudo del lead",
-    summary: "Mover al lead #9012 a la etapa \"cualificado\".",
+    summary: 'Mover al lead #9012 a la etapa "cualificado".',
     actionType: "update_record",
     status: "allowed",
     riskLevel: "low",
@@ -759,7 +763,11 @@ export const actions: AgentAction[] = [
     actionType: "create_task",
     status: "allowed",
     riskLevel: "low",
-    payload: { customerId: "4410", taskType: "confirmacion_llamada", dueInHours: 4 },
+    payload: {
+      customerId: "4410",
+      taskType: "confirmacion_llamada",
+      dueInHours: 4,
+    },
     policyResult: {
       policyId: null,
       effect: "allow",
@@ -821,7 +829,8 @@ export const actions: AgentAction[] = [
     toolId: "tool_tasks",
     policyId: "pol_block_prod_delete",
     title: "Vaciar inventario obsoleto",
-    summary: "Intento de eliminar en bloque referencias de inventario discontinuadas.",
+    summary:
+      "Intento de eliminar en bloque referencias de inventario discontinuadas.",
     actionType: "create_task",
     status: "blocked",
     riskLevel: "high",
@@ -917,13 +926,17 @@ export const actions: AgentAction[] = [
     toolId: "tool_billing",
     policyId: "pol_refund_cap",
     title: "Reembolso de 610 EUR",
-    summary: "Reembolso al cliente #5502 por producto defectuoso, con evidencias adjuntas.",
+    summary:
+      "Reembolso al cliente #5502 por producto defectuoso, con evidencias adjuntas.",
     actionType: "issue_refund",
     status: "needs_approval",
     riskLevel: "high",
     payload: {
       customer: { id: "5502", name: "Nuria Campos" },
-      order: { id: "ORD-88213", items: [{ sku: "SKU-33", qty: 1, price: 610 }] },
+      order: {
+        id: "ORD-88213",
+        items: [{ sku: "SKU-33", qty: 1, price: 610 }],
+      },
       amount: 610,
       currency: "EUR",
       evidence: ["foto_dano.jpg"],
@@ -945,7 +958,8 @@ export const actions: AgentAction[] = [
     toolId: "tool_billing",
     policyId: "pol_refund_cap",
     title: "Nota de crédito de 340 EUR",
-    summary: "Nota de crédito al cliente #6633 por facturación duplicada; muy vencida.",
+    summary:
+      "Nota de crédito al cliente #6633 por facturación duplicada; muy vencida.",
     actionType: "issue_refund",
     status: "needs_approval",
     riskLevel: "critical",
@@ -1077,7 +1091,8 @@ export const actions: AgentAction[] = [
     toolId: "tool_crm",
     policyId: "pol_permission_change",
     title: "Ampliar acceso de auditoría",
-    summary: "Acceso de solo lectura ampliado para revisión de contratos históricos.",
+    summary:
+      "Acceso de solo lectura ampliado para revisión de contratos históricos.",
     actionType: "change_permission",
     status: "approved",
     riskLevel: "medium",
@@ -1105,7 +1120,8 @@ export const actions: AgentAction[] = [
     toolId: "tool_billing",
     policyId: "pol_refund_cap",
     title: "Nota de crédito de 260 EUR",
-    summary: "Nota de crédito aprobada para el cliente #5588 por error de facturación.",
+    summary:
+      "Nota de crédito aprobada para el cliente #5588 por error de facturación.",
     actionType: "issue_refund",
     status: "approved",
     riskLevel: "medium",
@@ -1181,7 +1197,8 @@ export const actions: AgentAction[] = [
     toolId: "tool_tasks",
     policyId: "pol_permission_change",
     title: "Acceso permanente a nómina",
-    summary: "Solicitud de acceso permanente rechazada; se exige acceso temporal y justificado.",
+    summary:
+      "Solicitud de acceso permanente rechazada; se exige acceso temporal y justificado.",
     actionType: "change_permission",
     status: "rejected",
     riskLevel: "high",
@@ -1231,11 +1248,15 @@ export const actions: AgentAction[] = [
     toolId: "tool_crm",
     policyId: "pol_crm_write",
     title: "Fusionar leads duplicados",
-    summary: "Propuesta de fusión de leads que necesita confirmar el propietario correcto.",
+    summary:
+      "Propuesta de fusión de leads que necesita confirmar el propietario correcto.",
     actionType: "update_record",
     status: "changes_requested",
     riskLevel: "medium",
-    payload: { mergeIds: ["8834", "8899"], conflictingFields: ["owner", "score"] },
+    payload: {
+      mergeIds: ["8834", "8899"],
+      conflictingFields: ["owner", "score"],
+    },
     policyResult: {
       policyId: "pol_crm_write",
       effect: "require_approval",
@@ -1329,7 +1350,8 @@ export const actions: AgentAction[] = [
     toolId: "tool_tasks",
     policyId: "pol_permission_change",
     title: "Reactivar credenciales de publicación",
-    summary: "Solicitud para restaurar el token de publicación, escalada por el error del agente.",
+    summary:
+      "Solicitud para restaurar el token de publicación, escalada por el error del agente.",
     actionType: "change_permission",
     status: "escalated",
     riskLevel: "medium",
@@ -1435,7 +1457,11 @@ export const actions: AgentAction[] = [
     actionType: "create_task",
     status: "executed",
     riskLevel: "low",
-    payload: { customerId: "3387", taskType: "confirmacion_llamada", result: "confirmada" },
+    payload: {
+      customerId: "3387",
+      taskType: "confirmacion_llamada",
+      result: "confirmada",
+    },
     policyResult: {
       policyId: null,
       effect: "allow",
@@ -1502,7 +1528,11 @@ export const actions: AgentAction[] = [
     actionType: "create_task",
     status: "failed",
     riskLevel: "medium",
-    payload: { postId: "POST-118", scheduledFor: "2026-07-13T09:00:00.000Z", error: "token_expired" },
+    payload: {
+      postId: "POST-118",
+      scheduledFor: "2026-07-13T09:00:00.000Z",
+      error: "token_expired",
+    },
     policyResult: null,
     approvalDueAt: null,
     createdAt: at(-600),
@@ -1520,7 +1550,11 @@ export const actions: AgentAction[] = [
     actionType: "create_task",
     status: "failed",
     riskLevel: "low",
-    payload: { sku: "SKU-341", warehouse: "MAD-1", error: "task_limit_reached" },
+    payload: {
+      sku: "SKU-341",
+      warehouse: "MAD-1",
+      error: "task_limit_reached",
+    },
     policyResult: null,
     approvalDueAt: null,
     createdAt: at(-9800),
@@ -2139,7 +2173,8 @@ export const auditEvents: AuditEvent[] = [
     agentId: "agt_hr",
     actionId: null,
     eventType: "permission_changed",
-    message: "Permiso de RRHH sobre tareas internas bloqueado tras revisión de cumplimiento.",
+    message:
+      "Permiso de RRHH sobre tareas internas bloqueado tras revisión de cumplimiento.",
     metadata: { toolId: "tool_tasks" },
     createdAt: at(-60 * 24 * 10),
   },

@@ -1,10 +1,20 @@
 import type { Agent, User } from "@/domain";
-import { agentEnvironmentLabel, agentModeLabel, agentStatusLabel } from "@/domain";
+import {
+  agentEnvironmentLabel,
+  agentModeLabel,
+  agentStatusLabel,
+} from "@/domain";
 import { PageHeader } from "@/components/app-shell/page-header";
 import styles from "./agents.module.css";
 
 /** Cabecera de identidad del agente: nombre, descripción y metadatos clave. */
-export function AgentDetail({ agent, owner }: { agent: Agent; owner: User | undefined }) {
+export function AgentDetail({
+  agent,
+  owner,
+}: {
+  agent: Agent;
+  owner: User | undefined;
+}) {
   return (
     <div>
       <PageHeader title={agent.name} description={agent.description} />

@@ -13,7 +13,10 @@ export default function AgentsError({
   return (
     <ErrorState
       title="No se pudo cargar el inventario de agentes."
-      message={error.message || "Ha ocurrido un error al obtener los agentes conectados."}
+      message={
+        error.message ||
+        "Ha ocurrido un error al obtener los agentes conectados."
+      }
       onRetry={reset}
     />
   );

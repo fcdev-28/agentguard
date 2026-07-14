@@ -13,7 +13,10 @@ export default function RootError({
   return (
     <ErrorState
       title="Algo salió mal al cargar la pantalla."
-      message={error.message || "Ha ocurrido un error inesperado. Puedes intentarlo de nuevo."}
+      message={
+        error.message ||
+        "Ha ocurrido un error inesperado. Puedes intentarlo de nuevo."
+      }
       onRetry={reset}
     />
   );

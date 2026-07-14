@@ -27,11 +27,16 @@ export function AgentActions({
       ) : (
         <div className={styles.panel}>
           {recent.map((action) => (
-            <Link key={action.id} href={`/review/${action.id}`} className={styles.panelRow}>
+            <Link
+              key={action.id}
+              href={`/review/${action.id}`}
+              className={styles.panelRow}
+            >
               <div className={styles.panelRowMain}>
                 <span className={styles.panelRowTitle}>{action.title}</span>
                 <span className={styles.panelRowMeta}>
-                  {actionStatusLabel[action.status]} · {formatRelativeTime(action.createdAt)}
+                  {actionStatusLabel[action.status]} ·{" "}
+                  {formatRelativeTime(action.createdAt)}
                 </span>
               </div>
               <div className={styles.panelRowAside}>

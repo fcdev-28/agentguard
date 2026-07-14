@@ -1,4 +1,11 @@
-import type { Agent, AgentAction, AgentStatus, Permission, RiskLevel, Tool } from "@/domain";
+import type {
+  Agent,
+  AgentAction,
+  AgentStatus,
+  Permission,
+  RiskLevel,
+  Tool,
+} from "@/domain";
 import { riskRank } from "@/domain";
 
 /**
@@ -36,7 +43,9 @@ export function getAgentRecentRisk(
   if (agentActions.length === 0) return null;
   return agentActions.reduce<RiskLevel>(
     (highest, action) =>
-      riskRank[action.riskLevel] > riskRank[highest] ? action.riskLevel : highest,
+      riskRank[action.riskLevel] > riskRank[highest]
+        ? action.riskLevel
+        : highest,
     agentActions[0].riskLevel,
   );
 }
@@ -67,7 +76,10 @@ export function getAgentTools(
       if (!tool) return null;
       return { tool, scope: p.scope, status: p.status };
     })
-    .filter((entry): entry is { tool: Tool; scope: string; status: string } => entry !== null);
+    .filter(
+      (entry): entry is { tool: Tool; scope: string; status: string } =>
+        entry !== null,
+    );
 }
 
 /** Acciones del agente, más recientes primero, opcionalmente recortadas a `limit`. */
