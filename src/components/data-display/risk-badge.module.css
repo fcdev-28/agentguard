@@ -26,3 +26,11 @@
   background: var(--color-primary);
   color: var(--color-primary-text);
 }
+
+@media (max-width: 600px) {
+  .badge {
+    flex-shrink: 0;
+    padding: 1px 6px;
+    font-size: var(--text-12);
+  }
+}
