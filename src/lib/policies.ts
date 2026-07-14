@@ -35,7 +35,10 @@ export function getPolicies(policies: Policy[]): Policy[] {
 }
 
 /** Busca una política por id. */
-export function getPolicyById(policies: Policy[], id: string): Policy | undefined {
+export function getPolicyById(
+  policies: Policy[],
+  id: string,
+): Policy | undefined {
   return policies.find((p) => p.id === id);
 }
 

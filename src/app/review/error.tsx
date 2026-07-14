@@ -14,7 +14,8 @@ export default function ReviewError({
     <ErrorState
       title="No se pudo cargar la cola de revisión."
       message={
-        error.message || "Ha ocurrido un error al obtener las acciones pendientes."
+        error.message ||
+        "Ha ocurrido un error al obtener las acciones pendientes."
       }
       onRetry={reset}
     />

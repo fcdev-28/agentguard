@@ -13,7 +13,10 @@ export default function AuditError({
   return (
     <ErrorState
       title="No se pudo cargar el registro de auditoría."
-      message={error.message || "Ha ocurrido un error al obtener los eventos de auditoría."}
+      message={
+        error.message ||
+        "Ha ocurrido un error al obtener los eventos de auditoría."
+      }
       onRetry={reset}
     />
   );

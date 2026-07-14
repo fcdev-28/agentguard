@@ -9,14 +9,20 @@ describe("applyDecision", () => {
   });
 
   it("rechaza con motivo válido", () => {
-    expect(applyDecision("proposed", "rejected", "Importe injustificado")).toEqual({
+    expect(
+      applyDecision("proposed", "rejected", "Importe injustificado"),
+    ).toEqual({
       status: "rejected",
     });
   });
 
   it("pide cambios con motivo válido", () => {
     expect(
-      applyDecision("escalated", "changes_requested", "Revisar el destinatario"),
+      applyDecision(
+        "escalated",
+        "changes_requested",
+        "Revisar el destinatario",
+      ),
     ).toEqual({ status: "changes_requested" });
   });
 

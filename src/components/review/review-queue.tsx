@@ -27,7 +27,8 @@ export function ReviewQueue({
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>, actionId: string) {
     // Clics para abrir en pestaña nueva o pantallas sin panel: navegación normal a /review/[actionId].
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0)
+      return;
     if (!window.matchMedia(DESKTOP_BREAKPOINT).matches) return;
 
     event.preventDefault();
@@ -46,9 +47,12 @@ export function ReviewQueue({
           <div className={styles.rowMain}>
             <span className={styles.rowTitle}>{action.title}</span>
             <span className={styles.rowMeta}>
-              {agentName(action.agentId)} · {formatRelativeTime(action.createdAt)}
+              {agentName(action.agentId)} ·{" "}
+              {formatRelativeTime(action.createdAt)}
             </span>
-            <span className={`${styles.statusBadge} ${actionStatusClass[action.status]}`}>
+            <span
+              className={`${styles.statusBadge} ${actionStatusClass[action.status]}`}
+            >
               {actionStatusLabel[action.status]}
             </span>
           </div>

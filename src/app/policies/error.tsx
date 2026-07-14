@@ -13,7 +13,9 @@ export default function PoliciesError({
   return (
     <ErrorState
       title="No se pudo cargar la gestión de políticas."
-      message={error.message || "Ha ocurrido un error al obtener las políticas."}
+      message={
+        error.message || "Ha ocurrido un error al obtener las políticas."
+      }
       onRetry={reset}
     />
   );
