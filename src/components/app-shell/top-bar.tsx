@@ -1,18 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import type { UserRole } from "@/domain";
+import { userRoleLabel } from "@/domain";
 import { currentOrganization, currentUser } from "@/lib/session";
 import { MobileNav } from "./mobile-nav";
 import styles from "./top-bar.module.css";
-
-/** Etiqueta visible (castellano) de cada rol de usuario. */
-const roleLabels: Record<UserRole, string> = {
-  admin: "Administrador",
-  reviewer: "Revisor",
-  auditor: "Auditor",
-  developer: "Desarrollador",
-};
 
 /** Iniciales a partir de las dos primeras palabras del nombre. */
 function initials(name: string): string {
@@ -63,7 +55,7 @@ export function TopBar() {
         <span className={styles.userMeta}>
           <span className={styles.userName}>{currentUser.name}</span>
           <span className={styles.userRole}>
-            {roleLabels[currentUser.role]}
+            {userRoleLabel[currentUser.role]}
           </span>
         </span>
         <span className={styles.avatar} aria-hidden="true">
