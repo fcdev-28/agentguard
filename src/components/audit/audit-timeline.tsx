@@ -94,6 +94,7 @@ export function AuditTimeline({
               >
                 <span
                   className={`${styles.dot} ${auditEventTypeClass[event.eventType]}`}
+                  aria-hidden="true"
                 />
                 <div className={styles.rowMain}>
                   <div className={styles.rowHead}>
