@@ -81,7 +81,7 @@ export function AuditTimeline({
         {filtered.length === 0 ? (
           <EmptyState
             title="Ningún evento coincide con los filtros aplicados."
-            hint="Prueba a ampliar el rango de fechas o a quitar algún filtro."
+            hint="Amplía el rango de fechas o quita algún filtro para ver más eventos."
           />
         ) : (
           <div className={styles.timeline}>
