@@ -12,3 +12,18 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+/** Etiqueta visible en castellano para cada rol de usuario. */
+export const userRoleLabel: Record<UserRole, string> = {
+  admin: "Administrador",
+  reviewer: "Revisor",
+  auditor: "Auditor",
+  developer: "Desarrollador",
+};
+
+/** Etiqueta visible en castellano para cada estado de usuario. */
+export const userStatusLabel: Record<UserStatus, string> = {
+  active: "Activo",
+  invited: "Invitado",
+  disabled: "Deshabilitado",
+};
