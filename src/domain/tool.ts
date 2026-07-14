@@ -14,3 +14,18 @@ export interface Tool {
   createdAt: string;
   updatedAt: string;
 }
+
+/** Etiqueta visible en castellano para cada tipo de herramienta. */
+export const toolTypeLabel: Record<ToolType, string> = {
+  email: "Correo",
+  crm: "CRM",
+  billing: "Facturación",
+  tasks: "Tareas",
+};
+
+/** Etiqueta visible en castellano para cada estado de herramienta. */
+export const toolStatusLabel: Record<ToolStatus, string> = {
+  active: "Conectada",
+  paused: "En pausa",
+  disabled: "Desconectada",
+};
