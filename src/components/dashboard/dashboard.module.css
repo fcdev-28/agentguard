@@ -188,11 +188,3 @@ a.row:hover {
   width: 65%;
 }
 
-@keyframes skeletonPulse {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.55;
-  }
-}
