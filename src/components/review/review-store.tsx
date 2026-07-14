@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useMemo, useReducer, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useReducer,
+  type ReactNode,
+} from "react";
 import type { ActionStatus } from "@/domain";
 import { actions as seedActions } from "@/data/demo-data";
 import { currentUser } from "@/lib/session";
@@ -61,7 +67,11 @@ function reviewReducer(state: ReviewState, action: DecideAction): ReviewState {
 
 interface ReviewContextValue {
   getActionState: (actionId: string) => ActionReviewState | undefined;
-  decide: (actionId: string, decision: ReviewDecision, reason: string | null) => void;
+  decide: (
+    actionId: string,
+    decision: ReviewDecision,
+    reason: string | null,
+  ) => void;
 }
 
 const ReviewContext = createContext<ReviewContextValue | null>(null);
@@ -73,7 +83,11 @@ const ReviewContext = createContext<ReviewContextValue | null>(null);
  * mutaciones contra la base de datos.
  */
 export function ReviewProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reviewReducer, undefined, buildInitialState);
+  const [state, dispatch] = useReducer(
+    reviewReducer,
+    undefined,
+    buildInitialState,
+  );
 
   const value = useMemo<ReviewContextValue>(
     () => ({
@@ -84,7 +98,9 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
     [state],
   );
 
-  return <ReviewContext.Provider value={value}>{children}</ReviewContext.Provider>;
+  return (
+    <ReviewContext.Provider value={value}>{children}</ReviewContext.Provider>
+  );
 }
 
 /** Acceso al store de revisión; debe usarse bajo el segmento `/review`. */

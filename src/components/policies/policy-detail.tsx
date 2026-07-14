@@ -2,13 +2,24 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { Agent, AgentAction, Permission, Policy, PolicyEffect, Tool } from "@/domain";
+import type {
+  Agent,
+  AgentAction,
+  Permission,
+  Policy,
+  PolicyEffect,
+  Tool,
+} from "@/domain";
 import { policyEffectLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { getAffectedActions } from "@/lib/policies";
 import { formatRelativeTime } from "@/lib/format";
-import { policyStatusClass, policyStatusLabel, policyEffectClass } from "./policies-style";
+import {
+  policyStatusClass,
+  policyStatusLabel,
+  policyEffectClass,
+} from "./policies-style";
 import styles from "./policies.module.css";
 
 /** Etiqueta visible en castellano para cada tipo de herramienta (editor de condición `tool`). */
@@ -28,7 +39,12 @@ const scopeLabel: Record<Permission["scope"], string> = {
 };
 
 /** Orden fijo de efectos para el selector, de menos a más severo. */
-const EFFECT_OPTIONS: PolicyEffect[] = ["allow", "require_approval", "escalate", "block"];
+const EFFECT_OPTIONS: PolicyEffect[] = [
+  "allow",
+  "require_approval",
+  "escalate",
+  "block",
+];
 
 /** Copia editable de los campos de una política que admite la "edición simple". */
 interface EditableFields {
@@ -75,7 +91,10 @@ export function PolicyDetail({
   const hasToolEditor = hasToolCondition || hasScopeCondition;
 
   function setCondition(key: string, value: unknown) {
-    setEdited((prev) => ({ ...prev, conditions: { ...prev.conditions, [key]: value } }));
+    setEdited((prev) => ({
+      ...prev,
+      conditions: { ...prev.conditions, [key]: value },
+    }));
   }
 
   const previewPolicy = useMemo<Policy>(
@@ -89,7 +108,13 @@ export function PolicyDetail({
   );
 
   const affected = useMemo(
-    () => getAffectedActions(previewPolicy, actions, { tools, agents, permissions }, 8),
+    () =>
+      getAffectedActions(
+        previewPolicy,
+        actions,
+        { tools, agents, permissions },
+        8,
+      ),
     [previewPolicy, actions, tools, agents, permissions],
   );
 
@@ -98,10 +123,14 @@ export function PolicyDetail({
   return (
     <div>
       <div className={styles.detailHead}>
-        <span className={`${styles.statusBadge} ${policyStatusClass[policy.status]}`}>
+        <span
+          className={`${styles.statusBadge} ${policyStatusClass[policy.status]}`}
+        >
           {policyStatusLabel[policy.status]}
         </span>
-        <span className={`${styles.effectBadge} ${policyEffectClass[policy.effect]}`}>
+        <span
+          className={`${styles.effectBadge} ${policyEffectClass[policy.effect]}`}
+        >
           {policyEffectLabel[policy.effect]}
         </span>
       </div>
@@ -118,13 +147,18 @@ export function PolicyDetail({
         </span>
         <span className={styles.metaItem}>
           Publicada:{" "}
-          <strong>{policy.publishedAt ? formatRelativeTime(policy.publishedAt) : "Sin publicar"}</strong>
+          <strong>
+            {policy.publishedAt
+              ? formatRelativeTime(policy.publishedAt)
+              : "Sin publicar"}
+          </strong>
         </span>
       </div>
 
       <p className={styles.previewNotice}>
-        Los cambios de esta pantalla son una previsualización simulada: no se guardan. Sirven para
-        ver de inmediato cómo cambiaría el efecto de la política sobre las acciones.
+        Los cambios de esta pantalla son una previsualización simulada: no se
+        guardan. Sirven para ver de inmediato cómo cambiaría el efecto de la
+        política sobre las acciones.
       </p>
 
       <section className={styles.section}>
@@ -141,7 +175,9 @@ export function PolicyDetail({
                     id="condition-tool"
                     className={styles.fieldSelect}
                     value={String(edited.conditions.tool ?? "")}
-                    onChange={(event) => setCondition("tool", event.target.value)}
+                    onChange={(event) =>
+                      setCondition("tool", event.target.value)
+                    }
                   >
                     {Object.entries(toolTypeLabel).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -153,14 +189,19 @@ export function PolicyDetail({
               ) : null}
               {hasScopeCondition ? (
                 <div className={styles.field}>
-                  <label className={styles.fieldLabel} htmlFor="condition-scope">
+                  <label
+                    className={styles.fieldLabel}
+                    htmlFor="condition-scope"
+                  >
                     Alcance
                   </label>
                   <select
                     id="condition-scope"
                     className={styles.fieldSelect}
                     value={String(edited.conditions.scope ?? "")}
-                    onChange={(event) => setCondition("scope", event.target.value)}
+                    onChange={(event) =>
+                      setCondition("scope", event.target.value)
+                    }
                   >
                     {Object.entries(scopeLabel).map(([value, label]) => (
                       <option key={value} value={value}>
@@ -175,7 +216,10 @@ export function PolicyDetail({
 
           {hasMaxAmountCondition ? (
             <div className={styles.field}>
-              <label className={styles.fieldLabel} htmlFor="condition-max-amount">
+              <label
+                className={styles.fieldLabel}
+                htmlFor="condition-max-amount"
+              >
                 Importe máximo sin aprobación (EUR)
               </label>
               <input
@@ -184,7 +228,9 @@ export function PolicyDetail({
                 min={0}
                 className={styles.fieldInput}
                 value={Number(edited.conditions.maxAmount ?? 0)}
-                onChange={(event) => setCondition("maxAmount", Number(event.target.value))}
+                onChange={(event) =>
+                  setCondition("maxAmount", Number(event.target.value))
+                }
               />
               <span className={styles.fieldHint}>
                 Se aplica a acciones con importe superior a este umbral.
@@ -202,7 +248,10 @@ export function PolicyDetail({
                 className={styles.fieldSelect}
                 value={edited.effect}
                 onChange={(event) =>
-                  setEdited((prev) => ({ ...prev, effect: event.target.value as PolicyEffect }))
+                  setEdited((prev) => ({
+                    ...prev,
+                    effect: event.target.value as PolicyEffect,
+                  }))
                 }
               >
                 {EFFECT_OPTIONS.map((value) => (
@@ -226,21 +275,32 @@ export function PolicyDetail({
                 onChange={(event) =>
                   setEdited((prev) => ({
                     ...prev,
-                    approvalSlaMinutes: event.target.value === "" ? null : Number(event.target.value),
+                    approvalSlaMinutes:
+                      event.target.value === ""
+                        ? null
+                        : Number(event.target.value),
                   }))
                 }
               />
-              <span className={styles.fieldHint}>Vacío = sin límite de tiempo para decidir.</span>
+              <span className={styles.fieldHint}>
+                Vacío = sin límite de tiempo para decidir.
+              </span>
             </div>
           </div>
 
           {Object.keys(policy.conditions).length > 0 ? (
             <div className={styles.field}>
-              <span className={styles.fieldLabel}>Resto de condiciones (no editables aquí)</span>
+              <span className={styles.fieldLabel}>
+                Resto de condiciones (no editables aquí)
+              </span>
               <span className={styles.fieldHint}>
                 {Object.entries(policy.conditions)
-                  .filter(([key]) => !["tool", "scope", "maxAmount"].includes(key))
-                  .map(([key, value]) => `${key}: ${formatConditionValue(value)}`)
+                  .filter(
+                    ([key]) => !["tool", "scope", "maxAmount"].includes(key),
+                  )
+                  .map(
+                    ([key, value]) => `${key}: ${formatConditionValue(value)}`,
+                  )
                   .join(" · ") || "—"}
               </span>
             </div>
@@ -258,11 +318,16 @@ export function PolicyDetail({
         ) : (
           <div className={styles.panel}>
             {affected.map((action) => (
-              <Link key={action.id} href={`/review/${action.id}`} className={styles.panelRow}>
+              <Link
+                key={action.id}
+                href={`/review/${action.id}`}
+                className={styles.panelRow}
+              >
                 <div className={styles.panelRowMain}>
                   <span className={styles.panelRowTitle}>{action.title}</span>
                   <span className={styles.panelRowMeta}>
-                    {agentName(action.agentId)} · {formatRelativeTime(action.createdAt)}
+                    {agentName(action.agentId)} ·{" "}
+                    {formatRelativeTime(action.createdAt)}
                   </span>
                 </div>
                 <div className={styles.panelRowAside}>

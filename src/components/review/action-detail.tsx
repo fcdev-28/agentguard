@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { actionStatusLabel, actionTypeLabel, policyEffectLabel } from "@/domain";
+import {
+  actionStatusLabel,
+  actionTypeLabel,
+  policyEffectLabel,
+} from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
@@ -31,7 +35,9 @@ function formatPayloadValue(value: unknown): string {
 export function ActionDetail({ actionId }: { actionId: string }) {
   const action = actions.find((a) => a.id === actionId);
   const { getActionState, decide } = useReview();
-  const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(null);
+  const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(
+    null,
+  );
   const [reason, setReason] = useState("");
 
   if (!action) {
@@ -46,7 +52,11 @@ export function ActionDetail({ actionId }: { actionId: string }) {
   const tool = tools.find((t) => t.id === action.toolId);
   // La sección de política refleja el motor de evaluación (lib/policy-eval),
   // no el policyResult sembrado: así queda vivo si cambian las políticas activas.
-  const policyEvaluation = evaluatePolicy(action, policies, { tools, agents, permissions });
+  const policyEvaluation = evaluatePolicy(action, policies, {
+    tools,
+    agents,
+    permissions,
+  });
   const policy = policyEvaluation.policyId
     ? policies.find((p) => p.id === policyEvaluation.policyId)
     : null;
@@ -141,7 +151,8 @@ export function ActionDetail({ actionId }: { actionId: string }) {
             {comments.map((comment) => (
               <li key={comment.id} className={styles.comment}>
                 <span className={styles.commentAuthor}>
-                  {users.find((u) => u.id === comment.authorId)?.name ?? comment.authorId}
+                  {users.find((u) => u.id === comment.authorId)?.name ??
+                    comment.authorId}
                 </span>
                 <span className={styles.commentBody}>{comment.body}</span>
                 <span className={styles.commentTime}>
@@ -182,7 +193,10 @@ export function ActionDetail({ actionId }: { actionId: string }) {
           ) : (
             <div className={styles.reasonBox}>
               <label className={styles.reasonLabel} htmlFor="decision-reason">
-                Motivo {pendingDecision === "rejected" ? "del rechazo" : "de los cambios solicitados"}
+                Motivo{" "}
+                {pendingDecision === "rejected"
+                  ? "del rechazo"
+                  : "de los cambios solicitados"}
               </label>
               <textarea
                 id="decision-reason"
@@ -193,7 +207,11 @@ export function ActionDetail({ actionId }: { actionId: string }) {
                 placeholder="Explica brevemente el motivo…"
               />
               <div className={styles.reasonActions}>
-                <button type="button" className={styles.decisionButtonGhost} onClick={cancelDecision}>
+                <button
+                  type="button"
+                  className={styles.decisionButtonGhost}
+                  onClick={cancelDecision}
+                >
                   Cancelar
                 </button>
                 <button
@@ -210,7 +228,8 @@ export function ActionDetail({ actionId }: { actionId: string }) {
         </section>
       ) : state?.decision ? (
         <p className={styles.decisionNote}>
-          Decidida por {state.decision.byName} · {formatRelativeTime(state.decision.at)}
+          Decidida por {state.decision.byName} ·{" "}
+          {formatRelativeTime(state.decision.at)}
           {state.decision.reason ? ` — ${state.decision.reason}` : ""}
         </p>
       ) : null}

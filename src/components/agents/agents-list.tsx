@@ -3,7 +3,11 @@ import type { Agent, AgentAction, User } from "@/domain";
 import { agentModeLabel, agentStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
-import { getAgents, getAgentLastActivityAt, getAgentRecentRisk } from "@/lib/agents";
+import {
+  getAgents,
+  getAgentLastActivityAt,
+  getAgentRecentRisk,
+} from "@/lib/agents";
 import { formatRelativeTime } from "@/lib/format";
 import styles from "./agents.module.css";
 
@@ -45,19 +49,31 @@ export function AgentsList({
         const lastActivityAt = getAgentLastActivityAt(actions, agent.id);
 
         return (
-          <Link key={agent.id} href={`/agents/${agent.id}`} className={styles.row}>
+          <Link
+            key={agent.id}
+            href={`/agents/${agent.id}`}
+            className={styles.row}
+          >
             <div className={styles.identity}>
               <span className={styles.name}>{agent.name}</span>
               <span className={styles.description}>{agent.description}</span>
             </div>
             <span className={styles.owner}>{ownerName(agent.ownerId)}</span>
-            <span className={`${styles.statusBadge} ${statusClass[agent.status]}`}>
+            <span
+              className={`${styles.statusBadge} ${statusClass[agent.status]}`}
+            >
               {agentStatusLabel[agent.status]}
             </span>
             <span className={styles.mode}>{agentModeLabel[agent.mode]}</span>
-            {risk ? <RiskBadge level={risk} /> : <span className={styles.noRisk}>—</span>}
+            {risk ? (
+              <RiskBadge level={risk} />
+            ) : (
+              <span className={styles.noRisk}>—</span>
+            )}
             <span className={styles.activity}>
-              {lastActivityAt ? formatRelativeTime(lastActivityAt) : "Sin actividad"}
+              {lastActivityAt
+                ? formatRelativeTime(lastActivityAt)
+                : "Sin actividad"}
             </span>
           </Link>
         );

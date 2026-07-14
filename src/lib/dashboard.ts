@@ -1,4 +1,10 @@
-import type { Agent, AgentAction, ActionStatus, Policy, RiskLevel } from "@/domain";
+import type {
+  Agent,
+  AgentAction,
+  ActionStatus,
+  Policy,
+  RiskLevel,
+} from "@/domain";
 import { riskRank } from "@/domain";
 
 /** Estados en los que una acción espera una decisión humana. */

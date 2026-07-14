@@ -13,7 +13,10 @@ export default function SettingsError({
   return (
     <ErrorState
       title="No se pudo cargar los ajustes."
-      message={error.message || "Ha ocurrido un error al obtener usuarios, roles y herramientas."}
+      message={
+        error.message ||
+        "Ha ocurrido un error al obtener usuarios, roles y herramientas."
+      }
       onRetry={reset}
     />
   );

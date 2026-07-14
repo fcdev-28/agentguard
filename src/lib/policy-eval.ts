@@ -1,4 +1,11 @@
-import type { Agent, AgentAction, Permission, Policy, PolicyEffect, Tool } from "@/domain";
+import type {
+  Agent,
+  AgentAction,
+  Permission,
+  Policy,
+  PolicyEffect,
+  Tool,
+} from "@/domain";
 import { policyEffectLabel, riskRank } from "@/domain";
 import type { RiskLevel } from "@/domain";
 
@@ -71,7 +78,11 @@ function matchesCondition(
     case "maxAmount": {
       // Casa cuando el importe de la acción SUPERA el umbral (la política actúa sobre el exceso).
       const amount = action.payload.amount;
-      return typeof amount === "number" && typeof value === "number" && amount > value;
+      return (
+        typeof amount === "number" &&
+        typeof value === "number" &&
+        amount > value
+      );
     }
     case "minRisk": {
       // Casa cuando el riesgo de la acción es igual o mayor que el mínimo exigido.
