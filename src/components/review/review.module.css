@@ -357,14 +357,6 @@ a.row:hover {
   width: 55%;
 }
 
-@keyframes skeletonPulse {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.55;
-  }
-}
 
 /* Enlace de vuelta (p. ej. desde el estado "no encontrado"). */
 .backLink {

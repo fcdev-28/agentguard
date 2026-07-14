@@ -224,11 +224,3 @@
   width: 55%;
 }
 
-@keyframes skeletonPulse {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.55;
-  }
-}
