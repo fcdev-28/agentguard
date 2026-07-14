@@ -1,0 +1,330 @@
+/* Auditoría: línea de tiempo + panel de detalle. Layout master-detail, igual criterio que /review. */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 440px) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.timelinePane {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detailPane {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .detailPane {
+    display: none;
+  }
+}
+
+/* Barra de filtros. */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+}
+
+.filterField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 160px;
+}
+
+.filterLabel {
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+}
+
+.filterSelect,
+.filterInput {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  color: var(--color-ink);
+  background: var(--color-bg);
+  font-size: var(--text-13);
+}
+
+.filterReset {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.filterReset:hover {
+  color: var(--color-ink);
+}
+
+/* Línea de tiempo: filas enlazadas, mismo lenguaje visual que la cola de revisión. */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  border-left: 2px solid transparent;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.timeline .row:last-child {
+  border-bottom: none;
+}
+
+a.row:hover {
+  background: var(--color-surface);
+}
+
+.rowSelected {
+  background: var(--color-surface);
+  border-left-color: var(--color-primary);
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+}
+
+.rowMain {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rowHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.rowTime {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+}
+
+.rowAgent {
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+
+.rowMessage {
+  font-size: var(--text-13);
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pill de tipo de evento, coloreada por severidad (reutiliza los mismos colores en el punto de la línea). */
+.eventBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-12);
+  font-weight: var(--weight-medium);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.eventNeutral {
+  background: var(--color-surface);
+  color: var(--color-muted);
+}
+.eventSuccess {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+.eventWarning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+}
+.eventDanger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger-text);
+}
+.eventInfo {
+  background: var(--color-info-bg);
+  color: var(--color-info-text);
+}
+
+@media (max-width: 600px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .dot {
+    display: none;
+  }
+}
+
+/* Panel de detalle de evento (reutilizado por la línea de tiempo y por /audit/[eventId]). */
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-bg);
+}
+
+.detailHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.metaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.metaItem {
+  font-size: var(--text-13);
+  color: var(--color-muted);
+}
+
+.metaItem strong {
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-soft);
+}
+
+.detailSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.detailSectionTitle {
+  font-size: var(--text-13);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.summary {
+  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+}
+
+.hint {
+  font-size: var(--text-13);
+  color: var(--color-muted);
+}
+
+.metadataBlock {
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink-soft);
+  font-size: var(--text-13);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.relatedLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.relatedLink {
+  display: inline-flex;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.relatedLink:hover {
+  background: var(--color-surface);
+}
+
+/* Esqueleto de carga de la línea de tiempo. */
+.skeletonRow {
+  padding: var(--space-4);
+}
+
+.skeletonLine {
+  height: 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  margin-bottom: var(--space-2);
+  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+    alternate;
+}
+
+.skeletonLine:nth-child(1) {
+  width: 30%;
+}
+.skeletonLine:nth-child(2) {
+  width: 55%;
+}
+
+@keyframes skeletonPulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
+
+/* Enlace de vuelta (p. ej. desde el estado "no encontrado"). */
+.backLink {
+  display: inline-flex;
+  margin-top: var(--space-4);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.backLink:hover {
+  color: var(--color-ink);
+}
