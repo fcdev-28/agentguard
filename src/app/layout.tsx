@@ -4,6 +4,7 @@ import { AppShell } from "@/components/app-shell/app-shell";
 import { RuntimeProvider } from "@/components/app-shell/runtime-store";
 import { ReviewProvider } from "@/components/review/review-store";
 import { CommandPaletteProvider } from "@/components/app-shell/command-palette-store";
+import { NotificationProvider } from "@/components/app-shell/notification-store";
 import { CommandPalette } from "@/components/app-shell/command-palette";
 import "@/styles/globals.css";
 
@@ -29,10 +30,12 @@ export default function RootLayout({
       <body>
         <RuntimeProvider>
           <ReviewProvider>
-            <CommandPaletteProvider>
-              <AppShell>{children}</AppShell>
-              <CommandPalette />
-            </CommandPaletteProvider>
+            <NotificationProvider>
+              <CommandPaletteProvider>
+                <AppShell>{children}</AppShell>
+                <CommandPalette />
+              </CommandPaletteProvider>
+            </NotificationProvider>
           </ReviewProvider>
         </RuntimeProvider>
       </body>
