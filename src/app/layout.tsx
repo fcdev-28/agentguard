@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { RuntimeProvider } from "@/components/app-shell/runtime-store";
 import { ReviewProvider } from "@/components/review/review-store";
+import { CommentProvider } from "@/components/review/comment-store";
 import { CommandPaletteProvider } from "@/components/app-shell/command-palette-store";
 import { NotificationProvider } from "@/components/app-shell/notification-store";
 import { CommandPalette } from "@/components/app-shell/command-palette";
@@ -30,12 +31,14 @@ export default function RootLayout({
       <body>
         <RuntimeProvider>
           <ReviewProvider>
-            <NotificationProvider>
-              <CommandPaletteProvider>
-                <AppShell>{children}</AppShell>
-                <CommandPalette />
-              </CommandPaletteProvider>
-            </NotificationProvider>
+            <CommentProvider>
+              <NotificationProvider>
+                <CommandPaletteProvider>
+                  <AppShell>{children}</AppShell>
+                  <CommandPalette />
+                </CommandPaletteProvider>
+              </NotificationProvider>
+            </CommentProvider>
           </ReviewProvider>
         </RuntimeProvider>
       </body>
