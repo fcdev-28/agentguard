@@ -1,0 +1,381 @@
+// Esquema de datos de AgentGuard (fase 10: persistencia real).
+// Modela las entidades de dominio de src/domain sobre PostgreSQL. Los ids son
+// cuid por defecto; el seed conserva ids semánticos (org_acme, usr_admin, …)
+// pasándolos de forma explícita. Docs: docs/DATA_MODEL.md.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ── Enums ────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  admin
+  reviewer
+  auditor
+  developer
+}
+
+enum UserStatus {
+  active
+  invited
+  disabled
+}
+
+enum AgentEnvironment {
+  sandbox
+  production
+}
+
+enum AgentStatus {
+  active
+  paused
+  disabled
+  error
+}
+
+enum AgentMode {
+  observe
+  enforce
+}
+
+enum ToolType {
+  email
+  crm
+  billing
+  tasks
+}
+
+enum ToolStatus {
+  active
+  paused
+  disabled
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+  critical
+}
+
+enum PermissionScope {
+  read
+  draft
+  write
+  execute
+}
+
+enum PermissionStatus {
+  allowed
+  restricted
+  blocked
+}
+
+enum PolicyStatus {
+  draft
+  active
+  archived
+}
+
+enum PolicyEffect {
+  allow
+  block
+  require_approval
+  escalate
+}
+
+enum ActionType {
+  send_email
+  update_record
+  issue_refund
+  create_task
+  change_permission
+}
+
+enum ActionStatus {
+  proposed
+  allowed
+  blocked
+  needs_approval
+  approved
+  rejected
+  changes_requested
+  escalated
+  executed
+  failed
+}
+
+enum ApprovalDecision {
+  approved
+  rejected
+  changes_requested
+  escalated
+}
+
+enum AuditEventType {
+  agent_created
+  agent_paused
+  agent_resumed
+  permission_changed
+  policy_published
+  action_proposed
+  action_allowed
+  action_blocked
+  approval_created
+  action_escalated
+  action_executed
+  action_failed
+  emergency_stop_engaged
+  emergency_stop_released
+}
+
+enum NotificationType {
+  approval_requested
+  action_escalated
+  agent_error
+  emergency_stop
+}
+
+// ── Modelos ──────────────────────────────────────────────────────────────
+
+model Organization {
+  id                String    @id @default(cuid())
+  name              String
+  slug              String    @unique
+  emergencyStop     Boolean   @default(false)
+  emergencyStopById String?
+  emergencyStopAt   DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Usuario que activó la parada de emergencia (relación separada de `users`).
+  emergencyStopBy User? @relation("EmergencyStopBy", fields: [emergencyStopById], references: [id], onDelete: SetNull)
+
+  users         User[]
+  agents        Agent[]
+  tools         Tool[]
+  policies      Policy[]
+  actions       AgentAction[]
+  auditEvents   AuditEvent[]
+  notifications Notification[]
+
+  @@index([emergencyStopById])
+}
+
+model User {
+  id             String     @id @default(cuid())
+  organizationId String
+  name           String
+  email          String
+  role           UserRole
+  status         UserStatus
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  ownedAgents         Agent[]         @relation("AgentOwner")
+  createdPolicies     Policy[]        @relation("PolicyCreatedBy")
+  approvals           Approval[]
+  comments            ActionComment[]
+  notifications       Notification[]
+  auditEvents         AuditEvent[]    @relation("AuditActor")
+  emergencyStoppedOrg Organization[]  @relation("EmergencyStopBy")
+
+  @@unique([organizationId, email])
+  @@index([organizationId])
+}
+
+model Agent {
+  id             String           @id @default(cuid())
+  organizationId String
+  ownerId        String
+  name           String
+  description    String
+  environment    AgentEnvironment
+  status         AgentStatus
+  mode           AgentMode
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  owner        User         @relation("AgentOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+
+  permissions Permission[]
+  actions     AgentAction[]
+  auditEvents AuditEvent[]
+
+  @@index([organizationId])
+  @@index([ownerId])
+}
+
+model Tool {
+  id             String     @id @default(cuid())
+  organizationId String
+  name           String
+  type           ToolType
+  status         ToolStatus
+  riskLevel      RiskLevel
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  permissions Permission[]
+  actions     AgentAction[]
+
+  @@index([organizationId])
+}
+
+model Permission {
+  id        String           @id @default(cuid())
+  agentId   String
+  toolId    String
+  scope     PermissionScope
+  status    PermissionStatus
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  tool  Tool  @relation(fields: [toolId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, toolId, scope])
+  @@index([agentId])
+  @@index([toolId])
+}
+
+model Policy {
+  id                 String       @id @default(cuid())
+  organizationId     String
+  name               String
+  description        String
+  status             PolicyStatus
+  version            Int          @default(1)
+  conditions         Json
+  effect             PolicyEffect
+  approvalSlaMinutes Int?
+  createdById        String
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+  publishedAt        DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdBy    User         @relation("PolicyCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+
+  actions AgentAction[]
+
+  @@index([organizationId])
+  @@index([createdById])
+}
+
+model AgentAction {
+  id             String       @id @default(cuid())
+  organizationId String
+  agentId        String
+  toolId         String
+  policyId       String?
+  title          String
+  summary        String
+  actionType     ActionType
+  status         ActionStatus
+  riskLevel      RiskLevel
+  payload        Json
+  policyResult   Json?
+  approvalDueAt  DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  executedAt     DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Restrict)
+  tool         Tool         @relation(fields: [toolId], references: [id], onDelete: Restrict)
+  policy       Policy?      @relation(fields: [policyId], references: [id], onDelete: SetNull)
+
+  approval      Approval?
+  comments      ActionComment[]
+  notifications Notification[]
+  auditEvents   AuditEvent[]
+
+  @@index([organizationId])
+  @@index([agentId])
+  @@index([toolId])
+  @@index([policyId])
+  // Cola de revisión: acciones de una org filtradas por estado y ordenadas por vencimiento.
+  @@index([organizationId, status, approvalDueAt])
+}
+
+model Approval {
+  id         String           @id @default(cuid())
+  actionId   String           @unique
+  reviewerId String
+  decision   ApprovalDecision
+  reason     String?
+  createdAt  DateTime         @default(now())
+
+  action   AgentAction @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  reviewer User        @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([reviewerId])
+}
+
+model AuditEvent {
+  id             String         @id @default(cuid())
+  organizationId String
+  actorUserId    String?
+  agentId        String?
+  actionId       String?
+  eventType      AuditEventType
+  message        String
+  metadata       Json
+  createdAt      DateTime       @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?        @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  agent        Agent?       @relation(fields: [agentId], references: [id], onDelete: SetNull)
+  action       AgentAction? @relation(fields: [actionId], references: [id], onDelete: SetNull)
+
+  // Registro de auditoría de una org ordenado por fecha (query dominante de /audit).
+  @@index([organizationId, createdAt])
+  @@index([actionId])
+  @@index([agentId])
+}
+
+model Notification {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  type           NotificationType
+  actionId       String?
+  message        String
+  readAt         DateTime?
+  createdAt      DateTime         @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action       AgentAction? @relation(fields: [actionId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId])
+  // Contador de notificaciones no leídas por usuario.
+  @@index([userId, readAt])
+  @@index([actionId])
+}
+
+model ActionComment {
+  id        String   @id @default(cuid())
+  actionId  String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  action AgentAction @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  author User        @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([actionId])
+  @@index([authorId])
+}
