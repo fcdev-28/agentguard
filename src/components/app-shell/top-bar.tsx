@@ -5,6 +5,7 @@ import { userRoleLabel } from "@/domain";
 import { currentOrganization, currentUser } from "@/lib/session";
 import { MobileNav } from "./mobile-nav";
 import { useCommandPalette } from "./command-palette-store";
+import { NotificationBell } from "./notification-bell";
 import styles from "./top-bar.module.css";
 
 /** Iniciales a partir de las dos primeras palabras del nombre. */
@@ -77,6 +78,7 @@ export function TopBar() {
       </button>
 
       <div className={styles.user}>
+        <NotificationBell />
         <span className={styles.userMeta}>
           <span className={styles.userName}>{currentUser.name}</span>
           <span className={styles.userRole}>
