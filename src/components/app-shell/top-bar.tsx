@@ -4,6 +4,7 @@ import { useState } from "react";
 import { userRoleLabel } from "@/domain";
 import { currentOrganization, currentUser } from "@/lib/session";
 import { MobileNav } from "./mobile-nav";
+import { useCommandPalette } from "./command-palette-store";
 import styles from "./top-bar.module.css";
 
 /** Iniciales a partir de las dos primeras palabras del nombre. */
@@ -22,6 +23,7 @@ function initials(name: string): string {
  */
 export function TopBar() {
   const [navOpen, setNavOpen] = useState(false);
+  const { openPalette } = useCommandPalette();
 
   return (
     <header className={styles.bar}>
@@ -50,6 +52,29 @@ export function TopBar() {
           <span className={styles.orgName}>{currentOrganization.name}</span>
         </div>
       </div>
+
+      <button
+        type="button"
+        className={styles.search}
+        onClick={openPalette}
+        aria-label="Abrir paleta de comandos"
+      >
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <span className={styles.searchHint}>Buscar</span>
+        <span className={styles.searchKey}>⌘K</span>
+      </button>
 
       <div className={styles.user}>
         <span className={styles.userMeta}>
