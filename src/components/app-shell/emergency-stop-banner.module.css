@@ -1,0 +1,28 @@
+/* Banner de parada de emergencia: ancho completo, inconfundible (color primario). */
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-6);
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+}
+
+.message {
+  font-size: var(--text-13);
+  font-weight: var(--weight-semibold);
+}
+
+.detail {
+  font-size: var(--text-13);
+  opacity: 0.85;
+}
+
+@media (max-width: 768px) {
+  .banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    padding: var(--space-2) var(--space-4);
+  }
+}

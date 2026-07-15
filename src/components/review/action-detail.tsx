@@ -10,6 +10,7 @@ import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
+import { useRuntime } from "@/components/app-shell/runtime-store";
 import {
   actions,
   agents,
@@ -35,6 +36,7 @@ function formatPayloadValue(value: unknown): string {
 export function ActionDetail({ actionId }: { actionId: string }) {
   const action = actions.find((a) => a.id === actionId);
   const { getActionState, decide } = useReview();
+  const { emergencyStop } = useRuntime();
   const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(
     null,
   );
@@ -167,29 +169,37 @@ export function ActionDetail({ actionId }: { actionId: string }) {
       {canDecide ? (
         <section className={styles.detailSection}>
           {pendingDecision === null ? (
-            <div className={styles.decisionBar}>
-              <button
-                type="button"
-                className={`${styles.decisionButton} ${styles.approve}`}
-                onClick={() => startDecision("approved")}
-              >
-                Aprobar
-              </button>
-              <button
-                type="button"
-                className={`${styles.decisionButton} ${styles.reject}`}
-                onClick={() => startDecision("rejected")}
-              >
-                Rechazar
-              </button>
-              <button
-                type="button"
-                className={styles.decisionButton}
-                onClick={() => startDecision("changes_requested")}
-              >
-                Pedir cambios
-              </button>
-            </div>
+            <>
+              <div className={styles.decisionBar}>
+                <button
+                  type="button"
+                  className={`${styles.decisionButton} ${styles.approve}`}
+                  onClick={() => startDecision("approved")}
+                  disabled={emergencyStop.active}
+                >
+                  Aprobar
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.decisionButton} ${styles.reject}`}
+                  onClick={() => startDecision("rejected")}
+                >
+                  Rechazar
+                </button>
+                <button
+                  type="button"
+                  className={styles.decisionButton}
+                  onClick={() => startDecision("changes_requested")}
+                >
+                  Pedir cambios
+                </button>
+              </div>
+              {emergencyStop.active ? (
+                <p className={styles.hint}>
+                  Parada de emergencia activa: aprobaciones bloqueadas.
+                </p>
+              ) : null}
+            </>
           ) : (
             <div className={styles.reasonBox}>
               <label className={styles.reasonLabel} htmlFor="decision-reason">
