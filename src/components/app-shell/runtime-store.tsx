@@ -7,7 +7,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { AuditEvent } from "@/domain";
+import type { AgentStatus, AuditEvent } from "@/domain";
+import { auditEventTypeLabel } from "@/domain";
 import { currentOrganization, currentUser } from "@/lib/session";
 
 /** Estado de la parada de emergencia global de la organización. */
@@ -34,12 +35,24 @@ function buildInitialEmergencyStop(): EmergencyStopState {
   };
 }
 
+/** Override runtime del estado de un agente (pausa/reanudación), fuera del seed. */
+export interface AgentStatusOverride {
+  status: AgentStatus;
+  byId: string;
+  byName: string;
+  at: string;
+}
+
 interface RuntimeContextValue {
   emergencyStop: EmergencyStopState;
   engageEmergencyStop: () => void;
   releaseEmergencyStop: () => void;
   runtimeAuditEvents: AuditEvent[];
   recordAudit: (event: AuditEvent) => void;
+  agentOverrides: Record<string, AgentStatusOverride>;
+  pauseAgent: (agentId: string) => void;
+  resumeAgent: (agentId: string) => void;
+  getAgentStatus: (agentId: string, seedStatus: AgentStatus) => AgentStatus;
 }
 
 const RuntimeContext = createContext<RuntimeContextValue | null>(null);
@@ -58,10 +71,65 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
   const [runtimeAuditEvents, setRuntimeAuditEvents] = useState<AuditEvent[]>(
     [],
   );
+  const [agentOverrides, setAgentOverrides] = useState<
+    Record<string, AgentStatusOverride>
+  >({});
 
   const value = useMemo<RuntimeContextValue>(() => {
     function recordAudit(event: AuditEvent) {
       setRuntimeAuditEvents((events) => [...events, event]);
+    }
+
+    function pauseAgent(agentId: string) {
+      const at = new Date().toISOString();
+      setAgentOverrides((overrides) => ({
+        ...overrides,
+        [agentId]: {
+          status: "paused",
+          byId: currentUser.id,
+          byName: currentUser.name,
+          at,
+        },
+      }));
+      recordAudit({
+        id: `evt-${Date.now()}`,
+        organizationId: currentOrganization.id,
+        actorUserId: currentUser.id,
+        agentId,
+        actionId: null,
+        eventType: "agent_paused",
+        message: auditEventTypeLabel.agent_paused,
+        metadata: {},
+        createdAt: at,
+      });
+    }
+
+    function resumeAgent(agentId: string) {
+      const at = new Date().toISOString();
+      setAgentOverrides((overrides) => ({
+        ...overrides,
+        [agentId]: {
+          status: "active",
+          byId: currentUser.id,
+          byName: currentUser.name,
+          at,
+        },
+      }));
+      recordAudit({
+        id: `evt-${Date.now()}`,
+        organizationId: currentOrganization.id,
+        actorUserId: currentUser.id,
+        agentId,
+        actionId: null,
+        eventType: "agent_resumed",
+        message: auditEventTypeLabel.agent_resumed,
+        metadata: {},
+        createdAt: at,
+      });
+    }
+
+    function getAgentStatus(agentId: string, seedStatus: AgentStatus) {
+      return agentOverrides[agentId]?.status ?? seedStatus;
     }
 
     function engageEmergencyStop() {
@@ -107,8 +175,12 @@ export function RuntimeProvider({ children }: { children: ReactNode }) {
       releaseEmergencyStop,
       runtimeAuditEvents,
       recordAudit,
+      agentOverrides,
+      pauseAgent,
+      resumeAgent,
+      getAgentStatus,
     };
-  }, [emergencyStop, runtimeAuditEvents]);
+  }, [emergencyStop, runtimeAuditEvents, agentOverrides]);
 
   return (
     <RuntimeContext.Provider value={value}>{children}</RuntimeContext.Provider>
