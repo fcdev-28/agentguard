@@ -103,6 +103,12 @@ a.row:hover {
   }
 }
 
+/* Marca "Vencida" en línea, dentro de un metaItem (sin forma de pill). */
+.overdueInline {
+  font-weight: var(--weight-medium);
+  color: var(--color-danger-text);
+}
+
 /* Badge "Vencida", coherente con el bloque de pendientes del dashboard. */
 .overdue {
   display: inline-flex;

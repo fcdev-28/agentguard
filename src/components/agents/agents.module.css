@@ -170,6 +170,27 @@ a.row:hover {
   color: var(--color-ink-soft);
 }
 
+/* Control de pausa/reanudación del agente: acción reversible, sin color primario. */
+.pauseActions {
+  margin-top: var(--space-4);
+}
+
+.pauseButton {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.pauseButton:hover {
+  background: var(--color-surface);
+}
+
 /* Secciones de detalle (herramientas, acciones). */
 .section {
   margin-top: var(--space-6);

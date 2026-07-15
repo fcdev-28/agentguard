@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import type { Agent, AgentAction, User } from "@/domain";
 import { agentModeLabel, agentStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
+import { useRuntime } from "@/components/app-shell/runtime-store";
 import {
   getAgents,
   getAgentLastActivityAt,
@@ -29,6 +32,7 @@ export function AgentsList({
   actions: AgentAction[];
   users: User[];
 }) {
+  const { getAgentStatus } = useRuntime();
   const sorted = getAgents(agents);
 
   if (sorted.length === 0) {
@@ -47,6 +51,7 @@ export function AgentsList({
       {sorted.map((agent) => {
         const risk = getAgentRecentRisk(actions, agent.id);
         const lastActivityAt = getAgentLastActivityAt(actions, agent.id);
+        const status = getAgentStatus(agent.id, agent.status);
 
         return (
           <Link
@@ -59,10 +64,8 @@ export function AgentsList({
               <span className={styles.description}>{agent.description}</span>
             </div>
             <span className={styles.owner}>{ownerName(agent.ownerId)}</span>
-            <span
-              className={`${styles.statusBadge} ${statusClass[agent.status]}`}
-            >
-              {agentStatusLabel[agent.status]}
+            <span className={`${styles.statusBadge} ${statusClass[status]}`}>
+              {agentStatusLabel[status]}
             </span>
             <span className={styles.mode}>{agentModeLabel[agent.mode]}</span>
             {risk ? (
