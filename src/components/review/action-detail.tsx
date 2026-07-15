@@ -19,12 +19,13 @@ import {
   tools,
   policies,
   permissions,
-  actionComments,
   users,
 } from "@/data/demo-data";
 import { useReview } from "./review-store";
+import { useComments } from "./comment-store";
 import { actionStatusClass } from "./status-style";
 import { eligibleEscalationTargets, type ReviewDecision } from "@/lib/review";
+import { isValidCommentBody } from "@/lib/comments";
 import styles from "./review.module.css";
 
 /** Representación legible de un valor del payload (sin volcar JSON crudo). */
@@ -39,11 +40,13 @@ export function ActionDetail({ actionId }: { actionId: string }) {
   const action = actions.find((a) => a.id === actionId);
   const { getActionState, decide, escalate } = useReview();
   const { emergencyStop } = useRuntime();
+  const { getComments, addComment } = useComments();
   const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(
     null,
   );
   const [reason, setReason] = useState("");
   const [escalateTarget, setEscalateTarget] = useState("");
+  const [commentBody, setCommentBody] = useState("");
 
   if (!action) {
     return null;
@@ -65,7 +68,7 @@ export function ActionDetail({ actionId }: { actionId: string }) {
   const policy = policyEvaluation.policyId
     ? policies.find((p) => p.id === policyEvaluation.policyId)
     : null;
-  const comments = actionComments.filter((c) => c.actionId === action.id);
+  const comments = getComments(action.id);
   const payloadEntries = Object.entries(action.payload);
   const resolvedActionId = action.id;
   const escalationTargets = eligibleEscalationTargets(users, currentUser.id);
@@ -95,6 +98,12 @@ export function ActionDetail({ actionId }: { actionId: string }) {
     if (!escalateTarget) return;
     escalate(resolvedActionId, escalateTarget);
     setEscalateTarget("");
+  }
+
+  function submitComment() {
+    if (!isValidCommentBody(commentBody)) return;
+    addComment(resolvedActionId, commentBody);
+    setCommentBody("");
   }
 
   return (
@@ -169,9 +178,9 @@ export function ActionDetail({ actionId }: { actionId: string }) {
         )}
       </section>
 
-      {comments.length > 0 ? (
-        <section className={styles.detailSection}>
-          <h3 className={styles.detailSectionTitle}>Comentarios</h3>
+      <section className={styles.detailSection}>
+        <h3 className={styles.detailSectionTitle}>Comentarios</h3>
+        {comments.length > 0 ? (
           <ul className={styles.commentList}>
             {comments.map((comment) => (
               <li key={comment.id} className={styles.comment}>
@@ -186,8 +195,33 @@ export function ActionDetail({ actionId }: { actionId: string }) {
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
+        ) : (
+          <p className={styles.hint}>Aún no hay comentarios.</p>
+        )}
+        <div className={styles.reasonBox}>
+          <label className={styles.reasonLabel} htmlFor="new-comment">
+            Añadir comentario
+          </label>
+          <textarea
+            id="new-comment"
+            className={styles.reasonInput}
+            value={commentBody}
+            onChange={(event) => setCommentBody(event.target.value)}
+            rows={3}
+            placeholder="Escribe un comentario…"
+          />
+          <div className={styles.reasonActions}>
+            <button
+              type="button"
+              className={styles.decisionButton}
+              onClick={submitComment}
+              disabled={!isValidCommentBody(commentBody)}
+            >
+              Comentar
+            </button>
+          </div>
+        </div>
+      </section>
 
       {canDecide ? (
         <section className={styles.detailSection}>
