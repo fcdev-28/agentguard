@@ -8,7 +8,7 @@ import {
 } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
-import { formatRelativeTime } from "@/lib/format";
+import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
 import { useRuntime } from "@/components/app-shell/runtime-store";
 import {
@@ -109,6 +109,14 @@ export function ActionDetail({ actionId }: { actionId: string }) {
         <span className={styles.metaItem}>
           Propuesta: <strong>{formatRelativeTime(action.createdAt)}</strong>
         </span>
+        {action.approvalDueAt ? (
+          <span className={styles.metaItem}>
+            Vence: <strong>{formatRelativeTime(action.approvalDueAt)}</strong>
+            {isOverdue(action.approvalDueAt) ? (
+              <span className={styles.overdueInline}> · Vencida</span>
+            ) : null}
+          </span>
+        ) : null}
       </div>
 
       <section className={styles.detailSection}>
