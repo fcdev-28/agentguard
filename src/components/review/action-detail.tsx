@@ -5,11 +5,13 @@ import {
   actionStatusLabel,
   actionTypeLabel,
   policyEffectLabel,
+  userRoleLabel,
 } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
+import { currentUser } from "@/lib/session";
 import { useRuntime } from "@/components/app-shell/runtime-store";
 import {
   actions,
@@ -22,7 +24,7 @@ import {
 } from "@/data/demo-data";
 import { useReview } from "./review-store";
 import { actionStatusClass } from "./status-style";
-import type { ReviewDecision } from "@/lib/review";
+import { eligibleEscalationTargets, type ReviewDecision } from "@/lib/review";
 import styles from "./review.module.css";
 
 /** Representación legible de un valor del payload (sin volcar JSON crudo). */
@@ -35,12 +37,13 @@ function formatPayloadValue(value: unknown): string {
 /** Contexto, evidencia y controles de decisión de una acción, para el panel o la ruta standalone. */
 export function ActionDetail({ actionId }: { actionId: string }) {
   const action = actions.find((a) => a.id === actionId);
-  const { getActionState, decide } = useReview();
+  const { getActionState, decide, escalate } = useReview();
   const { emergencyStop } = useRuntime();
   const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(
     null,
   );
   const [reason, setReason] = useState("");
+  const [escalateTarget, setEscalateTarget] = useState("");
 
   if (!action) {
     return null;
@@ -65,6 +68,7 @@ export function ActionDetail({ actionId }: { actionId: string }) {
   const comments = actionComments.filter((c) => c.actionId === action.id);
   const payloadEntries = Object.entries(action.payload);
   const resolvedActionId = action.id;
+  const escalationTargets = eligibleEscalationTargets(users, currentUser.id);
 
   function startDecision(decision: ReviewDecision) {
     if (decision === "approved") {
@@ -85,6 +89,12 @@ export function ActionDetail({ actionId }: { actionId: string }) {
   function cancelDecision() {
     setPendingDecision(null);
     setReason("");
+  }
+
+  function confirmEscalate() {
+    if (!escalateTarget) return;
+    escalate(resolvedActionId, escalateTarget);
+    setEscalateTarget("");
   }
 
   return (
@@ -115,6 +125,11 @@ export function ActionDetail({ actionId }: { actionId: string }) {
             {isOverdue(action.approvalDueAt) ? (
               <span className={styles.overdueInline}> · Vencida</span>
             ) : null}
+          </span>
+        ) : null}
+        {state?.decision?.escalatedTo ? (
+          <span className={styles.metaItem}>
+            Escalada a: <strong>{state.decision.escalatedTo.name}</strong>
           </span>
         ) : null}
       </div>
@@ -206,6 +221,37 @@ export function ActionDetail({ actionId }: { actionId: string }) {
                 <p className={styles.hint}>
                   Parada de emergencia activa: aprobaciones bloqueadas.
                 </p>
+              ) : null}
+              {escalationTargets.length > 0 ? (
+                <div className={styles.escalateRow}>
+                  <label
+                    className={styles.escalateLabel}
+                    htmlFor="escalate-target"
+                  >
+                    Escalar a
+                  </label>
+                  <select
+                    id="escalate-target"
+                    className={styles.escalateSelect}
+                    value={escalateTarget}
+                    onChange={(event) => setEscalateTarget(event.target.value)}
+                  >
+                    <option value="">Selecciona un responsable…</option>
+                    {escalationTargets.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.name} · {userRoleLabel[user.role]}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    className={styles.decisionButtonGhost}
+                    onClick={confirmEscalate}
+                    disabled={!escalateTarget}
+                  >
+                    Escalar
+                  </button>
+                </div>
               ) : null}
             </>
           ) : (
