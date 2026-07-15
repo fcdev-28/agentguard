@@ -37,8 +37,7 @@
 .row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
   border-left: 2px solid transparent;
@@ -51,13 +50,46 @@
   border-bottom: none;
 }
 
-a.row:hover {
+.row:hover {
   background: var(--color-surface);
 }
 
 .rowSelected {
   background: var(--color-surface);
   border-left-color: var(--color-primary);
+}
+
+/* Fila marcada para una acción por lote: fondo tenue de énfasis. */
+.rowChecked {
+  background: var(--color-surface);
+}
+
+/* Casilla de selección por lote; ancho fijo para alinear las filas. */
+.rowCheckboxCell {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+}
+
+.rowCheckbox {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+/* Enlace a la acción: ocupa el resto de la fila con el layout main/aside. */
+.rowLink {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: inherit;
+  text-decoration: none;
 }
 
 .rowMain {
@@ -93,7 +125,7 @@ a.row:hover {
 }
 
 @media (max-width: 600px) {
-  .row {
+  .rowLink {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -305,6 +337,63 @@ a.row:hover {
 
 .decisionButtonGhost:hover {
   color: var(--color-ink);
+}
+
+/* Fila de escalado manual: etiqueta + selector de responsable + botón. */
+.escalateRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.escalateLabel {
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-soft);
+}
+
+.escalateSelect {
+  flex: 1;
+  min-width: 180px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  font-size: var(--text-13);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+/* Barra de acción por lote: aparece al seleccionar acciones en la cola. */
+.selectionBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+}
+
+.selectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.selectionCount {
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+
+.selectionActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
 }
 
 .reasonBox {

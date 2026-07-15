@@ -1,8 +1,9 @@
-import type { ActionStatus } from "@/domain";
+import type { ActionStatus, User } from "@/domain";
 import { isPendingReview } from "@/lib/dashboard";
 
 /** Decisiones humanas posibles sobre una acción pendiente (ver docs/UX_ARCHITECTURE.md). */
-export type ReviewDecision = "approved" | "rejected" | "changes_requested";
+export type ReviewDecision =
+  "approved" | "rejected" | "changes_requested" | "escalated";
 
 /** Estado resultante de aplicar la decisión, o el motivo por el que no procede. */
 export type ApplyDecisionResult = { status: ActionStatus } | { error: string };
@@ -12,12 +13,19 @@ const DECISION_STATUS: Record<ReviewDecision, ActionStatus> = {
   approved: "approved",
   rejected: "rejected",
   changes_requested: "changes_requested",
+  escalated: "escalated",
 };
 
 /** Decisiones que exigen un motivo no vacío. */
 const REASON_REQUIRED: ReadonlySet<ReviewDecision> = new Set([
   "rejected",
   "changes_requested",
+]);
+
+/** Roles que pueden actuar como responsables a los que escalar una acción. */
+const ESCALATION_ROLES: ReadonlySet<User["role"]> = new Set([
+  "admin",
+  "reviewer",
 ]);
 
 /**
@@ -38,4 +46,20 @@ export function applyDecision(
     return { error: "Esta decisión requiere un motivo." };
   }
   return { status: DECISION_STATUS[decision] };
+}
+
+/**
+ * Usuarios elegibles como destino de un escalado manual: administradores y
+ * revisores activos de la organización, excluyendo al usuario que escala.
+ */
+export function eligibleEscalationTargets(
+  users: User[],
+  currentUserId: string,
+): User[] {
+  return users.filter(
+    (user) =>
+      user.id !== currentUserId &&
+      user.status === "active" &&
+      ESCALATION_ROLES.has(user.role),
+  );
 }
