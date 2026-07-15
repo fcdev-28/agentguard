@@ -6,6 +6,7 @@ import type { MouseEvent } from "react";
 import type { AgentAction } from "@/domain";
 import { actionStatusLabel } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
+import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { agents } from "@/data/demo-data";
 import { actionStatusClass } from "./status-style";
@@ -18,9 +19,13 @@ const DESKTOP_BREAKPOINT = "(min-width: 900px)";
 export function ReviewQueue({
   actions,
   selectedId,
+  selectedIds,
+  onToggleSelect,
 }: {
   actions: AgentAction[];
   selectedId: string | null;
+  selectedIds: ReadonlySet<string>;
+  onToggleSelect: (actionId: string) => void;
 }) {
   const router = useRouter();
   const agentName = (id: string) => agents.find((a) => a.id === id)?.name ?? id;
@@ -38,31 +43,46 @@ export function ReviewQueue({
   return (
     <div className={styles.queue}>
       {actions.map((action) => (
-        <Link
+        <div
           key={action.id}
-          href={`/review/${action.id}`}
-          onClick={(event) => handleClick(event, action.id)}
-          className={`${styles.row} ${action.id === selectedId ? styles.rowSelected : ""}`}
+          className={`${styles.row} ${action.id === selectedId ? styles.rowSelected : ""} ${selectedIds.has(action.id) ? styles.rowChecked : ""}`}
         >
-          <div className={styles.rowMain}>
-            <span className={styles.rowTitle}>{action.title}</span>
-            <span className={styles.rowMeta}>
-              {agentName(action.agentId)} ·{" "}
-              {formatRelativeTime(action.createdAt)}
-            </span>
-            <span
-              className={`${styles.statusBadge} ${actionStatusClass[action.status]}`}
-            >
-              {actionStatusLabel[action.status]}
-            </span>
-          </div>
-          <div className={styles.rowAside}>
-            {isOverdue(action.approvalDueAt) ? (
-              <span className={styles.overdue}>Vencida</span>
+          <span className={styles.rowCheckboxCell}>
+            {isPendingReview(action.status) ? (
+              <input
+                type="checkbox"
+                className={styles.rowCheckbox}
+                checked={selectedIds.has(action.id)}
+                onChange={() => onToggleSelect(action.id)}
+                aria-label={`Seleccionar acción ${action.title}`}
+              />
             ) : null}
-            <RiskBadge level={action.riskLevel} />
-          </div>
-        </Link>
+          </span>
+          <Link
+            href={`/review/${action.id}`}
+            onClick={(event) => handleClick(event, action.id)}
+            className={styles.rowLink}
+          >
+            <div className={styles.rowMain}>
+              <span className={styles.rowTitle}>{action.title}</span>
+              <span className={styles.rowMeta}>
+                {agentName(action.agentId)} ·{" "}
+                {formatRelativeTime(action.createdAt)}
+              </span>
+              <span
+                className={`${styles.statusBadge} ${actionStatusClass[action.status]}`}
+              >
+                {actionStatusLabel[action.status]}
+              </span>
+            </div>
+            <div className={styles.rowAside}>
+              {isOverdue(action.approvalDueAt) ? (
+                <span className={styles.overdue}>Vencida</span>
+              ) : null}
+              <RiskBadge level={action.riskLevel} />
+            </div>
+          </Link>
+        </div>
       ))}
     </div>
   );
