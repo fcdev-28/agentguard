@@ -163,6 +163,82 @@ a.row:hover {
   color: var(--color-ink);
 }
 
+/* Bloque de parada de emergencia (dashboard). */
+.emergencyStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.emergencyStatusText {
+  font-size: var(--text-13);
+  color: var(--color-ink-soft);
+}
+
+.emergencyDot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success);
+}
+
+.emergencyDotActive {
+  background: var(--color-primary);
+}
+
+.emergencyConfirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.emergencyWarning {
+  font-size: var(--text-13);
+  color: var(--color-ink-soft);
+}
+
+.emergencyActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.emergencyButton {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-control);
+  background: var(--color-primary);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary-text);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.emergencyButton:hover {
+  background: var(--color-primary-hover);
+}
+
+.emergencyButtonGhost {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.emergencyButtonGhost:hover {
+  color: var(--color-ink);
+}
+
 /* Esqueleto de carga del dashboard. */
 .skeletonBlock {
   min-height: 160px;
