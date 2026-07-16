@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
-import type { AgentAction } from "@/domain";
+import type { Agent, AgentAction } from "@/domain";
 import { actionStatusLabel } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
-import { agents } from "@/data/demo-data";
 import { actionStatusClass } from "./status-style";
 import styles from "./review.module.css";
 
@@ -18,11 +17,13 @@ const DESKTOP_BREAKPOINT = "(min-width: 900px)";
 /** Cola priorizada de acciones pendientes: fila enlazable con selección compartida por URL. */
 export function ReviewQueue({
   actions,
+  agents,
   selectedId,
   selectedIds,
   onToggleSelect,
 }: {
   actions: AgentAction[];
+  agents: Agent[];
   selectedId: string | null;
   selectedIds: ReadonlySet<string>;
   onToggleSelect: (actionId: string) => void;

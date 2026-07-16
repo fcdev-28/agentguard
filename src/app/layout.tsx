@@ -7,6 +7,9 @@ import { CommentProvider } from "@/components/review/comment-store";
 import { CommandPaletteProvider } from "@/components/app-shell/command-palette-store";
 import { NotificationProvider } from "@/components/app-shell/notification-store";
 import { CommandPalette } from "@/components/app-shell/command-palette";
+import { getActions } from "@/data/actions";
+import { getUsers } from "@/data/users";
+import { getComments } from "@/data/comments";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -21,17 +24,23 @@ export const metadata: Metadata = {
     "Plano de control para agentes de IA: visibilidad, aprobación y auditoría de cada acción.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [actions, users, comments] = await Promise.all([
+    getActions(),
+    getUsers(),
+    getComments(),
+  ]);
+
   return (
     <html lang="es" className={inter.variable}>
       <body>
         <RuntimeProvider>
-          <ReviewProvider>
-            <CommentProvider>
+          <ReviewProvider initialActions={actions} users={users}>
+            <CommentProvider initialComments={comments}>
               <NotificationProvider>
                 <CommandPaletteProvider>
                   <AppShell>{children}</AppShell>

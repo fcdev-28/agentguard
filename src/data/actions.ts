@@ -35,3 +35,11 @@ export async function getActions(): Promise<AgentAction[]> {
   });
   return rows.map(mapAgentAction);
 }
+
+/** Busca una acción por id directamente en BD; `undefined` si no existe. */
+export async function getActionById(
+  id: string,
+): Promise<AgentAction | undefined> {
+  const row = await prisma.agentAction.findUnique({ where: { id } });
+  return row ? mapAgentAction(row) : undefined;
+}

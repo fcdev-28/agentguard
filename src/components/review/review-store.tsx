@@ -7,8 +7,7 @@ import {
   useReducer,
   type ReactNode,
 } from "react";
-import type { ActionStatus } from "@/domain";
-import { actions as seedActions, users } from "@/data/demo-data";
+import type { ActionStatus, AgentAction, User } from "@/domain";
 import { currentUser } from "@/lib/session";
 import { applyDecision, type ReviewDecision } from "@/lib/review";
 
@@ -52,15 +51,15 @@ interface DecideManyAction {
 interface EscalateAction {
   type: "escalate";
   actionId: string;
-  toUserId: string;
+  target: EscalationTarget | null;
 }
 
 type ReviewStoreAction = DecideAction | DecideManyAction | EscalateAction;
 
-/** Estado inicial: cada acción semilla arranca con su status de `demo-data`. */
-function buildInitialState(): ReviewState {
+/** Estado inicial: cada acción cargada arranca con su status de origen. */
+function buildInitialState(initialActions: AgentAction[]): ReviewState {
   const state: ReviewState = {};
-  for (const action of seedActions) {
+  for (const action of initialActions) {
     state[action.id] = { status: action.status, decision: null };
   }
   return state;
@@ -120,14 +119,15 @@ function reviewReducer(
           ),
         state,
       );
-    case "escalate": {
-      const target = users.find((u) => u.id === action.toUserId);
-      if (!target) return state;
-      return applyDecisionToState(state, action.actionId, "escalated", null, {
-        id: target.id,
-        name: target.name,
-      });
-    }
+    case "escalate":
+      if (!action.target) return state;
+      return applyDecisionToState(
+        state,
+        action.actionId,
+        "escalated",
+        null,
+        action.target,
+      );
     default:
       return state;
   }
@@ -152,14 +152,22 @@ const ReviewContext = createContext<ReviewContextValue | null>(null);
 
 /**
  * Store efímero (no persistido) de las decisiones de revisión. Se siembra a
- * partir de `demo-data` y vive mientras dure la navegación por `/review`;
- * al llegar la persistencia real (fase 10) se sustituye por consultas y
- * mutaciones contra la base de datos.
+ * partir de las acciones cargadas por el layout raíz y vive mientras dure la
+ * navegación; al llegar la persistencia real (fase 10) se sustituye por
+ * consultas y mutaciones contra la base de datos.
  */
-export function ReviewProvider({ children }: { children: ReactNode }) {
+export function ReviewProvider({
+  children,
+  initialActions,
+  users,
+}: {
+  children: ReactNode;
+  initialActions: AgentAction[];
+  users: User[];
+}) {
   const [state, dispatch] = useReducer(
     reviewReducer,
-    undefined,
+    initialActions,
     buildInitialState,
   );
 
@@ -170,10 +178,16 @@ export function ReviewProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "decide", actionId, decision, reason }),
       decideMany: (actionIds, decision, reason) =>
         dispatch({ type: "decideMany", actionIds, decision, reason }),
-      escalate: (actionId, toUserId) =>
-        dispatch({ type: "escalate", actionId, toUserId }),
+      escalate: (actionId, toUserId) => {
+        const target = users.find((u) => u.id === toUserId);
+        dispatch({
+          type: "escalate",
+          actionId,
+          target: target ? { id: target.id, name: target.name } : null,
+        });
+      },
     }),
-    [state],
+    [state, users],
   );
 
   return (
