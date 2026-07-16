@@ -35,6 +35,8 @@ export function ReviewScreen({
   comments,
   approvals,
   currentUserId,
+  canDecide,
+  canComment,
 }: {
   actions: AgentAction[];
   agents: Agent[];
@@ -45,6 +47,8 @@ export function ReviewScreen({
   comments: ActionComment[];
   approvals: RecordedApproval[];
   currentUserId: string;
+  canDecide: boolean;
+  canComment: boolean;
 }) {
   const searchParams = useSearchParams();
   const { emergencyStop } = useRuntime();
@@ -89,6 +93,7 @@ export function ReviewScreen({
   }
 
   function applyBatch(decision: BatchDecision) {
+    if (!canDecide) return;
     const ids = [...activeSelection];
     if (ids.length === 0) return;
     const trimmed = reason.trim();
@@ -115,7 +120,7 @@ export function ReviewScreen({
   return (
     <div className={styles.layout}>
       <div className={styles.queuePane}>
-        {activeSelection.size > 0 ? (
+        {canDecide && activeSelection.size > 0 ? (
           <div className={styles.selectionBar}>
             <div className={styles.selectionHead}>
               <span className={styles.selectionCount}>
@@ -179,6 +184,7 @@ export function ReviewScreen({
           selectedId={selectedId}
           selectedIds={activeSelection}
           onToggleSelect={toggleSelect}
+          canDecide={canDecide}
         />
       </div>
       {selectedId ? (
@@ -197,6 +203,8 @@ export function ReviewScreen({
               null
             }
             currentUserId={currentUserId}
+            canDecide={canDecide}
+            canComment={canComment}
           />
         </div>
       ) : null}

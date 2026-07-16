@@ -10,6 +10,7 @@ import { getUsers } from "@/data/users";
 import { getComments } from "@/data/comments";
 import { getApprovals } from "@/data/approvals";
 import { getCurrentUser } from "@/lib/session-db";
+import { can } from "@/lib/permissions";
 
 export default async function ReviewPage() {
   const [
@@ -56,6 +57,8 @@ export default async function ReviewPage() {
         comments={comments}
         approvals={approvals}
         currentUserId={currentUser.id}
+        canDecide={can(currentUser, "review:decide")}
+        canComment={can(currentUser, "review:comment")}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import { getComments } from "@/data/comments";
 import { getApprovalByActionId } from "@/data/approvals";
 import { commentsForAction } from "@/lib/comments";
 import { getCurrentUser } from "@/lib/session-db";
+import { can } from "@/lib/permissions";
 
 export default async function ReviewActionPage({
   params,
@@ -66,6 +67,8 @@ export default async function ReviewActionPage({
         comments={commentsForAction(comments, action.id)}
         approval={approval}
         currentUserId={currentUser.id}
+        canDecide={can(currentUser, "review:decide")}
+        canComment={can(currentUser, "review:comment")}
       />
     </div>
   );

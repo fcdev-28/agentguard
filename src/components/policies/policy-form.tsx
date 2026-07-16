@@ -14,7 +14,7 @@ import styles from "./policies.module.css";
  * Editor mínimo de condiciones: casillas para añadir herramienta, alcance e
  * importe máximo, los mismos campos que `PolicyDetail` sabe editar.
  */
-export function PolicyForm() {
+export function PolicyForm({ canWrite }: { canWrite: boolean }) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -204,6 +204,9 @@ export function PolicyForm() {
           {error}
         </p>
       ) : null}
+      {!canWrite ? (
+        <p className={styles.fieldHint}>Tu rol no permite crear políticas.</p>
+      ) : null}
 
       <div className={styles.formActions}>
         <Link href="/policies" className={styles.ghostButton}>
@@ -212,7 +215,7 @@ export function PolicyForm() {
         <button
           type="submit"
           className={styles.primaryButton}
-          disabled={isPending}
+          disabled={isPending || !canWrite}
         >
           {isPending ? "Creando…" : "Crear política"}
         </button>

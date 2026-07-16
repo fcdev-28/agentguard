@@ -44,6 +44,8 @@ export function ActionDetail({
   comments,
   approval,
   currentUserId,
+  canDecide,
+  canComment,
 }: {
   actionId: string;
   actions: AgentAction[];
@@ -55,6 +57,8 @@ export function ActionDetail({
   comments: ActionComment[];
   approval: RecordedApproval | null;
   currentUserId: string;
+  canDecide: boolean;
+  canComment: boolean;
 }) {
   const action = actions.find((a) => a.id === actionId);
   const { emergencyStop } = useRuntime();
@@ -74,7 +78,7 @@ export function ActionDetail({
   }
 
   const status = action.status;
-  const canDecide = isPendingReview(status);
+  const isDecidable = isPendingReview(status);
 
   const agent = agents.find((a) => a.id === action.agentId);
   const tool = tools.find((t) => t.id === action.toolId);
@@ -230,32 +234,34 @@ export function ActionDetail({
         ) : (
           <p className={styles.hint}>Aún no hay comentarios.</p>
         )}
-        <div className={styles.reasonBox}>
-          <label className={styles.reasonLabel} htmlFor="new-comment">
-            Añadir comentario
-          </label>
-          <textarea
-            id="new-comment"
-            className={styles.reasonInput}
-            value={commentBody}
-            onChange={(event) => setCommentBody(event.target.value)}
-            rows={3}
-            placeholder="Escribe un comentario…"
-          />
-          <div className={styles.reasonActions}>
-            <button
-              type="button"
-              className={styles.decisionButton}
-              onClick={submitComment}
-              disabled={!isValidCommentBody(commentBody)}
-            >
-              Comentar
-            </button>
+        {canComment ? (
+          <div className={styles.reasonBox}>
+            <label className={styles.reasonLabel} htmlFor="new-comment">
+              Añadir comentario
+            </label>
+            <textarea
+              id="new-comment"
+              className={styles.reasonInput}
+              value={commentBody}
+              onChange={(event) => setCommentBody(event.target.value)}
+              rows={3}
+              placeholder="Escribe un comentario…"
+            />
+            <div className={styles.reasonActions}>
+              <button
+                type="button"
+                className={styles.decisionButton}
+                onClick={submitComment}
+                disabled={!isValidCommentBody(commentBody)}
+              >
+                Comentar
+              </button>
+            </div>
           </div>
-        </div>
+        ) : null}
       </section>
 
-      {canDecide ? (
+      {isDecidable && canDecide ? (
         <section className={styles.detailSection}>
           {pendingDecision === null ? (
             <>

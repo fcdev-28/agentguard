@@ -7,6 +7,7 @@ import {
 import { CommandPaletteProvider } from "@/components/app-shell/command-palette-store";
 import { CommandPalette } from "@/components/app-shell/command-palette";
 import { getCurrentUser } from "@/lib/session-db";
+import { can } from "@/lib/permissions";
 import { getOrganization } from "@/data/organizations";
 import { getUsers } from "@/data/users";
 import { getNotificationsForUser } from "@/data/notifications";
@@ -65,7 +66,13 @@ export default async function AppLayout({
         >
           {children}
         </AppShell>
-        <CommandPalette agents={agents} actions={actions} policies={policies} />
+        <CommandPalette
+          agents={agents}
+          actions={actions}
+          policies={policies}
+          canDecide={can(currentUser, "review:decide")}
+          canEmergencyStop={can(currentUser, "runtime:emergency_stop")}
+        />
       </CommandPaletteProvider>
     </RuntimeProvider>
   );

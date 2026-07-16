@@ -11,7 +11,11 @@ import {
 import styles from "./dashboard.module.css";
 
 /** Control de nivel organización: congela toda ejecución de agentes al instante (ver docs/FEATURES.md). */
-export function EmergencyStopBlock() {
+export function EmergencyStopBlock({
+  canEmergencyStop,
+}: {
+  canEmergencyStop: boolean;
+}) {
   const { emergencyStop } = useRuntime();
   const [pendingConfirm, setPendingConfirm] = useState(false);
   const [, startTransition] = useTransition();
@@ -41,7 +45,7 @@ export function EmergencyStopBlock() {
         </span>
       </div>
 
-      {pendingConfirm ? (
+      {!canEmergencyStop ? null : pendingConfirm ? (
         <div className={styles.emergencyConfirm}>
           <p className={styles.emergencyWarning}>
             {emergencyStop.active
