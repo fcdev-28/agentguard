@@ -10,6 +10,9 @@ import { CommandPalette } from "@/components/app-shell/command-palette";
 import { getCurrentUser, getCurrentOrganization } from "@/lib/session-db";
 import { getUsers } from "@/data/users";
 import { getNotificationsForUser } from "@/data/notifications";
+import { getAgents } from "@/data/agents";
+import { getActions } from "@/data/actions";
+import { getPolicies } from "@/data/policies";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -29,11 +32,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [currentUser, organization, users] = await Promise.all([
-    getCurrentUser(),
-    getCurrentOrganization(),
-    getUsers(),
-  ]);
+  const [currentUser, organization, users, agents, actions, policies] =
+    await Promise.all([
+      getCurrentUser(),
+      getCurrentOrganization(),
+      getUsers(),
+      getAgents(),
+      getActions(),
+      getPolicies(),
+    ]);
   const notifications = await getNotificationsForUser(currentUser.id);
 
   const emergencyStop: EmergencyStopState = organization.emergencyStop
@@ -53,7 +60,11 @@ export default async function RootLayout({
         <RuntimeProvider emergencyStop={emergencyStop}>
           <CommandPaletteProvider>
             <AppShell notifications={notifications}>{children}</AppShell>
-            <CommandPalette />
+            <CommandPalette
+              agents={agents}
+              actions={actions}
+              policies={policies}
+            />
           </CommandPaletteProvider>
         </RuntimeProvider>
       </body>
