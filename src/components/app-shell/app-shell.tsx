@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { Notification } from "@/domain";
+import type { Notification, Organization, User } from "@/domain";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
 import { EmergencyStopBanner } from "./emergency-stop-banner";
@@ -13,15 +13,23 @@ import styles from "./app-shell.module.css";
 export function AppShell({
   children,
   notifications,
+  user,
+  organization,
 }: {
   children: ReactNode;
   notifications: Notification[];
+  user: User;
+  organization: Organization;
 }) {
   return (
     <div className={styles.shell}>
       <Sidebar />
       <div className={styles.main}>
-        <TopBar notifications={notifications} />
+        <TopBar
+          notifications={notifications}
+          user={user}
+          organization={organization}
+        />
         <EmergencyStopBanner />
         <main className={styles.content}>{children}</main>
       </div>

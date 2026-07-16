@@ -6,9 +6,7 @@ export default function LoginPage() {
     <div className={styles.card}>
       <div className={styles.brand}>
         <span className={styles.title}>AgentGuard</span>
-        <span className={styles.subtitle}>
-          Inicia sesión para continuar.
-        </span>
+        <span className={styles.subtitle}>Inicia sesión para continuar.</span>
       </div>
       <LoginForm />
     </div>

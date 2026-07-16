@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import type { Notification } from "@/domain";
+import type { Notification, Organization, User } from "@/domain";
 import { userRoleLabel } from "@/domain";
-import { currentOrganization, currentUser } from "@/lib/session";
+import { logout } from "@/lib/auth/auth-actions";
 import { MobileNav } from "./mobile-nav";
 import { useCommandPalette } from "./command-palette-store";
 import { NotificationBell } from "./notification-bell";
@@ -21,9 +21,19 @@ function initials(name: string): string {
 
 /**
  * Cabecera del shell: contexto de la organización activa (izquierda) y del
- * usuario en sesión (derecha). El usuario proviene de la sesión simulada.
+ * usuario en sesión (derecha, con opción de cerrar sesión). `user` y
+ * `organization` llegan por props desde el layout del grupo `(app)`, que los
+ * lee de la sesión real.
  */
-export function TopBar({ notifications }: { notifications: Notification[] }) {
+export function TopBar({
+  notifications,
+  user,
+  organization,
+}: {
+  notifications: Notification[];
+  user: User;
+  organization: Organization;
+}) {
   const [navOpen, setNavOpen] = useState(false);
   const { openPalette } = useCommandPalette();
 
@@ -51,7 +61,7 @@ export function TopBar({ notifications }: { notifications: Notification[] }) {
           </svg>
         </button>
         <div className={styles.org}>
-          <span className={styles.orgName}>{currentOrganization.name}</span>
+          <span className={styles.orgName}>{organization.name}</span>
         </div>
       </div>
 
@@ -81,14 +91,17 @@ export function TopBar({ notifications }: { notifications: Notification[] }) {
       <div className={styles.user}>
         <NotificationBell notifications={notifications} />
         <span className={styles.userMeta}>
-          <span className={styles.userName}>{currentUser.name}</span>
-          <span className={styles.userRole}>
-            {userRoleLabel[currentUser.role]}
-          </span>
+          <span className={styles.userName}>{user.name}</span>
+          <span className={styles.userRole}>{userRoleLabel[user.role]}</span>
         </span>
         <span className={styles.avatar} aria-hidden="true">
-          {initials(currentUser.name)}
+          {initials(user.name)}
         </span>
+        <form action={logout}>
+          <button type="submit" className={styles.logoutButton}>
+            Cerrar sesión
+          </button>
+        </form>
       </div>
 
       <MobileNav open={navOpen} onClose={() => setNavOpen(false)} />

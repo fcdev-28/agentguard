@@ -62,7 +62,11 @@ export function LoginForm() {
         </p>
       ) : null}
 
-      <button type="submit" className={styles.submitButton} disabled={isPending}>
+      <button
+        type="submit"
+        className={styles.submitButton}
+        disabled={isPending}
+      >
         {isPending ? "Entrando…" : "Entrar"}
       </button>
     </form>

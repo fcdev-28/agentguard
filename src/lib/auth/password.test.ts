@@ -9,14 +9,10 @@ describe("hashPassword / verifyPassword", () => {
 
   it("no verifica contra una contraseña distinta", async () => {
     const hash = await hashPassword("agentguard-demo");
-    await expect(verifyPassword("otra-contraseña", hash)).resolves.toBe(
-      false,
-    );
+    await expect(verifyPassword("otra-contraseña", hash)).resolves.toBe(false);
   });
 
   it("falla cerrado cuando el hash es null", async () => {
-    await expect(verifyPassword("agentguard-demo", null)).resolves.toBe(
-      false,
-    );
+    await expect(verifyPassword("agentguard-demo", null)).resolves.toBe(false);
   });
 });

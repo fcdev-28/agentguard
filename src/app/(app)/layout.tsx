@@ -58,7 +58,13 @@ export default async function AppLayout({
   return (
     <RuntimeProvider emergencyStop={emergencyStop}>
       <CommandPaletteProvider>
-        <AppShell notifications={notifications}>{children}</AppShell>
+        <AppShell
+          notifications={notifications}
+          user={currentUser}
+          organization={organization}
+        >
+          {children}
+        </AppShell>
         <CommandPalette agents={agents} actions={actions} policies={policies} />
       </CommandPaletteProvider>
     </RuntimeProvider>
