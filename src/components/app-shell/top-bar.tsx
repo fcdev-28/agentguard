@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Notification } from "@/domain";
 import { userRoleLabel } from "@/domain";
 import { currentOrganization, currentUser } from "@/lib/session";
 import { MobileNav } from "./mobile-nav";
@@ -22,7 +23,7 @@ function initials(name: string): string {
  * Cabecera del shell: contexto de la organización activa (izquierda) y del
  * usuario en sesión (derecha). El usuario proviene de la sesión simulada.
  */
-export function TopBar() {
+export function TopBar({ notifications }: { notifications: Notification[] }) {
   const [navOpen, setNavOpen] = useState(false);
   const { openPalette } = useCommandPalette();
 
@@ -78,7 +79,7 @@ export function TopBar() {
       </button>
 
       <div className={styles.user}>
-        <NotificationBell />
+        <NotificationBell notifications={notifications} />
         <span className={styles.userMeta}>
           <span className={styles.userName}>{currentUser.name}</span>
           <span className={styles.userRole}>

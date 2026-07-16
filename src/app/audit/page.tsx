@@ -1,5 +1,5 @@
 import { PageHeader } from "@/components/app-shell/page-header";
-import { AuditTimelineLive } from "@/components/audit/audit-timeline-live";
+import { AuditTimeline } from "@/components/audit/audit-timeline";
 import { getAuditEvents } from "@/data/audit";
 import { getAgents } from "@/data/agents";
 import { getUsers } from "@/data/users";
@@ -22,8 +22,8 @@ export default async function AuditPage({
         title="Auditoría"
         description="Registro inmutable de acciones, decisiones y cambios de configuración."
       />
-      <AuditTimelineLive
-        seedEvents={auditEvents}
+      <AuditTimeline
+        events={auditEvents}
         agents={agents}
         users={users}
         selectedId={selected ?? null}

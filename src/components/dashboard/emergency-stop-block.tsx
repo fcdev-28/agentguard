@@ -1,24 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { DashboardBlock } from "./dashboard-block";
 import { formatRelativeTime } from "@/lib/format";
-import { useRuntime } from "@/components/app-shell/runtime-store";
+import { useRuntime } from "@/components/app-shell/runtime-provider";
+import {
+  engageEmergencyStop,
+  releaseEmergencyStop,
+} from "@/lib/runtime-actions";
 import styles from "./dashboard.module.css";
 
 /** Control de nivel organización: congela toda ejecución de agentes al instante (ver docs/FEATURES.md). */
 export function EmergencyStopBlock() {
-  const { emergencyStop, engageEmergencyStop, releaseEmergencyStop } =
-    useRuntime();
+  const { emergencyStop } = useRuntime();
   const [pendingConfirm, setPendingConfirm] = useState(false);
+  const [, startTransition] = useTransition();
 
   function confirm() {
-    if (emergencyStop.active) {
-      releaseEmergencyStop();
-    } else {
-      engageEmergencyStop();
-    }
     setPendingConfirm(false);
+    startTransition(async () => {
+      if (emergencyStop.active) {
+        await releaseEmergencyStop();
+      } else {
+        await engageEmergencyStop();
+      }
+    });
   }
 
   return (

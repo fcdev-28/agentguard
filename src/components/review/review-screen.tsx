@@ -1,23 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { getPendingActions } from "@/lib/dashboard";
 import type {
+  ActionComment,
   Agent,
   AgentAction,
   Permission,
   Policy,
+  RecordedApproval,
   Tool,
   User,
 } from "@/domain";
-import { useRuntime } from "@/components/app-shell/runtime-store";
-import { useReview } from "./review-store";
+import { useRuntime } from "@/components/app-shell/runtime-provider";
+import { decideManyActions } from "@/lib/review-actions";
 import { ReviewQueue } from "./review-queue";
 import { ActionDetail } from "./action-detail";
 import type { ReviewDecision } from "@/lib/review";
 import styles from "./review.module.css";
+
+/** Decisiones aplicables en lote (el escalado no admite lote). */
+type BatchDecision = Exclude<ReviewDecision, "escalated">;
 
 /** Pantalla master-detail de `/review`: cola priorizada + panel de la acción seleccionada. */
 export function ReviewScreen({
@@ -27,6 +32,9 @@ export function ReviewScreen({
   policies,
   permissions,
   users,
+  comments,
+  approvals,
+  currentUserId,
 }: {
   actions: AgentAction[];
   agents: Agent[];
@@ -34,22 +42,28 @@ export function ReviewScreen({
   policies: Policy[];
   permissions: Permission[];
   users: User[];
+  comments: ActionComment[];
+  approvals: RecordedApproval[];
+  currentUserId: string;
 }) {
   const searchParams = useSearchParams();
-  const { getActionState, decideMany } = useReview();
   const { emergencyStop } = useRuntime();
+  const [, startTransition] = useTransition();
   const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(
     new Set(),
   );
   const [reason, setReason] = useState("");
 
-  // La cola refleja el status del store (no el cargado inicialmente), para
-  // que una acción decidida desaparezca al instante sin recargar la página.
-  const withStoreStatus = actions.map((action) => ({
-    ...action,
-    status: getActionState(action.id)?.status ?? action.status,
-  }));
-  const pending = getPendingActions(withStoreStatus);
+  // Ids decididos de forma optimista: la fila sale de la cola al instante,
+  // antes de que la revalidación traiga el status real desde el servidor.
+  const [optimisticallyDecidedIds, addOptimisticallyDecided] = useOptimistic<
+    ReadonlySet<string>,
+    string[]
+  >(new Set(), (state, ids) => new Set([...state, ...ids]));
+
+  const pending = getPendingActions(actions).filter(
+    (action) => !optimisticallyDecidedIds.has(action.id),
+  );
 
   // Solo cuentan las acciones marcadas que siguen pendientes en la cola: una
   // acción ya decidida deja de estar seleccionable.
@@ -74,13 +88,17 @@ export function ReviewScreen({
     });
   }
 
-  function applyBatch(decision: ReviewDecision) {
+  function applyBatch(decision: BatchDecision) {
     const ids = [...activeSelection];
     if (ids.length === 0) return;
     const trimmed = reason.trim();
-    decideMany(ids, decision, trimmed === "" ? null : trimmed);
+    const reasonValue = trimmed === "" ? null : trimmed;
     setSelectedIds(new Set());
     setReason("");
+    startTransition(async () => {
+      addOptimisticallyDecided(ids);
+      await decideManyActions(ids, decision, reasonValue);
+    });
   }
 
   if (pending.length === 0) {
@@ -173,6 +191,12 @@ export function ReviewScreen({
             policies={policies}
             permissions={permissions}
             users={users}
+            comments={comments}
+            approval={
+              approvals.find((approval) => approval.actionId === selectedId) ??
+              null
+            }
+            currentUserId={currentUserId}
           />
         </div>
       ) : null}
