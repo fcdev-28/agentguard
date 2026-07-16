@@ -11,16 +11,24 @@ import {
 import styles from "./policies.module.css";
 
 /** Inventario de políticas: fila enlazada al detalle con estado, efecto, versión y SLA. */
-export function PoliciesList({ policies }: { policies: Policy[] }) {
+export function PoliciesList({
+  policies,
+  canWrite,
+}: {
+  policies: Policy[];
+  canWrite: boolean;
+}) {
   const sorted = getPolicies(policies);
 
   return (
     <div>
-      <div className={styles.listActions}>
-        <Link href="/policies/new" className={styles.primaryButton}>
-          Nueva política
-        </Link>
-      </div>
+      {canWrite ? (
+        <div className={styles.listActions}>
+          <Link href="/policies/new" className={styles.primaryButton}>
+            Nueva política
+          </Link>
+        </div>
+      ) : null}
       {sorted.length === 0 ? (
         <EmptyState
           title="No hay políticas configuradas."

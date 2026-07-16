@@ -20,6 +20,9 @@ function revalidateNotifications(): void {
 /** Marca una notificación como leída; solo si pertenece al usuario en sesión. */
 export async function markNotificationRead(id: string): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   const notification = await prisma.notification.findUnique({
     where: { id },
@@ -43,6 +46,9 @@ export async function markNotificationRead(id: string): Promise<ActionResult> {
 /** Marca como leídas todas las notificaciones sin leer del usuario en sesión. */
 export async function markAllNotificationsRead(): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   await prisma.notification.updateMany({
     where: { userId: user.id, readAt: null },

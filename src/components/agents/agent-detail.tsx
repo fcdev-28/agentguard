@@ -15,9 +15,11 @@ import styles from "./agents.module.css";
 export function AgentDetail({
   agent,
   owner,
+  canPause,
 }: {
   agent: Agent;
   owner: User | undefined;
+  canPause: boolean;
 }) {
   const [, startTransition] = useTransition();
   const status = agent.status;
@@ -49,7 +51,7 @@ export function AgentDetail({
           Propietario: <strong>{owner?.name ?? agent.ownerId}</strong>
         </span>
       </div>
-      {status === "active" || status === "paused" ? (
+      {canPause && (status === "active" || status === "paused") ? (
         <div className={styles.pauseActions}>
           <button
             type="button"

@@ -79,12 +79,16 @@ export function PolicyDetail({
   tools,
   agents,
   permissions,
+  canWrite,
+  canPublish,
 }: {
   policy: Policy;
   actions: AgentAction[];
   tools: Tool[];
   agents: Agent[];
   permissions: Permission[];
+  canWrite: boolean;
+  canPublish: boolean;
 }) {
   const [edited, setEdited] = useState<EditableFields>({
     conditions: policy.conditions,
@@ -206,15 +210,17 @@ export function PolicyDetail({
       </div>
 
       <div className={styles.actionsBar}>
-        <button
-          type="button"
-          className={styles.primaryButton}
-          onClick={handleSave}
-          disabled={isPending || !hasChanges}
-        >
-          Guardar cambios
-        </button>
-        {policy.status === "draft" ? (
+        {canWrite ? (
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={handleSave}
+            disabled={isPending || !hasChanges}
+          >
+            Guardar cambios
+          </button>
+        ) : null}
+        {canPublish && policy.status === "draft" ? (
           <button
             type="button"
             className={styles.primaryButton}
@@ -224,7 +230,8 @@ export function PolicyDetail({
             Publicar
           </button>
         ) : null}
-        {policy.status === "draft" || policy.status === "active" ? (
+        {canWrite &&
+        (policy.status === "draft" || policy.status === "active") ? (
           <button
             type="button"
             className={styles.ghostButton}
