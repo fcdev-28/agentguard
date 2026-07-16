@@ -1,13 +1,13 @@
 import Link from "next/link";
+import type { Agent } from "@/domain";
 import { DashboardBlock } from "./dashboard-block";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { CountUp } from "@/components/data-display/count-up";
 import { getActiveAgents } from "@/lib/dashboard";
-import { agents } from "@/data/demo-data";
 import styles from "./dashboard.module.css";
 
 /** Bloque: cuántos agentes están activos y cuáles. */
-export function ActiveAgentsBlock() {
+export function ActiveAgentsBlock({ agents }: { agents: Agent[] }) {
   const active = getActiveAgents(agents);
 
   return (
