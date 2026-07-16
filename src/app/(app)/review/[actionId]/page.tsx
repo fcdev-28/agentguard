@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PageHeader } from "@/components/app-shell/page-header";
 import { ActionDetail } from "@/components/review/action-detail";
 import { getActionById, getActions } from "@/data/actions";
@@ -11,6 +11,7 @@ import { getComments } from "@/data/comments";
 import { getApprovalByActionId } from "@/data/approvals";
 import { commentsForAction } from "@/lib/comments";
 import { getCurrentUser } from "@/lib/session-db";
+import { can } from "@/lib/permissions";
 
 export default async function ReviewActionPage({
   params,
@@ -46,6 +47,12 @@ export default async function ReviewActionPage({
     getCurrentUser(),
   ]);
 
+  // Defensa en profundidad: el middleware ya debería haber redirigido, pero
+  // un usuario desactivado a mitad de sesión llega hasta aquí.
+  if (!currentUser) {
+    redirect("/login");
+  }
+
   return (
     <div>
       <PageHeader title={action.title} description={action.summary} />
@@ -60,6 +67,8 @@ export default async function ReviewActionPage({
         comments={commentsForAction(comments, action.id)}
         approval={approval}
         currentUserId={currentUser.id}
+        canDecide={can(currentUser, "review:decide")}
+        canComment={can(currentUser, "review:comment")}
       />
     </div>
   );

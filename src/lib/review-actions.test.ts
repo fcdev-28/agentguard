@@ -24,17 +24,21 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/session-db", () => ({
-  getCurrentUser: vi.fn(async () => ({
-    id: "usr_reviewer",
-    organizationId: "org_acme",
-    name: "Diego Ferrer",
-    email: "diego.ferrer@acme.example",
-    role: "reviewer",
-    status: "active",
-    createdAt: "2026-01-01T00:00:00.000Z",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-  })),
+const reviewerUser = {
+  id: "usr_reviewer",
+  organizationId: "org_acme",
+  name: "Diego Ferrer",
+  email: "diego.ferrer@acme.example",
+  role: "reviewer",
+  status: "active",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
+
+const mockRequireCan = vi.fn();
+
+vi.mock("@/lib/auth/authz", () => ({
+  requireCan: (...args: unknown[]) => mockRequireCan(...args),
 }));
 
 vi.mock("next/cache", () => ({
@@ -56,6 +60,7 @@ beforeEach(() => {
   mockCreate.mockReset().mockResolvedValue({});
   mockTransaction.mockReset();
   mockTransaction.mockImplementation((ops: unknown[]) => Promise.all(ops));
+  mockRequireCan.mockReset().mockResolvedValue({ user: reviewerUser });
 });
 
 describe("decideAction", () => {
@@ -200,6 +205,26 @@ describe("addComment", () => {
     const result = await addComment("act_1", "   ");
 
     expect(result).toEqual({ error: "El comentario no puede estar vacío." });
+    expect(mockCreate).not.toHaveBeenCalled();
+  });
+});
+
+describe("autorización (requireCan)", () => {
+  it("decideAction no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await decideAction("act_1", "approved", null);
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockFindUnique).not.toHaveBeenCalled();
+  });
+
+  it("addComment no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await addComment("act_1", "Comentario válido.");
+
+    expect(result).toEqual({ error: "No autorizado." });
     expect(mockCreate).not.toHaveBeenCalled();
   });
 });

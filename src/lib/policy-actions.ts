@@ -9,7 +9,8 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
-import { getCurrentUser, getCurrentOrganization } from "@/lib/session-db";
+import { getCurrentOrganization } from "@/lib/session-db";
+import { requireCan } from "@/lib/auth/authz";
 import {
   validatePolicyInput,
   nextPolicyStatus,
@@ -34,8 +35,16 @@ export async function createPolicy(
     return validation;
   }
 
-  const user = await getCurrentUser();
+  const authResult = await requireCan("policy:write");
+  if ("error" in authResult) {
+    return authResult;
+  }
+  const { user } = authResult;
+
   const organization = await getCurrentOrganization();
+  if (!organization) {
+    return { error: "No autenticado." };
+  }
 
   const policy = await prisma.policy.create({
     data: {
@@ -60,6 +69,11 @@ export async function updatePolicy(
   id: string,
   patch: PolicyInput,
 ): Promise<ActionResult> {
+  const authResult = await requireCan("policy:write");
+  if ("error" in authResult) {
+    return authResult;
+  }
+
   const policy = await prisma.policy.findUnique({
     where: { id },
     select: { id: true },
@@ -90,6 +104,11 @@ export async function updatePolicy(
 
 /** Publica una política en borrador: pasa a activa y fija `publishedAt`. */
 export async function publishPolicy(id: string): Promise<ActionResult> {
+  const authResult = await requireCan("policy:publish");
+  if ("error" in authResult) {
+    return authResult;
+  }
+
   const policy = await prisma.policy.findUnique({
     where: { id },
     select: { status: true },
@@ -114,6 +133,11 @@ export async function publishPolicy(id: string): Promise<ActionResult> {
 
 /** Archiva una política en borrador o activa. */
 export async function archivePolicy(id: string): Promise<ActionResult> {
+  const authResult = await requireCan("policy:write");
+  if ("error" in authResult) {
+    return authResult;
+  }
+
   const policy = await prisma.policy.findUnique({
     where: { id },
     select: { status: true },

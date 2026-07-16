@@ -21,12 +21,14 @@ export function ReviewQueue({
   selectedId,
   selectedIds,
   onToggleSelect,
+  canDecide,
 }: {
   actions: AgentAction[];
   agents: Agent[];
   selectedId: string | null;
   selectedIds: ReadonlySet<string>;
   onToggleSelect: (actionId: string) => void;
+  canDecide: boolean;
 }) {
   const router = useRouter();
   const agentName = (id: string) => agents.find((a) => a.id === id)?.name ?? id;
@@ -49,7 +51,7 @@ export function ReviewQueue({
           className={`${styles.row} ${action.id === selectedId ? styles.rowSelected : ""} ${selectedIds.has(action.id) ? styles.rowChecked : ""}`}
         >
           <span className={styles.rowCheckboxCell}>
-            {isPendingReview(action.status) ? (
+            {canDecide && isPendingReview(action.status) ? (
               <input
                 type="checkbox"
                 className={styles.rowCheckbox}

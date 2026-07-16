@@ -1,0 +1,7 @@
+.wrapper {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: var(--space-6);
+  background: var(--color-surface);
+}

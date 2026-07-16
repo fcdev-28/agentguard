@@ -68,10 +68,14 @@ export function CommandPalette({
   agents,
   actions,
   policies,
+  canDecide,
+  canEmergencyStop,
 }: {
   agents: Agent[];
   actions: AgentAction[];
   policies: Policy[];
+  canDecide: boolean;
+  canEmergencyStop: boolean;
 }) {
   const { open, closePalette, togglePalette } = useCommandPalette();
 
@@ -97,6 +101,8 @@ export function CommandPalette({
       agents={agents}
       actions={actions}
       policies={policies}
+      canDecide={canDecide}
+      canEmergencyStop={canEmergencyStop}
     />
   );
 }
@@ -107,11 +113,15 @@ function CommandPaletteDialog({
   agents,
   actions,
   policies,
+  canDecide,
+  canEmergencyStop,
 }: {
   onClose: () => void;
   agents: Agent[];
   actions: AgentAction[];
   policies: Policy[];
+  canDecide: boolean;
+  canEmergencyStop: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -154,22 +164,24 @@ function CommandPaletteDialog({
 
   const quickActionItems = useMemo<CommandItem[]>(() => {
     const items: CommandItem[] = [];
-    items.push(
-      emergencyStop.active
-        ? {
-            kind: "quick-action",
-            id: "qa-release-emergency-stop",
-            label: "Liberar parada de emergencia",
-            quickAction: "release_emergency_stop",
-          }
-        : {
-            kind: "quick-action",
-            id: "qa-engage-emergency-stop",
-            label: "Activar parada de emergencia",
-            quickAction: "engage_emergency_stop",
-          },
-    );
-    if (openActionId && openActionPending) {
+    if (canEmergencyStop) {
+      items.push(
+        emergencyStop.active
+          ? {
+              kind: "quick-action",
+              id: "qa-release-emergency-stop",
+              label: "Liberar parada de emergencia",
+              quickAction: "release_emergency_stop",
+            }
+          : {
+              kind: "quick-action",
+              id: "qa-engage-emergency-stop",
+              label: "Activar parada de emergencia",
+              quickAction: "engage_emergency_stop",
+            },
+      );
+    }
+    if (canDecide && openActionId && openActionPending) {
       // Aprobar queda bloqueado con la parada de emergencia activa, igual que
       // en el detalle de la acción; rechazar sí se permite.
       if (!emergencyStop.active) {
@@ -191,7 +203,14 @@ function CommandPaletteDialog({
     return items.filter((item) =>
       item.label.toLowerCase().includes(trimmedQuery.toLowerCase()),
     );
-  }, [emergencyStop.active, openActionId, openActionPending, trimmedQuery]);
+  }, [
+    canDecide,
+    canEmergencyStop,
+    emergencyStop.active,
+    openActionId,
+    openActionPending,
+    trimmedQuery,
+  ]);
 
   const sections = useMemo(() => {
     const all = [...searchResults, ...quickActionItems];
