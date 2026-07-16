@@ -18,7 +18,7 @@ import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
-import { useRuntime } from "@/components/app-shell/runtime-store";
+import { useRuntime } from "@/components/app-shell/runtime-provider";
 import { addComment, decideAction, escalateAction } from "@/lib/review-actions";
 import { actionStatusClass } from "./status-style";
 import { eligibleEscalationTargets, type ReviewDecision } from "@/lib/review";

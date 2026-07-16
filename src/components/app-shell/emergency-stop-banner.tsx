@@ -1,6 +1,6 @@
 "use client";
 
-import { useRuntime } from "./runtime-store";
+import { useRuntime } from "./runtime-provider";
 import { formatRelativeTime } from "@/lib/format";
 import styles from "./emergency-stop-banner.module.css";
 

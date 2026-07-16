@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AppShell } from "@/components/app-shell/app-shell";
-import { RuntimeProvider } from "@/components/app-shell/runtime-store";
+import {
+  RuntimeProvider,
+  type EmergencyStopState,
+} from "@/components/app-shell/runtime-provider";
 import { CommandPaletteProvider } from "@/components/app-shell/command-palette-store";
-import { NotificationProvider } from "@/components/app-shell/notification-store";
 import { CommandPalette } from "@/components/app-shell/command-palette";
+import { getCurrentUser, getCurrentOrganization } from "@/lib/session-db";
+import { getUsers } from "@/data/users";
+import { getNotificationsForUser } from "@/data/notifications";
 import "@/styles/globals.css";
 
 const inter = Inter({
@@ -19,21 +24,37 @@ export const metadata: Metadata = {
     "Plano de control para agentes de IA: visibilidad, aprobación y auditoría de cada acción.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const [currentUser, organization, users] = await Promise.all([
+    getCurrentUser(),
+    getCurrentOrganization(),
+    getUsers(),
+  ]);
+  const notifications = await getNotificationsForUser(currentUser.id);
+
+  const emergencyStop: EmergencyStopState = organization.emergencyStop
+    ? {
+        active: true,
+        byId: organization.emergencyStopById,
+        byName:
+          users.find((u) => u.id === organization.emergencyStopById)?.name ??
+          null,
+        at: organization.emergencyStopAt,
+      }
+    : { active: false, byId: null, byName: null, at: null };
+
   return (
     <html lang="es" className={inter.variable}>
       <body>
-        <RuntimeProvider>
-          <NotificationProvider>
-            <CommandPaletteProvider>
-              <AppShell>{children}</AppShell>
-              <CommandPalette />
-            </CommandPaletteProvider>
-          </NotificationProvider>
+        <RuntimeProvider emergencyStop={emergencyStop}>
+          <CommandPaletteProvider>
+            <AppShell notifications={notifications}>{children}</AppShell>
+            <CommandPalette />
+          </CommandPaletteProvider>
         </RuntimeProvider>
       </body>
     </html>

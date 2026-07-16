@@ -14,7 +14,7 @@ import type {
   Tool,
   User,
 } from "@/domain";
-import { useRuntime } from "@/components/app-shell/runtime-store";
+import { useRuntime } from "@/components/app-shell/runtime-provider";
 import { decideManyActions } from "@/lib/review-actions";
 import { ReviewQueue } from "./review-queue";
 import { ActionDetail } from "./action-detail";

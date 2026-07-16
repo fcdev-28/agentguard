@@ -11,8 +11,12 @@ import { useRouter, usePathname } from "next/navigation";
 import { agents, actions, policies } from "@/data/demo-data";
 import { isPendingReview } from "@/lib/dashboard";
 import { searchCommands, type CommandItem } from "@/lib/command-palette";
-import { useRuntime } from "./runtime-store";
+import { useRuntime } from "./runtime-provider";
 import { decideAction } from "@/lib/review-actions";
+import {
+  engageEmergencyStop,
+  releaseEmergencyStop,
+} from "@/lib/runtime-actions";
 import { useCommandPalette } from "./command-palette-store";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { NavIcon } from "./nav-icons";
@@ -86,8 +90,7 @@ export function CommandPalette() {
 function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { emergencyStop, engageEmergencyStop, releaseEmergencyStop } =
-    useRuntime();
+  const { emergencyStop } = useRuntime();
 
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -181,21 +184,21 @@ function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
   );
 
   /**
-   * Ejecuta una acción rápida contra los stores runtime. Rechazar exige un
-   * motivo no vacío (ver `applyDecision` en `src/lib/review.ts`) y la paleta
-   * no ofrece un paso para escribirlo; en vez de añadir un segundo diálogo,
-   * usamos un motivo por defecto explícito que deja constancia del origen de
-   * la decisión.
+   * Ejecuta una acción rápida contra las server actions de runtime/revisión.
+   * Rechazar exige un motivo no vacío (ver `applyDecision` en
+   * `src/lib/review.ts`) y la paleta no ofrece un paso para escribirlo; en
+   * vez de añadir un segundo diálogo, usamos un motivo por defecto explícito
+   * que deja constancia del origen de la decisión.
    */
   function runQuickAction(
     quickAction: Extract<CommandItem, { kind: "quick-action" }>["quickAction"],
   ) {
     switch (quickAction) {
       case "engage_emergency_stop":
-        engageEmergencyStop();
+        void engageEmergencyStop();
         break;
       case "release_emergency_stop":
-        releaseEmergencyStop();
+        void releaseEmergencyStop();
         break;
       case "approve_open_action":
         if (openActionId) void decideAction(openActionId, "approved", null);
