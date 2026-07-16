@@ -38,7 +38,7 @@ vi.mock("@/data/organizations", () => ({
   })),
 }));
 
-import { getCurrentUser, getCurrentOrganization } from "./session";
+import { getCurrentUser, getCurrentOrganization } from "./session-db";
 
 describe("getCurrentUser", () => {
   it("devuelve el usuario administrador de la organización", async () => {
