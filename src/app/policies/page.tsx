@@ -1,8 +1,10 @@
 import { PageHeader } from "@/components/app-shell/page-header";
 import { PoliciesList } from "@/components/policies/policies-list";
-import { policies } from "@/data/demo-data";
+import { getPolicies } from "@/data/policies";
 
-export default function PoliciesPage() {
+export default async function PoliciesPage() {
+  const policies = await getPolicies();
+
   return (
     <div>
       <PageHeader

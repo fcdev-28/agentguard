@@ -30,3 +30,9 @@ export async function getPolicies(): Promise<Policy[]> {
   const rows = await prisma.policy.findMany({ orderBy: { createdAt: "asc" } });
   return rows.map(mapPolicy);
 }
+
+/** Busca una política por id directamente en BD; `undefined` si no existe. */
+export async function getPolicyById(id: string): Promise<Policy | undefined> {
+  const row = await prisma.policy.findUnique({ where: { id } });
+  return row ? mapPolicy(row) : undefined;
+}
