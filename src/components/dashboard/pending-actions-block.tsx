@@ -1,14 +1,20 @@
 import Link from "next/link";
+import type { Agent, AgentAction } from "@/domain";
 import { DashboardBlock } from "./dashboard-block";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { getPendingActions } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
-import { actions, agents } from "@/data/demo-data";
 import styles from "./dashboard.module.css";
 
 /** Bloque: acciones a la espera de decisión, las más urgentes primero. */
-export function PendingActionsBlock() {
+export function PendingActionsBlock({
+  actions,
+  agents,
+}: {
+  actions: AgentAction[];
+  agents: Agent[];
+}) {
   const pending = getPendingActions(actions);
   const agentName = (id: string) => agents.find((a) => a.id === id)?.name ?? id;
 

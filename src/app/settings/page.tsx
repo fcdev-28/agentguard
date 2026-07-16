@@ -1,8 +1,11 @@
 import { PageHeader } from "@/components/app-shell/page-header";
 import { SettingsPanel } from "@/components/settings/settings-panel";
-import { users, tools } from "@/data/demo-data";
+import { getUsers } from "@/data/users";
+import { getTools } from "@/data/tools";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const [users, tools] = await Promise.all([getUsers(), getTools()]);
+
   return (
     <div>
       <PageHeader

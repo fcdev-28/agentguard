@@ -1,8 +1,16 @@
 import { PageHeader } from "@/components/app-shell/page-header";
 import { AgentsList } from "@/components/agents/agents-list";
-import { agents, actions, users } from "@/data/demo-data";
+import { getAgents } from "@/data/agents";
+import { getActions } from "@/data/actions";
+import { getUsers } from "@/data/users";
 
-export default function AgentsPage() {
+export default async function AgentsPage() {
+  const [agents, actions, users] = await Promise.all([
+    getAgents(),
+    getActions(),
+    getUsers(),
+  ]);
+
   return (
     <div>
       <PageHeader

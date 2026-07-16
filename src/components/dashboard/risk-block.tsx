@@ -1,17 +1,16 @@
+import type { AgentAction, RiskLevel } from "@/domain";
 import { DashboardBlock } from "./dashboard-block";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { CountUp } from "@/components/data-display/count-up";
 import { getPendingActions, getRiskBreakdown } from "@/lib/dashboard";
 import { riskLevelLabel } from "@/domain";
-import type { RiskLevel } from "@/domain";
-import { actions } from "@/data/demo-data";
 import styles from "./dashboard.module.css";
 
 /** Orden de presentación del desglose: de más grave a menos. */
 const LEVELS: RiskLevel[] = ["critical", "high", "medium", "low"];
 
 /** Bloque: riesgo agregado de las acciones pendientes. */
-export function RiskBlock() {
+export function RiskBlock({ actions }: { actions: AgentAction[] }) {
   const pending = getPendingActions(actions);
   const breakdown = getRiskBreakdown(pending);
   const severe = breakdown.critical + breakdown.high;

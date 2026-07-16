@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/app-shell/page-header";
 import { AuditDetail } from "@/components/audit/audit-detail";
 import { auditEventTypeLabel } from "@/domain";
-import { getAuditEventById } from "@/lib/audit";
-import { auditEvents, agents, users } from "@/data/demo-data";
+import { getAuditEventById } from "@/data/audit";
+import { getAgents } from "@/data/agents";
+import { getUsers } from "@/data/users";
 
 export default async function AuditEventPage({
   params,
@@ -11,7 +12,11 @@ export default async function AuditEventPage({
   params: Promise<{ eventId: string }>;
 }) {
   const { eventId } = await params;
-  const event = getAuditEventById(auditEvents, eventId);
+  const [event, agents, users] = await Promise.all([
+    getAuditEventById(eventId),
+    getAgents(),
+    getUsers(),
+  ]);
 
   if (!event) {
     notFound();

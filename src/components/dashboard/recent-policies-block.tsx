@@ -1,14 +1,14 @@
 import Link from "next/link";
+import type { Policy } from "@/domain";
 import { DashboardBlock } from "./dashboard-block";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { getRecentPolicies } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
 import { policyEffectLabel } from "@/domain";
-import { policies } from "@/data/demo-data";
 import styles from "./dashboard.module.css";
 
 /** Bloque: políticas que pasaron a activas más recientemente. */
-export function RecentPoliciesBlock() {
+export function RecentPoliciesBlock({ policies }: { policies: Policy[] }) {
   const recent = getRecentPolicies(policies);
 
   return (
