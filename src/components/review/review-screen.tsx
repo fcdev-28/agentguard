@@ -4,7 +4,14 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { getPendingActions } from "@/lib/dashboard";
-import { actions } from "@/data/demo-data";
+import type {
+  Agent,
+  AgentAction,
+  Permission,
+  Policy,
+  Tool,
+  User,
+} from "@/domain";
 import { useRuntime } from "@/components/app-shell/runtime-store";
 import { useReview } from "./review-store";
 import { ReviewQueue } from "./review-queue";
@@ -13,7 +20,21 @@ import type { ReviewDecision } from "@/lib/review";
 import styles from "./review.module.css";
 
 /** Pantalla master-detail de `/review`: cola priorizada + panel de la acción seleccionada. */
-export function ReviewScreen() {
+export function ReviewScreen({
+  actions,
+  agents,
+  tools,
+  policies,
+  permissions,
+  users,
+}: {
+  actions: AgentAction[];
+  agents: Agent[];
+  tools: Tool[];
+  policies: Policy[];
+  permissions: Permission[];
+  users: User[];
+}) {
   const searchParams = useSearchParams();
   const { getActionState, decideMany } = useReview();
   const { emergencyStop } = useRuntime();
@@ -22,8 +43,8 @@ export function ReviewScreen() {
   );
   const [reason, setReason] = useState("");
 
-  // La cola refleja el status del store (no el de demo-data), para que una
-  // acción decidida desaparezca al instante sin recargar la página.
+  // La cola refleja el status del store (no el cargado inicialmente), para
+  // que una acción decidida desaparezca al instante sin recargar la página.
   const withStoreStatus = actions.map((action) => ({
     ...action,
     status: getActionState(action.id)?.status ?? action.status,
@@ -136,6 +157,7 @@ export function ReviewScreen() {
         ) : null}
         <ReviewQueue
           actions={pending}
+          agents={agents}
           selectedId={selectedId}
           selectedIds={activeSelection}
           onToggleSelect={toggleSelect}
@@ -143,7 +165,15 @@ export function ReviewScreen() {
       </div>
       {selectedId ? (
         <div className={styles.detailPane}>
-          <ActionDetail actionId={selectedId} />
+          <ActionDetail
+            actionId={selectedId}
+            actions={actions}
+            agents={agents}
+            tools={tools}
+            policies={policies}
+            permissions={permissions}
+            users={users}
+          />
         </div>
       ) : null}
     </div>

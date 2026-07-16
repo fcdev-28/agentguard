@@ -8,7 +8,6 @@ import {
   type ReactNode,
 } from "react";
 import type { ActionComment } from "@/domain";
-import { actionComments as seedComments } from "@/data/demo-data";
 import { currentUser } from "@/lib/session";
 import { commentsForAction, isValidCommentBody } from "@/lib/comments";
 
@@ -20,18 +19,24 @@ interface CommentContextValue {
 const CommentContext = createContext<CommentContextValue | null>(null);
 
 /**
- * Store efímero (no persistido) del hilo de comentarios de las acciones. El
- * seed es inmutable, así que el store mantiene en memoria los comentarios
- * añadidos en la sesión y los combina con el seed al listar; al llegar la
- * persistencia real (fase 10) se sustituye por lecturas y mutaciones contra
- * la base de datos.
+ * Store efímero (no persistido) del hilo de comentarios de las acciones. Los
+ * comentarios iniciales llegan del layout raíz (Prisma) y son inmutables; el
+ * store mantiene en memoria los añadidos en la sesión y los combina con los
+ * iniciales al listar; al llegar la persistencia real (fase 10) se sustituye
+ * por lecturas y mutaciones contra la base de datos.
  */
-export function CommentProvider({ children }: { children: ReactNode }) {
+export function CommentProvider({
+  children,
+  initialComments,
+}: {
+  children: ReactNode;
+  initialComments: ActionComment[];
+}) {
   const [added, setAdded] = useState<ActionComment[]>([]);
 
   const value = useMemo<CommentContextValue>(() => {
     function getComments(actionId: string): ActionComment[] {
-      return commentsForAction([...seedComments, ...added], actionId);
+      return commentsForAction([...initialComments, ...added], actionId);
     }
 
     function addComment(actionId: string, body: string) {
@@ -51,7 +56,7 @@ export function CommentProvider({ children }: { children: ReactNode }) {
     }
 
     return { getComments, addComment };
-  }, [added]);
+  }, [added, initialComments]);
 
   return (
     <CommentContext.Provider value={value}>{children}</CommentContext.Provider>

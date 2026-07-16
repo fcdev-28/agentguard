@@ -6,6 +6,12 @@ import {
   actionTypeLabel,
   policyEffectLabel,
   userRoleLabel,
+  type Agent,
+  type AgentAction,
+  type Permission,
+  type Policy,
+  type Tool,
+  type User,
 } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
@@ -13,14 +19,6 @@ import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
 import { currentUser } from "@/lib/session";
 import { useRuntime } from "@/components/app-shell/runtime-store";
-import {
-  actions,
-  agents,
-  tools,
-  policies,
-  permissions,
-  users,
-} from "@/data/demo-data";
 import { useReview } from "./review-store";
 import { useComments } from "./comment-store";
 import { actionStatusClass } from "./status-style";
@@ -36,7 +34,23 @@ function formatPayloadValue(value: unknown): string {
 }
 
 /** Contexto, evidencia y controles de decisión de una acción, para el panel o la ruta standalone. */
-export function ActionDetail({ actionId }: { actionId: string }) {
+export function ActionDetail({
+  actionId,
+  actions,
+  agents,
+  tools,
+  policies,
+  permissions,
+  users,
+}: {
+  actionId: string;
+  actions: AgentAction[];
+  agents: Agent[];
+  tools: Tool[];
+  policies: Policy[];
+  permissions: Permission[];
+  users: User[];
+}) {
   const action = actions.find((a) => a.id === actionId);
   const { getActionState, decide, escalate } = useReview();
   const { emergencyStop } = useRuntime();
