@@ -6,6 +6,7 @@
  * Uso: npm run db:seed (invoca `prisma db seed`, configurado en prisma.config.ts).
  */
 import "dotenv/config";
+import bcrypt from "bcryptjs";
 import { Prisma } from "../src/generated/prisma/client";
 import { prisma } from "../src/lib/prisma";
 import {
@@ -21,6 +22,13 @@ import {
   notifications,
   actionComments,
 } from "../src/data/demo-data";
+
+/**
+ * Contraseña demo compartida por todos los usuarios `active` del seed
+ * (fase 11: auth core). Los usuarios `invited`/`disabled` no tienen hash y no
+ * pueden loguear.
+ */
+const DEMO_PASSWORD = "agentguard-demo";
 
 /** Convierte un ISO string (o null) a Date (o null) para los campos de Prisma. */
 function toDate(iso: string | null): Date | null {
@@ -73,6 +81,10 @@ async function main() {
     },
   });
 
+  // bcrypt directo (no `src/lib/auth/password.ts`, que llega en el paso
+  // siguiente de esta fase): mismo coste, ~12 rounds.
+  const demoPasswordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
+
   for (const user of users) {
     await prisma.user.create({
       data: {
@@ -82,6 +94,9 @@ async function main() {
         email: user.email,
         role: user.role,
         status: user.status,
+        // Solo los usuarios activos tienen credenciales: invited/disabled se
+        // siembran con passwordHash null y no pueden loguear.
+        passwordHash: user.status === "active" ? demoPasswordHash : null,
         createdAt: toDate(user.createdAt)!,
         updatedAt: toDate(user.updatedAt)!,
       },

@@ -175,6 +175,9 @@ model User {
   email          String
   role           UserRole
   status         UserStatus
+  // Hash bcrypt de la contraseña (fase 11). Nullable: los usuarios `invited`/
+  // `disabled` no tienen credenciales propias y no pueden loguear.
+  passwordHash   String?
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
