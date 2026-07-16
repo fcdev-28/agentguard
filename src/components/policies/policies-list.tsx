@@ -36,9 +36,7 @@ export function PoliciesList({ policies }: { policies: Policy[] }) {
             >
               <div className={styles.identity}>
                 <span className={styles.name}>{policy.name}</span>
-                <span className={styles.description}>
-                  {policy.description}
-                </span>
+                <span className={styles.description}>{policy.description}</span>
               </div>
               <span
                 className={`${styles.statusBadge} ${policyStatusClass[policy.status]}`}

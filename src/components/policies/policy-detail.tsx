@@ -15,7 +15,11 @@ import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
 import { getAffectedActions } from "@/lib/policies";
 import { formatRelativeTime } from "@/lib/format";
-import { archivePolicy, publishPolicy, updatePolicy } from "@/lib/policy-actions";
+import {
+  archivePolicy,
+  publishPolicy,
+  updatePolicy,
+} from "@/lib/policy-actions";
 import {
   policyStatusClass,
   policyStatusLabel,

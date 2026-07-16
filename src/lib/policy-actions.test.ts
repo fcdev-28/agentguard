@@ -101,7 +101,10 @@ describe("updatePolicy", () => {
   it("actualiza los campos editables cuando la política existe y el input es válido", async () => {
     mockFindUnique.mockResolvedValue({ id: "pol_1" });
 
-    const result = await updatePolicy("pol_1", policyInput({ name: "Nuevo nombre" }));
+    const result = await updatePolicy(
+      "pol_1",
+      policyInput({ name: "Nuevo nombre" }),
+    );
 
     expect(result).toEqual({ ok: true });
     expect(mockUpdate).toHaveBeenCalledWith({
@@ -115,10 +118,7 @@ describe("updatePolicy", () => {
       },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/policies");
-    expect(revalidatePath).toHaveBeenCalledWith(
-      "/policies/[policyId]",
-      "page",
-    );
+    expect(revalidatePath).toHaveBeenCalledWith("/policies/[policyId]", "page");
   });
 
   it("devuelve error si la política no existe", async () => {
@@ -157,10 +157,7 @@ describe("publishPolicy", () => {
       data: { status: "active", publishedAt: expect.any(Date) },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/policies");
-    expect(revalidatePath).toHaveBeenCalledWith(
-      "/policies/[policyId]",
-      "page",
-    );
+    expect(revalidatePath).toHaveBeenCalledWith("/policies/[policyId]", "page");
   });
 
   it("devuelve error si la política no existe", async () => {
@@ -194,10 +191,7 @@ describe("archivePolicy", () => {
       data: { status: "archived" },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/policies");
-    expect(revalidatePath).toHaveBeenCalledWith(
-      "/policies/[policyId]",
-      "page",
-    );
+    expect(revalidatePath).toHaveBeenCalledWith("/policies/[policyId]", "page");
   });
 
   it("devuelve error si la política no existe", async () => {

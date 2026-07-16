@@ -43,7 +43,8 @@ export function validatePolicyInput(
       input.approvalSlaMinutes <= 0)
   ) {
     return {
-      error: "El SLA de aprobación debe ser un número entero positivo, o vacío.",
+      error:
+        "El SLA de aprobación debe ser un número entero positivo, o vacío.",
     };
   }
   if (

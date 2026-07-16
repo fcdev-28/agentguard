@@ -245,9 +245,7 @@ describe("validatePolicyInput", () => {
   });
 
   it("rechaza una descripción vacía (o solo espacios)", () => {
-    expect(
-      validatePolicyInput(policyInput({ description: "  " })),
-    ).toEqual({
+    expect(validatePolicyInput(policyInput({ description: "  " }))).toEqual({
       error: "La descripción no puede estar vacía.",
     });
   });
@@ -270,12 +268,12 @@ describe("validatePolicyInput", () => {
   });
 
   it("rechaza approvalSlaMinutes negativo o cero", () => {
-    expect(
-      validatePolicyInput(policyInput({ approvalSlaMinutes: 0 })),
-    ).toEqual({
-      error:
-        "El SLA de aprobación debe ser un número entero positivo, o vacío.",
-    });
+    expect(validatePolicyInput(policyInput({ approvalSlaMinutes: 0 }))).toEqual(
+      {
+        error:
+          "El SLA de aprobación debe ser un número entero positivo, o vacío.",
+      },
+    );
   });
 
   it("rechaza conditions que no sea un objeto (array)", () => {

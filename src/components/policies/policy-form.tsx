@@ -6,11 +6,7 @@ import Link from "next/link";
 import type { Permission, PolicyEffect, Tool } from "@/domain";
 import { policyEffectLabel } from "@/domain";
 import { createPolicy } from "@/lib/policy-actions";
-import {
-  EFFECT_OPTIONS,
-  scopeLabel,
-  toolTypeLabel,
-} from "./policy-detail";
+import { EFFECT_OPTIONS, scopeLabel, toolTypeLabel } from "./policy-detail";
 import styles from "./policies.module.css";
 
 /**
@@ -101,9 +97,7 @@ export function PolicyForm() {
             id="policy-effect"
             className={styles.fieldSelect}
             value={effect}
-            onChange={(event) =>
-              setEffect(event.target.value as PolicyEffect)
-            }
+            onChange={(event) => setEffect(event.target.value as PolicyEffect)}
           >
             {EFFECT_OPTIONS.map((value) => (
               <option key={value} value={value}>
@@ -148,9 +142,7 @@ export function PolicyForm() {
           <select
             className={styles.fieldSelect}
             value={tool}
-            onChange={(event) =>
-              setTool(event.target.value as Tool["type"])
-            }
+            onChange={(event) => setTool(event.target.value as Tool["type"])}
           >
             {Object.entries(toolTypeLabel).map(([value, label]) => (
               <option key={value} value={value}>
