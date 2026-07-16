@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { PageHeader } from "@/components/app-shell/page-header";
 import { ActionDetail } from "@/components/review/action-detail";
 import { getActionById, getActions } from "@/data/actions";
@@ -45,6 +45,12 @@ export default async function ReviewActionPage({
     getApprovalByActionId(actionId),
     getCurrentUser(),
   ]);
+
+  // Defensa en profundidad: el middleware ya debería haber redirigido, pero
+  // un usuario desactivado a mitad de sesión llega hasta aquí.
+  if (!currentUser) {
+    redirect("/login");
+  }
 
   return (
     <div>

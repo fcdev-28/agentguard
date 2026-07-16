@@ -36,6 +36,9 @@ export async function createPolicy(
 
   const user = await getCurrentUser();
   const organization = await getCurrentOrganization();
+  if (!user || !organization) {
+    return { error: "No autenticado." };
+  }
 
   const policy = await prisma.policy.create({
     data: {

@@ -26,6 +26,9 @@ function revalidateAgents(): void {
 /** Activa la parada de emergencia de la organización. */
 export async function engageEmergencyStop(): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   await prisma.$transaction([
     prisma.organization.update({
@@ -54,6 +57,9 @@ export async function engageEmergencyStop(): Promise<ActionResult> {
 /** Libera la parada de emergencia de la organización. */
 export async function releaseEmergencyStop(): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   await prisma.$transaction([
     prisma.organization.update({
@@ -82,6 +88,9 @@ export async function releaseEmergencyStop(): Promise<ActionResult> {
 /** Pausa un agente: bloquea nuevas ejecuciones hasta que se reanude explícitamente. */
 export async function pauseAgent(agentId: string): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   const agent = await prisma.agent.findUnique({
     where: { id: agentId },
@@ -115,6 +124,9 @@ export async function pauseAgent(agentId: string): Promise<ActionResult> {
 /** Reanuda un agente pausado. */
 export async function resumeAgent(agentId: string): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   const agent = await prisma.agent.findUnique({
     where: { id: agentId },

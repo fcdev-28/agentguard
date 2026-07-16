@@ -31,6 +31,9 @@ export async function decideAction(
   reason: string | null,
 ): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   const action = await prisma.agentAction.findUnique({
     where: { id: actionId },
@@ -72,6 +75,9 @@ export async function decideManyActions(
   reason: string | null,
 ): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   const actions = await prisma.agentAction.findMany({
     where: { id: { in: actionIds } },
@@ -109,6 +115,9 @@ export async function decideManyActions(
  */
 export async function escalateAction(actionId: string): Promise<ActionResult> {
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
 
   const action = await prisma.agentAction.findUnique({
     where: { id: actionId },
@@ -154,6 +163,10 @@ export async function addComment(
   }
 
   const user = await getCurrentUser();
+  if (!user) {
+    return { error: "No autenticado." };
+  }
+
   await prisma.actionComment.create({
     data: { actionId, authorId: user.id, body: body.trim() },
   });

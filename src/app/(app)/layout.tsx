@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/app-shell/app-shell";
 import {
   RuntimeProvider,
@@ -5,7 +6,8 @@ import {
 } from "@/components/app-shell/runtime-provider";
 import { CommandPaletteProvider } from "@/components/app-shell/command-palette-store";
 import { CommandPalette } from "@/components/app-shell/command-palette";
-import { getCurrentUser, getCurrentOrganization } from "@/lib/session-db";
+import { getCurrentUser } from "@/lib/session-db";
+import { getOrganization } from "@/data/organizations";
 import { getUsers } from "@/data/users";
 import { getNotificationsForUser } from "@/data/notifications";
 import { getAgents } from "@/data/agents";
@@ -18,21 +20,28 @@ import { getPolicies } from "@/data/policies";
  * Vive separado del layout raíz para que `(auth)/login` pueda renderizar sin
  * shell dentro del mismo `<html>`/`<body>` (patrón de Next para layouts
  * raíz múltiples sobre grupos de rutas).
+ *
+ * Defensa en profundidad: si `getCurrentUser()` devuelve `null` (sin cookie,
+ * o usuario desactivado a mitad de sesión) se redirige a /login aquí, aunque
+ * el middleware ya debería haberlo hecho antes.
  */
 export default async function AppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [currentUser, organization, users, agents, actions, policies] =
-    await Promise.all([
-      getCurrentUser(),
-      getCurrentOrganization(),
-      getUsers(),
-      getAgents(),
-      getActions(),
-      getPolicies(),
-    ]);
+  const currentUser = await getCurrentUser();
+  if (!currentUser) {
+    redirect("/login");
+  }
+
+  const [organization, users, agents, actions, policies] = await Promise.all([
+    getOrganization(),
+    getUsers(),
+    getAgents(),
+    getActions(),
+    getPolicies(),
+  ]);
   const notifications = await getNotificationsForUser(currentUser.id);
 
   const emergencyStop: EmergencyStopState = organization.emergencyStop
