@@ -8,7 +8,7 @@
  */
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/session-db";
+import { requireCan } from "@/lib/auth/authz";
 import { applyDecision, type ReviewDecision } from "@/lib/review";
 import { isValidCommentBody } from "@/lib/comments";
 
@@ -30,10 +30,11 @@ export async function decideAction(
   decision: DirectDecision,
   reason: string | null,
 ): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { error: "No autenticado." };
+  const authResult = await requireCan("review:decide");
+  if ("error" in authResult) {
+    return authResult;
   }
+  const { user } = authResult;
 
   const action = await prisma.agentAction.findUnique({
     where: { id: actionId },
@@ -74,10 +75,11 @@ export async function decideManyActions(
   decision: DirectDecision,
   reason: string | null,
 ): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { error: "No autenticado." };
+  const authResult = await requireCan("review:decide");
+  if ("error" in authResult) {
+    return authResult;
   }
+  const { user } = authResult;
 
   const actions = await prisma.agentAction.findMany({
     where: { id: { in: actionIds } },
@@ -114,10 +116,11 @@ export async function decideManyActions(
  * ver spec de escrituras de /review).
  */
 export async function escalateAction(actionId: string): Promise<ActionResult> {
-  const user = await getCurrentUser();
-  if (!user) {
-    return { error: "No autenticado." };
+  const authResult = await requireCan("review:decide");
+  if ("error" in authResult) {
+    return authResult;
   }
+  const { user } = authResult;
 
   const action = await prisma.agentAction.findUnique({
     where: { id: actionId },
@@ -162,10 +165,11 @@ export async function addComment(
     return { error: "El comentario no puede estar vacío." };
   }
 
-  const user = await getCurrentUser();
-  if (!user) {
-    return { error: "No autenticado." };
+  const authResult = await requireCan("review:comment");
+  if ("error" in authResult) {
+    return authResult;
   }
+  const { user } = authResult;
 
   await prisma.actionComment.create({
     data: { actionId, authorId: user.id, body: body.trim() },

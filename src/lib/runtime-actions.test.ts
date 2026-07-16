@@ -22,17 +22,21 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
-vi.mock("@/lib/session-db", () => ({
-  getCurrentUser: vi.fn(async () => ({
-    id: "usr_admin",
-    organizationId: "org_acme",
-    name: "Ada Martín",
-    email: "ada.martin@acme.example",
-    role: "admin",
-    status: "active",
-    createdAt: "2026-01-01T00:00:00.000Z",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-  })),
+const adminUser = {
+  id: "usr_admin",
+  organizationId: "org_acme",
+  name: "Ada Martín",
+  email: "ada.martin@acme.example",
+  role: "admin",
+  status: "active",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
+
+const mockRequireCan = vi.fn();
+
+vi.mock("@/lib/auth/authz", () => ({
+  requireCan: (...args: unknown[]) => mockRequireCan(...args),
 }));
 
 vi.mock("next/cache", () => ({
@@ -55,6 +59,7 @@ beforeEach(() => {
   mockTransaction.mockReset();
   mockTransaction.mockImplementation((ops: unknown[]) => Promise.all(ops));
   vi.mocked(revalidatePath).mockClear();
+  mockRequireCan.mockReset().mockResolvedValue({ user: adminUser });
 });
 
 describe("engageEmergencyStop", () => {
@@ -159,5 +164,25 @@ describe("resumeAgent", () => {
 
     expect(result).toEqual({ error: "El agente no existe." });
     expect(mockTransaction).not.toHaveBeenCalled();
+  });
+});
+
+describe("autorización (requireCan)", () => {
+  it("engageEmergencyStop no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await engageEmergencyStop();
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockTransaction).not.toHaveBeenCalled();
+  });
+
+  it("pauseAgent no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await pauseAgent("agt_datasync");
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockFindUniqueAgent).not.toHaveBeenCalled();
   });
 });

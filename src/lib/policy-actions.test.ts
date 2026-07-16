@@ -15,17 +15,24 @@ vi.mock("@/lib/prisma", () => ({
   },
 }));
 
+const adminUser = {
+  id: "usr_admin",
+  organizationId: "org_acme",
+  name: "Lucía Marín",
+  email: "lucia.marin@acme.example",
+  role: "admin",
+  status: "active",
+  createdAt: "2026-01-01T00:00:00.000Z",
+  updatedAt: "2026-01-01T00:00:00.000Z",
+};
+
+const mockRequireCan = vi.fn();
+
+vi.mock("@/lib/auth/authz", () => ({
+  requireCan: (...args: unknown[]) => mockRequireCan(...args),
+}));
+
 vi.mock("@/lib/session-db", () => ({
-  getCurrentUser: vi.fn(async () => ({
-    id: "usr_admin",
-    organizationId: "org_acme",
-    name: "Lucía Marín",
-    email: "lucia.marin@acme.example",
-    role: "admin",
-    status: "active",
-    createdAt: "2026-01-01T00:00:00.000Z",
-    updatedAt: "2026-01-01T00:00:00.000Z",
-  })),
   getCurrentOrganization: vi.fn(async () => ({
     id: "org_acme",
     name: "Acme Operations",
@@ -66,6 +73,7 @@ beforeEach(() => {
   mockCreate.mockReset().mockResolvedValue({ id: "pol_new" });
   mockUpdate.mockReset().mockResolvedValue({});
   vi.mocked(revalidatePath).mockClear();
+  mockRequireCan.mockReset().mockResolvedValue({ user: adminUser });
 });
 
 describe("createPolicy", () => {
@@ -210,5 +218,43 @@ describe("archivePolicy", () => {
 
     expect(result).toEqual({ error: "La política ya está archivada." });
     expect(mockUpdate).not.toHaveBeenCalled();
+  });
+});
+
+describe("autorización (requireCan)", () => {
+  it("createPolicy no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await createPolicy(policyInput());
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockCreate).not.toHaveBeenCalled();
+  });
+
+  it("updatePolicy no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await updatePolicy("pol_1", policyInput());
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockFindUnique).not.toHaveBeenCalled();
+  });
+
+  it("publishPolicy no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await publishPolicy("pol_1");
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockFindUnique).not.toHaveBeenCalled();
+  });
+
+  it("archivePolicy no ejecuta si requireCan deniega", async () => {
+    mockRequireCan.mockResolvedValue({ error: "No autorizado." });
+
+    const result = await archivePolicy("pol_1");
+
+    expect(result).toEqual({ error: "No autorizado." });
+    expect(mockFindUnique).not.toHaveBeenCalled();
   });
 });
