@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
 import type { AgentAction, Policy } from "@/domain";
-import { getPolicies, getPolicyById, getAffectedActions } from "@/lib/policies";
+import {
+  getPolicies,
+  getPolicyById,
+  getAffectedActions,
+  validatePolicyInput,
+  nextPolicyStatus,
+  type PolicyInput,
+} from "@/lib/policies";
 import type { PolicyEvalContext } from "@/lib/policy-eval";
 
 function policy(partial: Partial<Policy>): Policy {
@@ -206,5 +213,116 @@ describe("getAffectedActions", () => {
     });
     const input = [action({ id: "a1", actionType: "send_email" })];
     expect(getAffectedActions(pol, input, emptyCtx)).toEqual([]);
+  });
+});
+
+function policyInput(partial: Partial<PolicyInput> = {}): PolicyInput {
+  return {
+    name: "Reembolsos altos",
+    description: "Requiere aprobación por encima de 200 EUR.",
+    effect: "require_approval",
+    conditions: { maxAmount: 200 },
+    approvalSlaMinutes: 30,
+    ...partial,
+  };
+}
+
+describe("validatePolicyInput", () => {
+  it("acepta un input válido", () => {
+    expect(validatePolicyInput(policyInput())).toEqual({ ok: true });
+  });
+
+  it("acepta approvalSlaMinutes null (sin SLA)", () => {
+    expect(
+      validatePolicyInput(policyInput({ approvalSlaMinutes: null })),
+    ).toEqual({ ok: true });
+  });
+
+  it("rechaza un nombre vacío (o solo espacios)", () => {
+    expect(validatePolicyInput(policyInput({ name: "   " }))).toEqual({
+      error: "El nombre no puede estar vacío.",
+    });
+  });
+
+  it("rechaza una descripción vacía (o solo espacios)", () => {
+    expect(
+      validatePolicyInput(policyInput({ description: "  " })),
+    ).toEqual({
+      error: "La descripción no puede estar vacía.",
+    });
+  });
+
+  it("rechaza un efecto que no sea un PolicyEffect válido", () => {
+    expect(
+      validatePolicyInput(
+        policyInput({ effect: "not_an_effect" as Policy["effect"] }),
+      ),
+    ).toEqual({ error: "El efecto no es válido." });
+  });
+
+  it("rechaza approvalSlaMinutes no entero", () => {
+    expect(
+      validatePolicyInput(policyInput({ approvalSlaMinutes: 30.5 })),
+    ).toEqual({
+      error:
+        "El SLA de aprobación debe ser un número entero positivo, o vacío.",
+    });
+  });
+
+  it("rechaza approvalSlaMinutes negativo o cero", () => {
+    expect(
+      validatePolicyInput(policyInput({ approvalSlaMinutes: 0 })),
+    ).toEqual({
+      error:
+        "El SLA de aprobación debe ser un número entero positivo, o vacío.",
+    });
+  });
+
+  it("rechaza conditions que no sea un objeto (array)", () => {
+    expect(
+      validatePolicyInput(
+        policyInput({
+          conditions: [] as unknown as Record<string, unknown>,
+        }),
+      ),
+    ).toEqual({ error: "Las condiciones deben ser un objeto." });
+  });
+});
+
+describe("nextPolicyStatus", () => {
+  it("publica una política en borrador (fija publishedAt)", () => {
+    const result = nextPolicyStatus("draft", "publish");
+    expect("status" in result && result.status).toBe("active");
+    expect("status" in result && result.publishedAt).toBeInstanceOf(Date);
+  });
+
+  it("no permite publicar una política ya activa", () => {
+    expect(nextPolicyStatus("active", "publish")).toEqual({
+      error: "La política ya está publicada.",
+    });
+  });
+
+  it("no permite publicar una política archivada", () => {
+    expect(nextPolicyStatus("archived", "publish")).toEqual({
+      error: "No se puede publicar una política archivada.",
+    });
+  });
+
+  it("archiva una política en borrador", () => {
+    expect(nextPolicyStatus("draft", "archive")).toEqual({
+      status: "archived",
+    });
+  });
+
+  it("archiva una política activa", () => {
+    expect(nextPolicyStatus("active", "archive")).toEqual({
+      status: "archived",
+    });
+  });
+
+  it("no permite archivar una política ya archivada", () => {
+    expect(nextPolicyStatus("archived", "archive")).toEqual({
+      error: "La política ya está archivada.",
+    });
   });
 });
