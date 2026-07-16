@@ -7,6 +7,10 @@ import { getTools } from "@/data/tools";
 import { getPolicies } from "@/data/policies";
 import { getPermissions } from "@/data/permissions";
 import { getUsers } from "@/data/users";
+import { getComments } from "@/data/comments";
+import { getApprovalByActionId } from "@/data/approvals";
+import { commentsForAction } from "@/lib/comments";
+import { getCurrentUser } from "@/lib/session-db";
 
 export default async function ReviewActionPage({
   params,
@@ -20,15 +24,27 @@ export default async function ReviewActionPage({
     notFound();
   }
 
-  const [actions, agents, tools, policies, permissions, users] =
-    await Promise.all([
-      getActions(),
-      getAgents(),
-      getTools(),
-      getPolicies(),
-      getPermissions(),
-      getUsers(),
-    ]);
+  const [
+    actions,
+    agents,
+    tools,
+    policies,
+    permissions,
+    users,
+    comments,
+    approval,
+    currentUser,
+  ] = await Promise.all([
+    getActions(),
+    getAgents(),
+    getTools(),
+    getPolicies(),
+    getPermissions(),
+    getUsers(),
+    getComments(),
+    getApprovalByActionId(actionId),
+    getCurrentUser(),
+  ]);
 
   return (
     <div>
@@ -41,6 +57,9 @@ export default async function ReviewActionPage({
         policies={policies}
         permissions={permissions}
         users={users}
+        comments={commentsForAction(comments, action.id)}
+        approval={approval}
+        currentUserId={currentUser.id}
       />
     </div>
   );

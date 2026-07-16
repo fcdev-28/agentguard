@@ -12,7 +12,7 @@ import { agents, actions, policies } from "@/data/demo-data";
 import { isPendingReview } from "@/lib/dashboard";
 import { searchCommands, type CommandItem } from "@/lib/command-palette";
 import { useRuntime } from "./runtime-store";
-import { useReview } from "@/components/review/review-store";
+import { decideAction } from "@/lib/review-actions";
 import { useCommandPalette } from "./command-palette-store";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { NavIcon } from "./nav-icons";
@@ -88,7 +88,6 @@ function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
   const pathname = usePathname();
   const { emergencyStop, engageEmergencyStop, releaseEmergencyStop } =
     useRuntime();
-  const { getActionState, decide } = useReview();
 
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -109,12 +108,15 @@ function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
     setActiveIndex(0);
   }
 
+  // La paleta busca sobre el seed local (`@/data/demo-data`), no sobre las
+  // acciones persistidas: mismo alcance que `searchCommands` más abajo. La
+  // decisión en sí (`decideAction`) sí llega a BD por el actionId real de
+  // la URL.
   const openActionId = useMemo(() => getOpenActionId(pathname), [pathname]);
-  const openActionState = openActionId
-    ? getActionState(openActionId)
+  const openAction = openActionId
+    ? actions.find((action) => action.id === openActionId)
     : undefined;
-  const openActionPending =
-    !!openActionState && isPendingReview(openActionState.status);
+  const openActionPending = !!openAction && isPendingReview(openAction.status);
 
   const trimmedQuery = query.trim();
 
@@ -196,11 +198,11 @@ function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
         releaseEmergencyStop();
         break;
       case "approve_open_action":
-        if (openActionId) decide(openActionId, "approved", null);
+        if (openActionId) void decideAction(openActionId, "approved", null);
         break;
       case "reject_open_action":
         if (openActionId) {
-          decide(
+          void decideAction(
             openActionId,
             "rejected",
             "Rechazada desde la paleta de comandos",

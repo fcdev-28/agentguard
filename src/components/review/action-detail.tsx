@@ -1,15 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import {
   actionStatusLabel,
   actionTypeLabel,
   policyEffectLabel,
-  userRoleLabel,
+  type ActionComment,
   type Agent,
   type AgentAction,
   type Permission,
   type Policy,
+  type RecordedApproval,
   type Tool,
   type User,
 } from "@/domain";
@@ -17,13 +18,11 @@ import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
-import { currentUser } from "@/lib/session";
 import { useRuntime } from "@/components/app-shell/runtime-store";
-import { useReview } from "./review-store";
-import { useComments } from "./comment-store";
+import { addComment, decideAction, escalateAction } from "@/lib/review-actions";
 import { actionStatusClass } from "./status-style";
 import { eligibleEscalationTargets, type ReviewDecision } from "@/lib/review";
-import { isValidCommentBody } from "@/lib/comments";
+import { commentsForAction, isValidCommentBody } from "@/lib/comments";
 import styles from "./review.module.css";
 
 /** Representación legible de un valor del payload (sin volcar JSON crudo). */
@@ -42,6 +41,9 @@ export function ActionDetail({
   policies,
   permissions,
   users,
+  comments,
+  approval,
+  currentUserId,
 }: {
   actionId: string;
   actions: AgentAction[];
@@ -50,24 +52,28 @@ export function ActionDetail({
   policies: Policy[];
   permissions: Permission[];
   users: User[];
+  comments: ActionComment[];
+  approval: RecordedApproval | null;
+  currentUserId: string;
 }) {
   const action = actions.find((a) => a.id === actionId);
-  const { getActionState, decide, escalate } = useReview();
   const { emergencyStop } = useRuntime();
-  const { getComments, addComment } = useComments();
+  const [, startTransition] = useTransition();
   const [pendingDecision, setPendingDecision] = useState<ReviewDecision | null>(
     null,
   );
   const [reason, setReason] = useState("");
-  const [escalateTarget, setEscalateTarget] = useState("");
   const [commentBody, setCommentBody] = useState("");
+  const [optimisticComments, addOptimisticComment] = useOptimistic<
+    ActionComment[],
+    ActionComment
+  >(comments, (state, comment) => [...state, comment]);
 
   if (!action) {
     return null;
   }
 
-  const state = getActionState(action.id);
-  const status = state?.status ?? action.status;
+  const status = action.status;
   const canDecide = isPendingReview(status);
 
   const agent = agents.find((a) => a.id === action.agentId);
@@ -82,14 +88,16 @@ export function ActionDetail({
   const policy = policyEvaluation.policyId
     ? policies.find((p) => p.id === policyEvaluation.policyId)
     : null;
-  const comments = getComments(action.id);
+  const visibleComments = commentsForAction(optimisticComments, action.id);
   const payloadEntries = Object.entries(action.payload);
   const resolvedActionId = action.id;
-  const escalationTargets = eligibleEscalationTargets(users, currentUser.id);
+  const escalationTargets = eligibleEscalationTargets(users, currentUserId);
 
   function startDecision(decision: ReviewDecision) {
     if (decision === "approved") {
-      decide(resolvedActionId, decision, null);
+      startTransition(async () => {
+        await decideAction(resolvedActionId, "approved", null);
+      });
       return;
     }
     setPendingDecision(decision);
@@ -97,10 +105,15 @@ export function ActionDetail({
   }
 
   function confirmDecision() {
-    if (!pendingDecision || !reason.trim()) return;
-    decide(resolvedActionId, pendingDecision, reason.trim());
+    if (!pendingDecision || pendingDecision === "escalated" || !reason.trim())
+      return;
+    const decision = pendingDecision;
+    const trimmedReason = reason.trim();
     setPendingDecision(null);
     setReason("");
+    startTransition(async () => {
+      await decideAction(resolvedActionId, decision, trimmedReason);
+    });
   }
 
   function cancelDecision() {
@@ -109,15 +122,25 @@ export function ActionDetail({
   }
 
   function confirmEscalate() {
-    if (!escalateTarget) return;
-    escalate(resolvedActionId, escalateTarget);
-    setEscalateTarget("");
+    startTransition(async () => {
+      await escalateAction(resolvedActionId);
+    });
   }
 
   function submitComment() {
     if (!isValidCommentBody(commentBody)) return;
-    addComment(resolvedActionId, commentBody);
+    const body = commentBody.trim();
     setCommentBody("");
+    startTransition(async () => {
+      addOptimisticComment({
+        id: `optimistic-${resolvedActionId}-${Date.now()}`,
+        actionId: resolvedActionId,
+        authorId: currentUserId,
+        body,
+        createdAt: new Date().toISOString(),
+      });
+      await addComment(resolvedActionId, body);
+    });
   }
 
   return (
@@ -148,11 +171,6 @@ export function ActionDetail({
             {isOverdue(action.approvalDueAt) ? (
               <span className={styles.overdueInline}> · Vencida</span>
             ) : null}
-          </span>
-        ) : null}
-        {state?.decision?.escalatedTo ? (
-          <span className={styles.metaItem}>
-            Escalada a: <strong>{state.decision.escalatedTo.name}</strong>
           </span>
         ) : null}
       </div>
@@ -194,9 +212,9 @@ export function ActionDetail({
 
       <section className={styles.detailSection}>
         <h3 className={styles.detailSectionTitle}>Comentarios</h3>
-        {comments.length > 0 ? (
+        {visibleComments.length > 0 ? (
           <ul className={styles.commentList}>
-            {comments.map((comment) => (
+            {visibleComments.map((comment) => (
               <li key={comment.id} className={styles.comment}>
                 <span className={styles.commentAuthor}>
                   {users.find((u) => u.id === comment.authorId)?.name ??
@@ -272,32 +290,12 @@ export function ActionDetail({
               ) : null}
               {escalationTargets.length > 0 ? (
                 <div className={styles.escalateRow}>
-                  <label
-                    className={styles.escalateLabel}
-                    htmlFor="escalate-target"
-                  >
-                    Escalar a
-                  </label>
-                  <select
-                    id="escalate-target"
-                    className={styles.escalateSelect}
-                    value={escalateTarget}
-                    onChange={(event) => setEscalateTarget(event.target.value)}
-                  >
-                    <option value="">Selecciona un responsable…</option>
-                    {escalationTargets.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name} · {userRoleLabel[user.role]}
-                      </option>
-                    ))}
-                  </select>
                   <button
                     type="button"
                     className={styles.decisionButtonGhost}
                     onClick={confirmEscalate}
-                    disabled={!escalateTarget}
                   >
-                    Escalar
+                    Escalar a un responsable
                   </button>
                 </div>
               ) : null}
@@ -338,11 +336,11 @@ export function ActionDetail({
             </div>
           )}
         </section>
-      ) : state?.decision ? (
+      ) : approval ? (
         <p className={styles.decisionNote}>
-          Decidida por {state.decision.byName} ·{" "}
-          {formatRelativeTime(state.decision.at)}
-          {state.decision.reason ? ` — ${state.decision.reason}` : ""}
+          Decidida por {approval.reviewer.name} ·{" "}
+          {formatRelativeTime(approval.createdAt)}
+          {approval.reason ? ` — ${approval.reason}` : ""}
         </p>
       ) : null}
     </div>
