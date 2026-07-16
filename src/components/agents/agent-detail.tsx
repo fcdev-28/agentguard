@@ -1,5 +1,6 @@
 "use client";
 
+import { useTransition } from "react";
 import type { Agent, User } from "@/domain";
 import {
   agentEnvironmentLabel,
@@ -7,8 +8,7 @@ import {
   agentStatusLabel,
 } from "@/domain";
 import { PageHeader } from "@/components/app-shell/page-header";
-import { useRuntime } from "@/components/app-shell/runtime-store";
-import { formatRelativeTime } from "@/lib/format";
+import { pauseAgent, resumeAgent } from "@/lib/runtime-actions";
 import styles from "./agents.module.css";
 
 /** Cabecera de identidad del agente: nombre, descripción, metadatos clave y control de pausa. */
@@ -19,10 +19,18 @@ export function AgentDetail({
   agent: Agent;
   owner: User | undefined;
 }) {
-  const { agentOverrides, getAgentStatus, pauseAgent, resumeAgent } =
-    useRuntime();
-  const status = getAgentStatus(agent.id, agent.status);
-  const override = agentOverrides[agent.id];
+  const [, startTransition] = useTransition();
+  const status = agent.status;
+
+  function togglePause() {
+    startTransition(async () => {
+      if (status === "active") {
+        await pauseAgent(agent.id);
+      } else {
+        await resumeAgent(agent.id);
+      }
+    });
+  }
 
   return (
     <div>
@@ -30,12 +38,6 @@ export function AgentDetail({
       <div className={styles.metaRow}>
         <span className={styles.metaItem}>
           Estado: <strong>{agentStatusLabel[status]}</strong>
-          {override ? (
-            <>
-              {" "}
-              · {override.byName} · {formatRelativeTime(override.at)}
-            </>
-          ) : null}
         </span>
         <span className={styles.metaItem}>
           Modo: <strong>{agentModeLabel[agent.mode]}</strong>
@@ -52,9 +54,7 @@ export function AgentDetail({
           <button
             type="button"
             className={styles.pauseButton}
-            onClick={() =>
-              status === "active" ? pauseAgent(agent.id) : resumeAgent(agent.id)
-            }
+            onClick={togglePause}
           >
             {status === "active" ? "Pausar agente" : "Reanudar agente"}
           </button>

@@ -8,11 +8,15 @@ import {
   type KeyboardEvent,
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { agents, actions, policies } from "@/data/demo-data";
+import type { Agent, AgentAction, Policy } from "@/domain";
 import { isPendingReview } from "@/lib/dashboard";
 import { searchCommands, type CommandItem } from "@/lib/command-palette";
-import { useRuntime } from "./runtime-store";
-import { useReview } from "@/components/review/review-store";
+import { useRuntime } from "./runtime-provider";
+import { decideAction } from "@/lib/review-actions";
+import {
+  engageEmergencyStop,
+  releaseEmergencyStop,
+} from "@/lib/runtime-actions";
 import { useCommandPalette } from "./command-palette-store";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { NavIcon } from "./nav-icons";
@@ -60,7 +64,15 @@ function getOpenActionId(pathname: string): string | null {
  * vez que se abre para que su estado (buscador, índice activo) arranque
  * limpio sin necesidad de efectos que lo reinicien.
  */
-export function CommandPalette() {
+export function CommandPalette({
+  agents,
+  actions,
+  policies,
+}: {
+  agents: Agent[];
+  actions: AgentAction[];
+  policies: Policy[];
+}) {
   const { open, closePalette, togglePalette } = useCommandPalette();
 
   // Atajo global: Cmd/Ctrl+K abre o cierra la paleta desde cualquier punto.
@@ -79,16 +91,31 @@ export function CommandPalette() {
 
   if (!open) return null;
 
-  return <CommandPaletteDialog onClose={closePalette} />;
+  return (
+    <CommandPaletteDialog
+      onClose={closePalette}
+      agents={agents}
+      actions={actions}
+      policies={policies}
+    />
+  );
 }
 
 /** Contenido interactivo de la paleta: buscador, resultados y ejecución. */
-function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
+function CommandPaletteDialog({
+  onClose,
+  agents,
+  actions,
+  policies,
+}: {
+  onClose: () => void;
+  agents: Agent[];
+  actions: AgentAction[];
+  policies: Policy[];
+}) {
   const router = useRouter();
   const pathname = usePathname();
-  const { emergencyStop, engageEmergencyStop, releaseEmergencyStop } =
-    useRuntime();
-  const { getActionState, decide } = useReview();
+  const { emergencyStop } = useRuntime();
 
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
@@ -109,18 +136,20 @@ function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
     setActiveIndex(0);
   }
 
+  // La paleta busca sobre agentes, acciones y políticas reales de BD,
+  // recibidos como props desde el layout raíz (server). La decisión en sí
+  // (`decideAction`) también llega a BD por el actionId real de la URL.
   const openActionId = useMemo(() => getOpenActionId(pathname), [pathname]);
-  const openActionState = openActionId
-    ? getActionState(openActionId)
+  const openAction = openActionId
+    ? actions.find((action) => action.id === openActionId)
     : undefined;
-  const openActionPending =
-    !!openActionState && isPendingReview(openActionState.status);
+  const openActionPending = !!openAction && isPendingReview(openAction.status);
 
   const trimmedQuery = query.trim();
 
   const searchResults = useMemo(
     () => searchCommands(query, { agents, actions, policies }),
-    [query],
+    [query, agents, actions, policies],
   );
 
   const quickActionItems = useMemo<CommandItem[]>(() => {
@@ -179,28 +208,28 @@ function CommandPaletteDialog({ onClose }: { onClose: () => void }) {
   );
 
   /**
-   * Ejecuta una acción rápida contra los stores runtime. Rechazar exige un
-   * motivo no vacío (ver `applyDecision` en `src/lib/review.ts`) y la paleta
-   * no ofrece un paso para escribirlo; en vez de añadir un segundo diálogo,
-   * usamos un motivo por defecto explícito que deja constancia del origen de
-   * la decisión.
+   * Ejecuta una acción rápida contra las server actions de runtime/revisión.
+   * Rechazar exige un motivo no vacío (ver `applyDecision` en
+   * `src/lib/review.ts`) y la paleta no ofrece un paso para escribirlo; en
+   * vez de añadir un segundo diálogo, usamos un motivo por defecto explícito
+   * que deja constancia del origen de la decisión.
    */
   function runQuickAction(
     quickAction: Extract<CommandItem, { kind: "quick-action" }>["quickAction"],
   ) {
     switch (quickAction) {
       case "engage_emergency_stop":
-        engageEmergencyStop();
+        void engageEmergencyStop();
         break;
       case "release_emergency_stop":
-        releaseEmergencyStop();
+        void releaseEmergencyStop();
         break;
       case "approve_open_action":
-        if (openActionId) decide(openActionId, "approved", null);
+        if (openActionId) void decideAction(openActionId, "approved", null);
         break;
       case "reject_open_action":
         if (openActionId) {
-          decide(
+          void decideAction(
             openActionId,
             "rejected",
             "Rechazada desde la paleta de comandos",

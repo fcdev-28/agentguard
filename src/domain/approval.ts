@@ -10,3 +10,16 @@ export interface Approval {
   reason: string | null;
   createdAt: string;
 }
+
+/**
+ * Aprobación hidratada con el nombre de quien la tomó, lista para mostrarla
+ * en la cola o el detalle de revisión sin resolver `reviewerId` contra la
+ * lista de usuarios.
+ */
+export interface RecordedApproval {
+  actionId: string;
+  reviewer: { name: string };
+  decision: ApprovalDecision;
+  reason: string | null;
+  createdAt: string;
+}

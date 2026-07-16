@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import type {
   Agent,
@@ -16,6 +16,11 @@ import { RiskBadge } from "@/components/data-display/risk-badge";
 import { getAffectedActions } from "@/lib/policies";
 import { formatRelativeTime } from "@/lib/format";
 import {
+  archivePolicy,
+  publishPolicy,
+  updatePolicy,
+} from "@/lib/policy-actions";
+import {
   policyStatusClass,
   policyStatusLabel,
   policyEffectClass,
@@ -23,7 +28,7 @@ import {
 import styles from "./policies.module.css";
 
 /** Etiqueta visible en castellano para cada tipo de herramienta (editor de condición `tool`). */
-const toolTypeLabel: Record<Tool["type"], string> = {
+export const toolTypeLabel: Record<Tool["type"], string> = {
   email: "Email",
   crm: "CRM",
   billing: "Facturación",
@@ -31,7 +36,7 @@ const toolTypeLabel: Record<Tool["type"], string> = {
 };
 
 /** Etiqueta visible en castellano para cada alcance de permiso (editor de condición `scope`). */
-const scopeLabel: Record<Permission["scope"], string> = {
+export const scopeLabel: Record<Permission["scope"], string> = {
   read: "Lectura",
   draft: "Borrador",
   write: "Escritura",
@@ -39,7 +44,7 @@ const scopeLabel: Record<Permission["scope"], string> = {
 };
 
 /** Orden fijo de efectos para el selector, de menos a más severo. */
-const EFFECT_OPTIONS: PolicyEffect[] = [
+export const EFFECT_OPTIONS: PolicyEffect[] = [
   "allow",
   "require_approval",
   "escalate",
@@ -64,7 +69,9 @@ function formatConditionValue(value: unknown): string {
  * versión, editor de las condiciones que ya tiene definidas (permisos por
  * herramienta, umbral de importe, efecto y SLA de aprobación) y una
  * previsualización en vivo de las acciones recientes a las que afectaría.
- * La edición es efímera: no persiste, solo sirve para previsualizar.
+ * "Guardar cambios" persiste la edición; "Publicar"/"Archivar" cambian el
+ * estado. El servidor es la única fuente de verdad: el éxito se refleja al
+ * revalidar, no se revierte el formulario ante un error.
  */
 export function PolicyDetail({
   policy,
@@ -84,6 +91,49 @@ export function PolicyDetail({
     effect: policy.effect,
     approvalSlaMinutes: policy.approvalSlaMinutes,
   });
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
+  const hasChanges =
+    edited.effect !== policy.effect ||
+    edited.approvalSlaMinutes !== policy.approvalSlaMinutes ||
+    JSON.stringify(edited.conditions) !== JSON.stringify(policy.conditions);
+
+  function handleSave() {
+    setError(null);
+    startTransition(async () => {
+      const result = await updatePolicy(policy.id, {
+        name: policy.name,
+        description: policy.description,
+        effect: edited.effect,
+        conditions: edited.conditions,
+        approvalSlaMinutes: edited.approvalSlaMinutes,
+      });
+      if ("error" in result) {
+        setError(result.error);
+      }
+    });
+  }
+
+  function handlePublish() {
+    setError(null);
+    startTransition(async () => {
+      const result = await publishPolicy(policy.id);
+      if ("error" in result) {
+        setError(result.error);
+      }
+    });
+  }
+
+  function handleArchive() {
+    setError(null);
+    startTransition(async () => {
+      const result = await archivePolicy(policy.id);
+      if ("error" in result) {
+        setError(result.error);
+      }
+    });
+  }
 
   const hasToolCondition = "tool" in policy.conditions;
   const hasScopeCondition = "scope" in policy.conditions;
@@ -155,11 +205,41 @@ export function PolicyDetail({
         </span>
       </div>
 
-      <p className={styles.previewNotice}>
-        Los cambios de esta pantalla son una previsualización simulada: no se
-        guardan. Sirven para ver de inmediato cómo cambiaría el efecto de la
-        política sobre las acciones.
-      </p>
+      <div className={styles.actionsBar}>
+        <button
+          type="button"
+          className={styles.primaryButton}
+          onClick={handleSave}
+          disabled={isPending || !hasChanges}
+        >
+          Guardar cambios
+        </button>
+        {policy.status === "draft" ? (
+          <button
+            type="button"
+            className={styles.primaryButton}
+            onClick={handlePublish}
+            disabled={isPending}
+          >
+            Publicar
+          </button>
+        ) : null}
+        {policy.status === "draft" || policy.status === "active" ? (
+          <button
+            type="button"
+            className={styles.ghostButton}
+            onClick={handleArchive}
+            disabled={isPending}
+          >
+            Archivar
+          </button>
+        ) : null}
+      </div>
+      {error ? (
+        <p className={styles.errorText} role="alert">
+          {error}
+        </p>
+      ) : null}
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>Condiciones</h2>

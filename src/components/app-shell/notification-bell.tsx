@@ -1,25 +1,70 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useRouter } from "next/navigation";
+import type { Notification } from "@/domain";
 import { notificationTypeLabel } from "@/domain";
 import { formatRelativeTime } from "@/lib/format";
+import { unreadCount } from "@/lib/notifications";
+import {
+  markAllNotificationsRead,
+  markNotificationRead,
+} from "@/lib/notification-actions";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { useNotifications } from "./notification-store";
 import styles from "./notification-bell.module.css";
+
+/** Actualización optimista aplicada mientras la mutación real viaja al servidor. */
+type ReadUpdate = { kind: "one"; id: string } | { kind: "all" };
+
+/** Marca `readAt` en la notificación indicada, o en todas las que sigan sin leer. */
+function applyReadUpdate(
+  state: Notification[],
+  update: ReadUpdate,
+): Notification[] {
+  const at = new Date().toISOString();
+  if (update.kind === "one") {
+    return state.map((notification) =>
+      notification.id === update.id && notification.readAt === null
+        ? { ...notification, readAt: at }
+        : notification,
+    );
+  }
+  return state.map((notification) =>
+    notification.readAt === null
+      ? { ...notification, readAt: at }
+      : notification,
+  );
+}
 
 /**
  * Campana de notificaciones de la top bar: badge con el contador de no
  * leídas y un popover anclado con el listado. El cierre usa un backdrop
  * transparente a pantalla completa (mismo patrón que `<MobileNav>` y
  * `<CommandPalette>`) para capturar el clic fuera del panel sin depender de
- * un listener manual de click-outside.
+ * un listener manual de click-outside. Las notificaciones llegan como prop
+ * desde el layout raíz (server); marcar como leída es optimista mientras la
+ * server action persiste el cambio real.
  */
-export function NotificationBell() {
+export function NotificationBell({
+  notifications,
+}: {
+  notifications: Notification[];
+}) {
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { items, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const [, startTransition] = useTransition();
+  const [items, applyOptimisticRead] = useOptimistic(
+    notifications,
+    applyReadUpdate,
+  );
+  const unread = unreadCount(items);
 
   useEffect(() => {
     if (!open) return;
@@ -37,11 +82,21 @@ export function NotificationBell() {
   }, [open]);
 
   function selectNotification(id: string, actionId: string | null) {
-    markAsRead(id);
+    startTransition(async () => {
+      applyOptimisticRead({ kind: "one", id });
+      await markNotificationRead(id);
+    });
     if (actionId) {
       setOpen(false);
       router.push(`/review/${actionId}`);
     }
+  }
+
+  function markAllAsRead() {
+    startTransition(async () => {
+      applyOptimisticRead({ kind: "all" });
+      await markAllNotificationsRead();
+    });
   }
 
   return (
@@ -52,9 +107,7 @@ export function NotificationBell() {
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={
-          unreadCount > 0
-            ? `Notificaciones, ${unreadCount} sin leer`
-            : "Notificaciones"
+          unread > 0 ? `Notificaciones, ${unread} sin leer` : "Notificaciones"
         }
         onClick={() => setOpen((value) => !value)}
       >
@@ -72,9 +125,9 @@ export function NotificationBell() {
           <path d="M6 9a6 6 0 0 1 12 0c0 4 1.4 5.6 2 6.5a1 1 0 0 1-.9 1.5H4.9A1 1 0 0 1 4 15.5c.6-.9 2-2.5 2-6.5Z" />
           <path d="M10 19a2 2 0 0 0 4 0" />
         </svg>
-        {unreadCount > 0 ? (
+        {unread > 0 ? (
           <span className={styles.badge} aria-hidden="true">
-            {unreadCount > 9 ? "9+" : unreadCount}
+            {unread > 9 ? "9+" : unread}
           </span>
         ) : null}
       </button>
@@ -100,7 +153,7 @@ export function NotificationBell() {
               <button
                 type="button"
                 className={styles.markAll}
-                disabled={unreadCount === 0}
+                disabled={unread === 0}
                 onClick={markAllAsRead}
               >
                 Marcar todas como leídas
@@ -112,13 +165,13 @@ export function NotificationBell() {
             ) : (
               <ul className={styles.list}>
                 {items.map((notification) => {
-                  const unread = notification.readAt === null;
+                  const isUnread = notification.readAt === null;
                   return (
                     <li key={notification.id}>
                       <button
                         type="button"
                         className={
-                          unread
+                          isUnread
                             ? `${styles.item} ${styles.itemUnread}`
                             : styles.item
                         }

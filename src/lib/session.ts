@@ -7,9 +7,8 @@
  *
  * La versión sobre BD (`getCurrentUser`/`getCurrentOrganization`) vive en
  * `./session-db.ts`, un módulo server-only: mantenerla aquí arrastraría
- * Prisma al bundle de cliente, porque varios componentes cliente
- * (top-bar, runtime-store, notification-store, review) siguen importando
- * los síncronos de este fichero.
+ * Prisma al bundle de cliente, porque `top-bar` (componente cliente) sigue
+ * importando los síncronos de este fichero.
  */
 import { organization, users } from "@/data/demo-data";
 import type { Organization, User } from "@/domain";

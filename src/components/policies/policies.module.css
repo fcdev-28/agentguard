@@ -190,14 +190,87 @@ a.row:hover {
   color: var(--color-ink-soft);
 }
 
-/* Aviso de que la edición del detalle es una previsualización efímera, no persistida. */
-.previewNotice {
+/* Barra de acciones de escritura del detalle: guardar, publicar, archivar. */
+.actionsBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
   margin-top: var(--space-4);
-  padding: var(--space-3);
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-primary);
   border-radius: var(--radius-control);
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  background: var(--color-primary);
   font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-primary-text);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.primaryButton:hover {
+  background: var(--color-primary-hover);
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ghostButton {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-bg);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-soft);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+}
+
+.ghostButton:hover {
+  background: var(--color-surface);
+}
+
+.ghostButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mensaje de error de una mutación fallida (validación o transición inválida). */
+.errorText {
+  margin-top: var(--space-3);
+  font-size: var(--text-13);
+  color: var(--color-danger-text);
+}
+
+/* Enlace/botón para crear una política nueva, alineado sobre el listado. */
+.listActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-4);
+}
+
+/* Formulario de creación de política: campos apilados, ancho legible. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 480px;
+  margin-top: var(--space-4);
+}
+
+.formActions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
 }
 
 /* Secciones de detalle (editor de condiciones, acciones afectadas). */

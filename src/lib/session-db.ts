@@ -3,11 +3,11 @@ import "server-only";
 /**
  * Sesión sobre BD para páginas server ya migradas a Prisma.
  * El equivalente síncrono, client-safe (sobre `demo-data`), sigue en
- * `./session.ts`; es deuda temporal hasta que los componentes cliente que
- * lo consumen (top-bar, runtime-store, notification-store, review) migren
- * a Server Components + props. Marcar este módulo con `server-only` evita
- * que Prisma se cuele en el bundle de cliente si alguien lo importa por error
- * desde un componente `"use client"`.
+ * `./session.ts`; es deuda temporal hasta que `top-bar` (el último
+ * componente cliente que lo consume) migre a Server Components + props.
+ * Marcar este módulo con `server-only` evita que Prisma se cuele en el
+ * bundle de cliente si alguien lo importa por error desde un componente
+ * `"use client"`.
  */
 import type { Organization, User } from "@/domain";
 import { getUsers } from "@/data/users";
