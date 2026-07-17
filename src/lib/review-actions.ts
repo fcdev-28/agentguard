@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { requireCan } from "@/lib/auth/authz";
 import { applyDecision, type ReviewDecision } from "@/lib/review";
 import { isValidCommentBody } from "@/lib/comments";
+import { executeAction } from "@/lib/execution/runner";
 
 /** Decisiones que se toman explícitamente (el escalado tiene su propia action). */
 type DirectDecision = Exclude<ReviewDecision, "escalated">;
@@ -60,6 +61,10 @@ export async function decideAction(
       data: { status: result.status },
     }),
   ]);
+
+  if (decision === "approved") {
+    await executeAction(actionId);
+  }
 
   revalidateReview();
   return { ok: true };
