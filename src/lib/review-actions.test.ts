@@ -41,6 +41,12 @@ vi.mock("@/lib/auth/authz", () => ({
   requireCan: (...args: unknown[]) => mockRequireCan(...args),
 }));
 
+const mockExecuteAction = vi.fn();
+
+vi.mock("@/lib/execution/runner", () => ({
+  executeAction: (...args: unknown[]) => mockExecuteAction(...args),
+}));
+
 vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
@@ -61,6 +67,9 @@ beforeEach(() => {
   mockTransaction.mockReset();
   mockTransaction.mockImplementation((ops: unknown[]) => Promise.all(ops));
   mockRequireCan.mockReset().mockResolvedValue({ user: reviewerUser });
+  mockExecuteAction
+    .mockReset()
+    .mockResolvedValue({ ok: true, status: "executed" });
 });
 
 describe("decideAction", () => {
@@ -85,6 +94,16 @@ describe("decideAction", () => {
       where: { id: "act_1" },
       data: { status: "approved" },
     });
+    expect(mockExecuteAction).toHaveBeenCalledWith("act_1");
+  });
+
+  it("no ejecuta la acción cuando la decisión no es una aprobación", async () => {
+    mockFindUnique.mockResolvedValue({ status: "needs_approval" });
+
+    const result = await decideAction("act_1", "rejected", "No procede.");
+
+    expect(result).toEqual({ ok: true });
+    expect(mockExecuteAction).not.toHaveBeenCalled();
   });
 
   it("devuelve error si la acción no existe", async () => {

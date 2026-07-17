@@ -142,6 +142,11 @@ enum NotificationType {
   emergency_stop
 }
 
+enum IntegrationLogStatus {
+  succeeded
+  failed
+}
+
 // ── Modelos ──────────────────────────────────────────────────────────────
 
 model Organization {
@@ -213,6 +218,7 @@ model Agent {
   permissions Permission[]
   actions     AgentAction[]
   auditEvents AuditEvent[]
+  apiKeys     AgentApiKey[]
 
   @@index([organizationId])
   @@index([ownerId])
@@ -294,16 +300,18 @@ model AgentAction {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   executedAt     DateTime?
+  externalId     String?
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Restrict)
   tool         Tool         @relation(fields: [toolId], references: [id], onDelete: Restrict)
   policy       Policy?      @relation(fields: [policyId], references: [id], onDelete: SetNull)
 
-  approval      Approval?
-  comments      ActionComment[]
-  notifications Notification[]
-  auditEvents   AuditEvent[]
+  approval        Approval?
+  comments        ActionComment[]
+  notifications   Notification[]
+  auditEvents     AuditEvent[]
+  integrationLogs IntegrationLog[]
 
   @@index([organizationId])
   @@index([agentId])
@@ -311,6 +319,8 @@ model AgentAction {
   @@index([policyId])
   // Cola de revisión: acciones de una org filtradas por estado y ordenadas por vencimiento.
   @@index([organizationId, status, approvalDueAt])
+  // Idempotencia de ingesta: un agente no duplica la misma acción externa.
+  @@unique([agentId, externalId])
 }
 
 model Approval {
@@ -381,4 +391,32 @@ model ActionComment {
 
   @@index([actionId])
   @@index([authorId])
+}
+
+model AgentApiKey {
+  id         String    @id @default(cuid())
+  agentId    String
+  prefix     String
+  keyHash    String    @unique
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+}
+
+model IntegrationLog {
+  id        String               @id @default(cuid())
+  actionId  String
+  toolType  ToolType
+  transport String
+  status    IntegrationLogStatus
+  detail    String?
+  createdAt DateTime             @default(now())
+
+  action AgentAction @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  @@index([actionId])
 }
