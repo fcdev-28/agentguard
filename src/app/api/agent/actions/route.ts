@@ -45,9 +45,23 @@ export async function POST(request: Request): Promise<NextResponse> {
     getPolicies(),
   ]);
 
-  const tool = tools.find(
-    (t) => t.id === input.toolId && t.organizationId === auth.organizationId,
+  // Acotamos todo a la org del token: los repositorios de src/data hacen
+  // findMany sin filtrar por organización (deuda single-tenant), así que
+  // filtramos aquí antes de evaluar políticas para evitar contaminación
+  // cross-org.
+  const orgTools = tools.filter(
+    (t) => t.organizationId === auth.organizationId,
   );
+  const orgAgents = agents.filter(
+    (a) => a.organizationId === auth.organizationId,
+  );
+  const orgAgentIds = new Set(orgAgents.map((a) => a.id));
+  const orgPermissions = permissions.filter((p) => orgAgentIds.has(p.agentId));
+  const orgPolicies = policies.filter(
+    (p) => p.organizationId === auth.organizationId,
+  );
+
+  const tool = orgTools.find((t) => t.id === input.toolId);
   if (!tool) {
     return NextResponse.json(
       { error: "toolId no pertenece a la organización." },
@@ -76,16 +90,16 @@ export async function POST(request: Request): Promise<NextResponse> {
     executedAt: null,
   };
 
-  const evaluation = evaluatePolicy(candidate, policies, {
-    tools,
-    agents,
-    permissions,
+  const evaluation = evaluatePolicy(candidate, orgPolicies, {
+    tools: orgTools,
+    agents: orgAgents,
+    permissions: orgPermissions,
   });
   const status = effectToStatus(evaluation.effect);
 
   const slaMinutes =
     evaluation.policyId != null
-      ? (policies.find((p) => p.id === evaluation.policyId)
+      ? (orgPolicies.find((p) => p.id === evaluation.policyId)
           ?.approvalSlaMinutes ?? null)
       : null;
   const approvalDueAt =
@@ -110,12 +124,18 @@ export async function POST(request: Request): Promise<NextResponse> {
         externalId: input.externalId ?? null,
       },
     });
-  } catch {
+  } catch (err) {
     // Colisión del unique (agentId, externalId): reintento idempotente.
-    return NextResponse.json(
-      { error: "Acción duplicada (externalId ya registrado)." },
-      { status: 409 },
-    );
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return NextResponse.json(
+        { error: "Acción duplicada (externalId ya registrado)." },
+        { status: 409 },
+      );
+    }
+    throw err;
   }
 
   await prisma.auditEvent.create({
@@ -130,7 +150,11 @@ export async function POST(request: Request): Promise<NextResponse> {
   });
 
   if (status === "allowed") {
-    await executeAction(created.id);
+    try {
+      await executeAction(created.id);
+    } catch (err) {
+      console.error("[ingesta] fallo al ejecutar la acción", created.id, err);
+    }
   }
 
   const fresh = await prisma.agentAction.findUnique({
