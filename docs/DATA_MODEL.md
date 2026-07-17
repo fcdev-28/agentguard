@@ -204,6 +204,11 @@ Campos:
 - `createdAt`
 - `updatedAt`
 - `executedAt`
+- `externalId`
+
+Regla de producto:
+
+- `(agentId, externalId)` es único: el endpoint de ingesta usa este par para idempotencia, así un agente no duplica la misma acción externa si reintenta el envío.
 
 Tipos de acción iniciales:
 
@@ -308,6 +313,49 @@ Regla de producto:
 
 - Los comentarios no sustituyen al `reason` obligatorio de una `Approval`; solo añaden contexto.
 
+### AgentApiKey
+
+Credencial M2M de un agente para autenticarse contra el endpoint de ingesta de acciones (fase 12).
+
+Campos:
+
+- `id`
+- `agentId`
+- `prefix`
+- `keyHash`
+- `lastUsedAt`
+- `revokedAt`
+- `createdAt`
+
+Regla de producto:
+
+- Solo se persiste el hash de la key (`keyHash`, único); el valor en claro se muestra una única vez al generarla y no se recupera después.
+- `prefix` identifica la key en la UI/logs sin exponer el secreto completo.
+- Una key revocada (`revokedAt` no nulo) deja de autenticar ingesta, pero se conserva para auditoría.
+
+### IntegrationLog
+
+Evidencia de un intento de ejecución de una `AgentAction` contra una herramienta real (fase 12).
+
+Campos:
+
+- `id`
+- `actionId`
+- `toolType`
+- `transport`
+- `status`
+- `detail`
+- `createdAt`
+
+Estados:
+
+- `succeeded`
+- `failed`
+
+Regla de producto:
+
+- `transport` identifica la implementación usada (p. ej. `resend`, `logging`), para poder distinguir un envío real de uno simulado en dev.
+
 ## Niveles de riesgo (`riskLevel`)
 
 Valores compartidos por `Tool.riskLevel` y `AgentAction.riskLevel` (etiqueta visible en la UI entre paréntesis):
@@ -328,6 +376,8 @@ Valores compartidos por `Tool.riskLevel` y `AgentAction.riskLevel` (etiqueta vis
 - Cada cambio relevante genera al menos un `AuditEvent`.
 - Una `Notification` pertenece a una `Organization` y a un `User`, y puede apuntar a una `AgentAction`.
 - Un `ActionComment` pertenece a una `AgentAction` y a su `User` autor.
+- Un `Agent` puede tener muchas `AgentApiKey` para autenticar su ingesta de acciones.
+- Una `AgentAction` puede tener muchos `IntegrationLog`, uno por intento de ejecución real.
 
 ## Flujo de estados de acción
 
