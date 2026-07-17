@@ -22,16 +22,17 @@ export async function executeAction(
   const guard = applyExecutionResult(action.status, { ok: true });
   if ("error" in guard) return guard;
 
+  const tool = await prisma.tool.findUnique({
+    where: { id: action.toolId },
+    select: { type: true },
+  });
+
   const transport = resolveTransport();
   const result = await transport.send(toEmailMessage(action));
   const final = applyExecutionResult(action.status, result);
   if ("error" in final) return final;
 
   const succeeded = final.status === "executed";
-  const tool = await prisma.tool.findUnique({
-    where: { id: action.toolId },
-    select: { type: true },
-  });
 
   await prisma.$transaction([
     prisma.agentAction.update({
