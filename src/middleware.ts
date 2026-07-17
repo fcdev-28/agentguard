@@ -12,6 +12,9 @@ import { authSecret, SESSION_COOKIE_NAME } from "@/lib/auth/config";
  * en el slice de RBAC, `requireCan` en cada mutación. Un usuario desactivado
  * a mitad de sesión pasa este middleware (su JWT sigue siendo válido) pero
  * es bloqueado por `getCurrentUser`.
+ *
+ * Las rutas `/api/*` quedan fuera de este middleware de sesión: cada una
+ * autentica por su cuenta (API key para ingesta, CRON_SECRET para el barrido).
  */
 export async function middleware(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
@@ -30,6 +33,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!login|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|login|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

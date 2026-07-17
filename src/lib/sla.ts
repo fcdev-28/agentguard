@@ -9,6 +9,7 @@
  * se calculará `action.approvalDueAt` con esta función en el instante en que
  * la política decide pedir aprobación.
  */
+import type { AgentAction } from "@/domain";
 export function computeApprovalDueAt(
   enteredAt: string | Date,
   approvalSlaMinutes: number | null,
@@ -20,4 +21,20 @@ export function computeApprovalDueAt(
   return new Date(
     entered.getTime() + approvalSlaMinutes * 60_000,
   ).toISOString();
+}
+
+/**
+ * Ids de acciones vencidas: en `needs_approval`, con `approvalDueAt` poblado y
+ * anterior a `now`. Pura; el barrido que las escala vive en
+ * `/api/cron/escalate`.
+ */
+export function findOverdue(actions: AgentAction[], now: Date): string[] {
+  return actions
+    .filter(
+      (a) =>
+        a.status === "needs_approval" &&
+        a.approvalDueAt !== null &&
+        new Date(a.approvalDueAt).getTime() < now.getTime(),
+    )
+    .map((a) => a.id);
 }
