@@ -67,7 +67,9 @@ beforeEach(() => {
   mockTransaction.mockReset();
   mockTransaction.mockImplementation((ops: unknown[]) => Promise.all(ops));
   mockRequireCan.mockReset().mockResolvedValue({ user: reviewerUser });
-  mockExecuteAction.mockReset().mockResolvedValue({ ok: true, status: "executed" });
+  mockExecuteAction
+    .mockReset()
+    .mockResolvedValue({ ok: true, status: "executed" });
 });
 
 describe("decideAction", () => {

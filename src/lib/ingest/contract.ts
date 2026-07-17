@@ -32,8 +32,7 @@ export interface IngestActionInput {
 }
 
 export type IngestValidation =
-  | { ok: true; value: IngestActionInput }
-  | { ok: false; error: string };
+  { ok: true; value: IngestActionInput } | { ok: false; error: string };
 
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === "object" && v !== null && !Array.isArray(v);
@@ -63,7 +62,10 @@ export function validateIngestInput(raw: unknown): IngestValidation {
   if (!isRecord(raw.payload)) {
     return { ok: false, error: "payload debe ser un objeto." };
   }
-  if (raw.riskLevel !== undefined && !RISK_LEVELS.has(raw.riskLevel as string)) {
+  if (
+    raw.riskLevel !== undefined &&
+    !RISK_LEVELS.has(raw.riskLevel as string)
+  ) {
     return { ok: false, error: "riskLevel no válido." };
   }
   if (raw.externalId !== undefined && !nonEmptyString(raw.externalId)) {
