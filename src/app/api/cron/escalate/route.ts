@@ -31,14 +31,17 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const byId = new Map(actions.map((a) => [a.id, a]));
-  await prisma.$transaction([
-    prisma.agentAction.updateMany({
-      where: { id: { in: overdue }, status: "needs_approval" },
-      data: { status: "escalated" },
-    }),
-    ...overdue.map((id) => {
+  let escalated = 0;
+  await prisma.$transaction(async (tx) => {
+    for (const id of overdue) {
+      const res = await tx.agentAction.updateMany({
+        where: { id, status: "needs_approval" },
+        data: { status: "escalated" },
+      });
+      if (res.count === 0) continue; // salió de needs_approval en la ventana de carrera
+      escalated += 1;
       const a = byId.get(id)!;
-      return prisma.auditEvent.create({
+      await tx.auditEvent.create({
         data: {
           organizationId: a.organizationId,
           agentId: a.agentId,
@@ -48,8 +51,8 @@ export async function POST(request: Request): Promise<NextResponse> {
           metadata: { reason: "sla_overdue" },
         },
       });
-    }),
-  ]);
+    }
+  });
 
-  return NextResponse.json({ escalated: overdue.length });
+  return NextResponse.json({ escalated });
 }
