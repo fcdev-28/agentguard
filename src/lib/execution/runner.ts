@@ -34,6 +34,12 @@ type RunResult = { ok: true; status: ActionStatus } | { error: string };
  * terminal (allowed/approved en el inicial, failed en el reintento) para que dos
  * ejecuciones concurrentes no persistan ambas. `currentAttempts` = reintentos ya
  * hechos (0 en el inicial; el valor post-claim en el reintento).
+ *
+ * Nota: `whereGuard` evita la doble *persistencia*, no el doble *envío*
+ * concurrente del camino inline (dos llamadas a `executeAction` pueden mandar
+ * el email dos veces antes de que una gane el updateMany); el reintento sí
+ * queda cerrado porque el cron `retry-executions` reclama la fila de forma
+ * atómica antes de invocar `retryExecution`.
  */
 async function runAttempt(
   action: AgentAction,
