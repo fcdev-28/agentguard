@@ -9,6 +9,7 @@ import { timingSafeEqual } from "node:crypto";
 import { prisma } from "@/lib/prisma";
 import { getActions } from "@/data/actions";
 import { findOverdue } from "@/lib/sla";
+import { metric } from "@/lib/observability/logger";
 
 function authorized(header: string | null): boolean {
   const secret = process.env.CRON_SECRET;
@@ -53,6 +54,8 @@ export async function POST(request: Request): Promise<NextResponse> {
       });
     }
   });
+
+  metric("action.escalated", { count: escalated });
 
   return NextResponse.json({ escalated });
 }
