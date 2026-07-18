@@ -60,5 +60,6 @@ export const logger = {
 
 /** Evento de métrica: record nivel info con `metric: name` + labels. +1 al counter. */
 export function metric(name: string, labels?: LogFields): void {
-  write("info", name, { metric: name, ...labels });
+  // `metric` va tras el spread: un label homónimo no puede pisar el nombre.
+  write("info", name, { ...labels, metric: name });
 }

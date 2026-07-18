@@ -64,7 +64,10 @@ describe("logger / write", () => {
 });
 
 describe("metric", () => {
-  afterEach(() => vi.restoreAllMocks());
+  afterEach(() => {
+    vi.restoreAllMocks();
+    delete process.env.LOG_LEVEL;
+  });
 
   it("emite un record con metric:name y los labels, a nivel info", () => {
     const spy = vi.spyOn(console, "log").mockImplementation(() => {});
@@ -74,5 +77,19 @@ describe("metric", () => {
     expect(parsed.msg).toBe("action.executed");
     expect(parsed.transport).toBe("resend");
     expect(parsed.level).toBe("info");
+  });
+
+  it("un label homónimo no pisa el nombre de la métrica", () => {
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    metric("action.executed", { metric: "malicioso" });
+    const parsed = JSON.parse(spy.mock.calls[0][0] as string);
+    expect(parsed.metric).toBe("action.executed");
+  });
+
+  it("respeta LOG_LEVEL: con warn, metric (info) no escribe", () => {
+    process.env.LOG_LEVEL = "warn";
+    const spy = vi.spyOn(console, "log").mockImplementation(() => {});
+    metric("action.executed");
+    expect(spy).not.toHaveBeenCalled();
   });
 });
