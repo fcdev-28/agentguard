@@ -1,44 +1,45 @@
 import "server-only";
 
 /**
- * Ejecuta una acción `allowed` o `approved` contra la herramienta real y
- * persiste el desenlace: estado (`executed`/`failed`), `IntegrationLog` como
- * evidencia y `AuditEvent`. Nunca deja la acción colgada: cualquier fallo del
- * transporte se registra como `failed` (reintentos = fase 13).
+ * Ejecuta acciones `allowed`/`approved` contra la herramienta real y persiste el
+ * desenlace (estado, `IntegrationLog`, `AuditEvent`), aplicando la política de
+ * reintentos (`retry.ts`). Núcleo compartido `runAttempt` usado por:
+ *   - `executeAction`: intento inicial (guard status IN allowed/approved).
+ *   - `retryExecution`: reintento de una acción ya reclamada por el cron
+ *     `retry-executions` (guard status = failed).
  *
- * Gates antes de ejecutar:
- * - Parada de emergencia de la organización (`canExecute`): si está activa,
- *   se bloquea sin tocar la herramienta ni la BD.
- * - Fase 12 solo soporta email: si la tool no es de tipo `email` no se
- *   reclama ejecución (evitaría dejar evidencia de auditoría falsa para
- *   refunds/updates/etc. que aún no se ejecutan de verdad).
+ * Fallo reintentable con reintentos disponibles → `failed` + `nextRetryAt` (el
+ * cron lo recogerá). Fallo permanente o agotado → `failed` terminal
+ * (`nextRetryAt` nulo). `attempts` solo lo incrementa el claim del cron.
  *
- * Idempotencia: el `update` de estado usa una guarda (`status IN
- * (allowed, approved)`) dentro de una transacción interactiva, así que si dos
- * ejecuciones compiten, solo una transiciona el estado y escribe
- * IntegrationLog/AuditEvent. Nota: esto no evita el reenvío del email si dos
- * llamadas concurrentes llegan a `transport.send` antes de que la BD arbitre
- * quién gana; la idempotencia del envío en sí (dedupe antes de enviar,
- * outbox/claim) queda para fase 13.
+ * Gates: parada de emergencia (`canExecute`) y solo herramientas `email`.
+ * Idempotencia del persist: `updateMany` guardado por estado dentro de una
+ * transacción interactiva; solo una ejecución concurrente transiciona.
  */
-import type { ActionStatus } from "@/domain";
+import type { ActionStatus, AgentAction } from "@/domain";
+import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getActionById } from "@/data/actions";
 import { applyExecutionResult, toEmailMessage } from "@/lib/execution";
+import type { SendResult } from "@/lib/execution";
 import { resolveTransport } from "@/lib/execution/transport";
 import { canExecute } from "@/lib/emergency";
+import { planNextAttempt } from "@/lib/execution/retry";
 import { metric } from "@/lib/observability/logger";
 
-export async function executeAction(
-  actionId: string,
-): Promise<{ ok: true; status: ActionStatus } | { error: string }> {
-  const action = await getActionById(actionId);
-  if (!action) return { error: "La acción no existe." };
+type RunResult = { ok: true; status: ActionStatus } | { error: string };
 
-  // Verifica el estado antes de gastar el envío.
-  const guard = applyExecutionResult(action.status, { ok: true });
-  if ("error" in guard) return guard;
-
+/**
+ * Envía la acción y persiste el desenlace. `whereGuard` acota el updateMany
+ * terminal (allowed/approved en el inicial, failed en el reintento) para que dos
+ * ejecuciones concurrentes no persistan ambas. `currentAttempts` = reintentos ya
+ * hechos (0 en el inicial; el valor post-claim en el reintento).
+ */
+async function runAttempt(
+  action: AgentAction,
+  currentAttempts: number,
+  whereGuard: Prisma.AgentActionWhereInput,
+): Promise<RunResult> {
   const org = await prisma.organization.findUnique({
     where: { id: action.organizationId },
     select: { emergencyStop: true },
@@ -62,27 +63,35 @@ export async function executeAction(
 
   const transport = resolveTransport();
   const message = toEmailMessage(action);
-  const result = message.to
+  const result: SendResult = message.to
     ? await transport.send(message)
-    : { ok: false, error: "El email no tiene destinatario (payload.to)." };
-  const final = applyExecutionResult(action.status, result);
-  if ("error" in final) return final;
+    : {
+        ok: false,
+        error: "El email no tiene destinatario (payload.to).",
+        retryable: false,
+      };
 
-  const succeeded = final.status === "executed";
+  const succeeded = result.ok;
+  const plan = succeeded
+    ? null
+    : planNextAttempt(currentAttempts, result.retryable ?? false, new Date());
+  const nextRetryAt = plan && plan.kind === "retry" ? plan.nextRetryAt : null;
 
   const persisted = await prisma.$transaction(async (tx) => {
     const res = await tx.agentAction.updateMany({
-      where: { id: actionId, status: { in: ["allowed", "approved"] } },
+      where: { id: action.id, ...whereGuard },
       data: {
-        status: final.status,
+        status: succeeded ? "executed" : "failed",
         executedAt: succeeded ? new Date() : null,
+        nextRetryAt,
+        lastError: succeeded ? null : (result.error ?? "unknown"),
       },
     });
     if (res.count === 0) return false;
 
     await tx.integrationLog.create({
       data: {
-        actionId,
+        actionId: action.id,
         toolType: "email",
         transport: transport.name,
         status: succeeded ? "succeeded" : "failed",
@@ -95,22 +104,36 @@ export async function executeAction(
       data: {
         organizationId: action.organizationId,
         agentId: action.agentId,
-        actionId,
+        actionId: action.id,
         eventType: succeeded ? "action_executed" : "action_failed",
         message: succeeded
           ? "Acción ejecutada contra la herramienta."
-          : "La ejecución de la acción falló.",
-        metadata: { transport: transport.name },
+          : nextRetryAt
+            ? "La ejecución falló; reintento programado."
+            : "La ejecución de la acción falló definitivamente.",
+        metadata: {
+          transport: transport.name,
+          ...(nextRetryAt
+            ? { retryScheduledFor: nextRetryAt.toISOString() }
+            : {}),
+        },
       },
     });
     return true;
   });
+
   if (!persisted) {
     return { error: "La acción ya fue procesada por otra ejecución." };
   }
 
   if (succeeded) {
     metric("action.executed", { toolType: "email", transport: transport.name });
+  } else if (nextRetryAt) {
+    metric("action.retry_scheduled", {
+      toolType: "email",
+      transport: transport.name,
+      attempt: currentAttempts + 1,
+    });
   } else {
     metric("action.failed", {
       toolType: "email",
@@ -119,5 +142,35 @@ export async function executeAction(
     });
   }
 
-  return { ok: true, status: final.status };
+  return { ok: true, status: succeeded ? "executed" : "failed" };
+}
+
+/** Intento inicial de ejecución de una acción `allowed`/`approved`. */
+export async function executeAction(actionId: string): Promise<RunResult> {
+  const action = await getActionById(actionId);
+  if (!action) return { error: "La acción no existe." };
+
+  // Verifica el estado antes de gastar el envío.
+  const guard = applyExecutionResult(action.status, { ok: true });
+  if ("error" in guard) return guard;
+
+  return runAttempt(action, 0, { status: { in: ["allowed", "approved"] } });
+}
+
+/**
+ * Reintenta una acción ya reclamada por el cron `retry-executions` (status=failed,
+ * attempts ya incrementado, nextRetryAt limpiado). No aplica el guard
+ * allowed/approved; el guard del persist es status=failed.
+ */
+export async function retryExecution(actionId: string): Promise<RunResult> {
+  const action = await getActionById(actionId);
+  if (!action) return { error: "La acción no existe." };
+
+  const row = await prisma.agentAction.findUnique({
+    where: { id: actionId },
+    select: { attempts: true },
+  });
+  if (!row) return { error: "La acción no existe." };
+
+  return runAttempt(action, row.attempts, { status: "failed" });
 }
