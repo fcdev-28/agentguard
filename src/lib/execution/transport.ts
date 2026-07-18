@@ -6,6 +6,7 @@
  * persiste el runner, para que sean intercambiables y testeables sin BD.
  */
 import type { EmailMessage, SendResult } from "@/lib/execution";
+import { logger } from "@/lib/observability/logger";
 
 export interface EmailTransport {
   readonly name: string;
@@ -17,7 +18,10 @@ export class LoggingTransport implements EmailTransport {
   readonly name = "logging";
 
   async send(msg: EmailMessage): Promise<SendResult> {
-    console.info("[email:logging]", { to: msg.to, subject: msg.subject });
+    logger.info("email enviado (logging transport)", {
+      to: msg.to,
+      subject: msg.subject,
+    });
     return { ok: true, providerId: "logged" };
   }
 }

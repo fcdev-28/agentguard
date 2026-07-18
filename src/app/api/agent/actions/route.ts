@@ -5,8 +5,10 @@
  * Idempotente por `(agentId, externalId)`.
  */
 import { NextResponse } from "next/server";
+import { randomUUID } from "node:crypto";
 import type { AgentAction } from "@/domain";
 import { prisma } from "@/lib/prisma";
+import { logger, metric } from "@/lib/observability/logger";
 import { Prisma } from "@/generated/prisma/client";
 import { authenticateAgent } from "@/lib/auth/agent-keys-db";
 import { validateIngestInput } from "@/lib/ingest/contract";
@@ -20,6 +22,7 @@ import { getAgents } from "@/data/agents";
 import { getPermissions } from "@/data/permissions";
 
 export async function POST(request: Request): Promise<NextResponse> {
+  const requestId = randomUUID();
   const auth = await authenticateAgent(request.headers.get("authorization"));
   if (!auth) {
     return NextResponse.json({ error: "No autenticado." }, { status: 401 });
@@ -149,11 +152,22 @@ export async function POST(request: Request): Promise<NextResponse> {
     },
   });
 
+  metric("action.ingested", {
+    organizationId: auth.organizationId,
+    agentId: auth.agentId,
+    status,
+    effect: evaluation.effect,
+  });
+
   if (status === "allowed") {
     try {
       await executeAction(created.id);
     } catch (err) {
-      console.error("[ingesta] fallo al ejecutar la acción", created.id, err);
+      logger.error("Fallo al ejecutar la acción tras la ingesta", {
+        requestId,
+        actionId: created.id,
+        err: String(err),
+      });
     }
   }
 

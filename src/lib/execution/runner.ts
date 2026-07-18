@@ -27,6 +27,7 @@ import { getActionById } from "@/data/actions";
 import { applyExecutionResult, toEmailMessage } from "@/lib/execution";
 import { resolveTransport } from "@/lib/execution/transport";
 import { canExecute } from "@/lib/emergency";
+import { metric } from "@/lib/observability/logger";
 
 export async function executeAction(
   actionId: string,
@@ -43,6 +44,9 @@ export async function executeAction(
     select: { emergencyStop: true },
   });
   if (org && !canExecute(org.emergencyStop)) {
+    metric("execution.blocked_emergency", {
+      organizationId: action.organizationId,
+    });
     return { error: "Parada de emergencia activa: ejecución bloqueada." };
   }
 
@@ -103,6 +107,16 @@ export async function executeAction(
   });
   if (!persisted) {
     return { error: "La acción ya fue procesada por otra ejecución." };
+  }
+
+  if (succeeded) {
+    metric("action.executed", { toolType: "email", transport: transport.name });
+  } else {
+    metric("action.failed", {
+      toolType: "email",
+      transport: transport.name,
+      reason: result.error ?? "unknown",
+    });
   }
 
   return { ok: true, status: final.status };
