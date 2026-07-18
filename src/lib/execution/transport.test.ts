@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { LoggingTransport } from "./transport";
+import { LoggingTransport, SmtpTransport } from "./transport";
 
 describe("LoggingTransport", () => {
   afterEach(() => vi.restoreAllMocks());
@@ -27,5 +27,38 @@ describe("LoggingTransport", () => {
     expect(parsed.level).toBe("info");
     expect(parsed.to).toBe("x@example.com");
     expect(parsed.subject).toBe("Hola");
+  });
+});
+
+describe("SmtpTransport retryable", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  const msg = { to: "x@example.com", subject: "Hola", body: "b" };
+
+  it("marca retryable en un 500 del proveedor", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 500 }),
+    );
+    const res = await new SmtpTransport("k", "from@x.com").send(msg);
+    expect(res.ok).toBe(false);
+    expect(res.retryable).toBe(true);
+  });
+
+  it("no marca retryable en un 400", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: false, status: 400 }),
+    );
+    const res = await new SmtpTransport("k", "from@x.com").send(msg);
+    expect(res.ok).toBe(false);
+    expect(res.retryable).toBe(false);
+  });
+
+  it("marca retryable cuando fetch lanza (fallo de red)", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("red caída")));
+    const res = await new SmtpTransport("k", "from@x.com").send(msg);
+    expect(res.ok).toBe(false);
+    expect(res.retryable).toBe(true);
   });
 });
