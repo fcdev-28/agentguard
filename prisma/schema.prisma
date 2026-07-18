@@ -301,6 +301,9 @@ model AgentAction {
   updatedAt      DateTime     @updatedAt
   executedAt     DateTime?
   externalId     String?
+  attempts       Int          @default(0)
+  nextRetryAt    DateTime?
+  lastError      String?
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   agent        Agent        @relation(fields: [agentId], references: [id], onDelete: Restrict)
@@ -319,6 +322,8 @@ model AgentAction {
   @@index([policyId])
   // Cola de revisión: acciones de una org filtradas por estado y ordenadas por vencimiento.
   @@index([organizationId, status, approvalDueAt])
+  // Barrido de reintentos: acciones failed con reintento pendiente.
+  @@index([status, nextRetryAt])
   // Idempotencia de ingesta: un agente no duplica la misma acción externa.
   @@unique([agentId, externalId])
 }
