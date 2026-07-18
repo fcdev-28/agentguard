@@ -3,13 +3,6 @@
  * reintentables o permanentes y calcula el backoff. La persistencia y el barrido
  * viven en el runner y el cron `retry-executions`.
  */
-export const MAX_RETRIES = 5;
-
-/** HTTP reintentable: 429 (rate limit) o 5xx (fallo del proveedor). */
-export function isRetryableHttpStatus(status: number): boolean {
-  return status === 429 || status >= 500;
-}
-
 /** Tramos de backoff antes del reintento k (1-indexado): 1m, 5m, 30m, 2h, 6h. */
 const BACKOFF_MS: readonly number[] = [
   60_000, // 1m — reintento 1
@@ -19,6 +12,14 @@ const BACKOFF_MS: readonly number[] = [
   21_600_000, // 6h — reintento 5
 ];
 
+/** Máximo de reintentos. Derivado de los tramos: una sola fuente de verdad. */
+export const MAX_RETRIES = BACKOFF_MS.length;
+
+/** HTTP reintentable: 429 (rate limit) o 5xx (fallo del proveedor). */
+export function isRetryableHttpStatus(status: number): boolean {
+  return status === 429 || status >= 500;
+}
+
 /** Backoff en ms antes del reintento `retryNumber`; clampa fuera de rango. */
 export function backoffMs(retryNumber: number): number {
   const idx = Math.min(Math.max(retryNumber, 1), BACKOFF_MS.length) - 1;
@@ -26,8 +27,7 @@ export function backoffMs(retryNumber: number): number {
 }
 
 export type NextAttempt =
-  | { kind: "retry"; nextRetryAt: Date }
-  | { kind: "terminal" };
+  { kind: "retry"; nextRetryAt: Date } | { kind: "terminal" };
 
 /**
  * Decide el siguiente paso tras un fallo de envío, dados los reintentos ya
