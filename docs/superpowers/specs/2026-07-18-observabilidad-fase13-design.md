@@ -11,8 +11,7 @@ métricas: solo dos `console.*` ad-hoc:
 
 - `src/lib/execution/transport.ts:20` — `console.info("[email:logging]", …)` en el
   transporte de dev.
-- `src/app/api/agent/actions/route.ts:156` — `console.error("[ingesta] fallo al
-  ejecutar la acción", created.id, err)` cuando la ejecución post-ingesta lanza.
+- `src/app/api/agent/actions/route.ts:156` — `console.error("[ingesta] fallo al ejecutar la acción", created.id, err)` cuando la ejecución post-ingesta lanza.
 
 No hay ninguna dependencia de logging/telemetría en `package.json`.
 
@@ -97,6 +96,7 @@ Reemplaza los dos `console.*` ad-hoc y añade eventos de métrica. Ninguna consu
 a la BD: se usan solo datos ya disponibles en cada sitio.
 
 **`src/app/api/agent/actions/route.ts`:**
+
 - Al inicio del `POST`, generar `const requestId = crypto.randomUUID();` (de
   `node:crypto`) para correlación dentro del handler.
 - Tras crear la acción y su `AuditEvent`, emitir
@@ -106,20 +106,23 @@ a la BD: se usan solo datos ya disponibles en cada sitio.
   (Se serializa `err` a string; no se vuelca el objeto entero.)
 
 **`src/lib/execution/runner.ts`:**
+
 - Cuando la parada de emergencia bloquea: antes de devolver el error,
   `metric("execution.blocked_emergency", { organizationId: action.organizationId })`.
 - Tras persistir el desenlace, emitir según resultado:
   - éxito → `metric("action.executed", { toolType: "email", transport: transport.name })`
   - fallo → `metric("action.failed", { toolType: "email", transport: transport.name, reason: result.error ?? "unknown" })`
-  (Emitido solo cuando `persisted === true`, para no contar ejecuciones que perdieron la
-  carrera de idempotencia.)
+    (Emitido solo cuando `persisted === true`, para no contar ejecuciones que perdieron la
+    carrera de idempotencia.)
 
 **`src/app/api/cron/escalate/route.ts`:**
+
 - Antes del `return NextResponse.json({ escalated })` final, emitir
   `metric("action.escalated", { count: escalated })`. (Un único evento con el conteo del
   barrido; suficiente para "básica".)
 
 **`src/lib/execution/transport.ts`:**
+
 - `console.info("[email:logging]", …)` de la línea 20 pasa a
   `logger.info("email enviado (logging transport)", { to: msg.to, subject: msg.subject })`.
   Nota: `to`/`subject` ya se registraban antes; se mantienen porque este transporte es
@@ -141,6 +144,7 @@ Fichero `src/lib/observability/logger.test.ts`:
 5. `metric`: emite un record con `metric: name` y los labels dados, a nivel info.
 
 Instrumentación:
+
 - El build (`npm run build`) y la suite existente (251 tests) siguen en verde.
 - Añadir en `src/lib/execution/*.test.ts` (o donde ya se testee el runner) **una**
   aserción con spy: al ejecutar con éxito, `metric` (o `console.log`) recibe un evento
@@ -161,6 +165,7 @@ Instrumentación:
 ## Entregable
 
 Una PR con:
+
 - `src/lib/observability/logger.ts` (nuevo) + `src/lib/observability/logger.test.ts` (nuevo)
 - Instrumentación en `api/agent/actions/route.ts`, `execution/runner.ts`,
   `api/cron/escalate/route.ts`, `execution/transport.ts`

@@ -34,7 +34,10 @@ export function buildLogRecord(
   return { ...fields, ts: now.toISOString(), level, msg };
 }
 
-export function shouldLog(configLevel: LogLevel, recordLevel: LogLevel): boolean {
+export function shouldLog(
+  configLevel: LogLevel,
+  recordLevel: LogLevel,
+): boolean {
   return LEVEL_ORDER[recordLevel] >= LEVEL_ORDER[configLevel];
 }
 
