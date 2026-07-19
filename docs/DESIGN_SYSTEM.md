@@ -6,77 +6,90 @@ Definir la base visual de AgentGuard antes de construir la interfaz. Este docume
 
 ## Escena de uso
 
-Un equipo de operaciones revisa acciones de agentes a media mañana, en una pantalla de trabajo luminosa, con presión controlada y necesidad de decidir sin drama.
+Un equipo de operaciones revisa acciones de agentes a media mañana, en una pantalla de trabajo oscura, con presión controlada y necesidad de decidir sin drama.
 
 ## Estrategia visual
 
-Estrategia: restringida.
+Estrategia: restringida, tema oscuro (único modo; `color-scheme: dark`).
 
-La interfaz debe apoyarse en neutros precisos, jerarquía tipográfica y color semántico. El rojo de marca se usa con intención: acciones primarias, foco, riesgo alto y detalles de identidad. No debe teñir toda la experiencia ni convertir cada pantalla en una alarma.
+La interfaz debe apoyarse en neutros oscuros precisos, jerarquía tipográfica y color semántico. El verde lima de marca se usa con intención: acciones primarias, foco y detalles de identidad. No debe teñir toda la experiencia ni convertir cada pantalla en una alarma.
+
+**Regla semántica dura**: el primario (verde lima) ya no significa peligro ni riesgo. El riesgo alto/crítico y las alarmas (por ejemplo, parada de emergencia) van siempre por `danger` (rojo), nunca por el primario. Son dos canales de color separados a propósito: uno identifica marca y acción, el otro identifica amenaza.
 
 ## Paleta base
 
-Todos los colores se expresan en OKLCH.
+Todos los colores se expresan en OKLCH. Fuente de verdad: `src/styles/tokens.css`.
 
 ```css
 :root {
-  --color-bg: oklch(1.000 0.000 0);
-  --color-bg-subtle: oklch(0.985 0.000 0);
-  --color-surface: oklch(0.972 0.000 0);
-  --color-panel: oklch(0.955 0.004 255);
+  color-scheme: dark;
 
-  --color-ink: oklch(0.160 0.006 255);
-  --color-ink-soft: oklch(0.300 0.008 255);
-  --color-muted: oklch(0.470 0.010 255);
-  --color-faint: oklch(0.650 0.008 255);
+  /* Superficies (oscuro, por capas: base casi-negra, paneles algo más claros) */
+  --color-bg: oklch(0.17 0.008 255);
+  --color-bg-subtle: oklch(0.2 0.008 255);
+  --color-surface: oklch(0.235 0.009 255);
+  --color-panel: oklch(0.27 0.01 255);
 
-  --color-border: oklch(0.900 0.006 255);
-  --color-border-strong: oklch(0.820 0.008 255);
+  /* Texto (claro sobre oscuro) */
+  --color-ink: oklch(0.96 0.004 255);
+  --color-ink-soft: oklch(0.83 0.006 255);
+  --color-muted: oklch(0.66 0.008 255);
+  --color-faint: oklch(0.52 0.008 255);
 
-  --color-primary: oklch(0.580 0.170 8);
-  --color-primary-hover: oklch(0.530 0.170 8);
-  --color-primary-soft: oklch(0.955 0.030 8);
-  --color-primary-text: oklch(1.000 0.000 0);
+  /* Bordes (visibles sobre el fondo oscuro) */
+  --color-border: oklch(0.3 0.01 255);
+  --color-border-strong: oklch(0.4 0.012 255);
 
-  --color-accent: oklch(0.360 0.080 246);
-  --color-accent-soft: oklch(0.940 0.020 246);
-  --color-accent-text: oklch(1.000 0.000 0);
+  /* Primario (marca / acción principal / foco): verde lima.
+     Es un color claro y saturado, así que el texto encima va oscuro. */
+  --color-primary: oklch(0.82 0.19 130);
+  --color-primary-hover: oklch(0.76 0.19 130);
+  --color-primary-soft: oklch(0.28 0.06 130);
+  --color-primary-text: oklch(0.18 0.03 130);
+
+  /* Acento técnico */
+  --color-accent: oklch(0.58 0.14 246);
+  --color-accent-soft: oklch(0.27 0.05 246);
+  --color-accent-text: oklch(0.97 0.01 246);
 }
 ```
 
 ## Colores semánticos
 
+Cada color semántico tiene tres variantes: el sólido (para dots e indicadores, brillante sobre el fondo oscuro), `-bg` (tinte oscuro para el fondo de pills) y `-text` (brillante, para el texto que va sobre ese pill oscuro).
+
 ```css
 :root {
-  --color-success: oklch(0.500 0.120 155);
-  --color-success-bg: oklch(0.960 0.035 155);
-  --color-success-text: oklch(0.330 0.090 155);
+  --color-success: oklch(0.72 0.15 155);
+  --color-success-bg: oklch(0.27 0.05 155);
+  --color-success-text: oklch(0.85 0.12 155);
 
-  --color-warning: oklch(0.700 0.135 80);
-  --color-warning-bg: oklch(0.965 0.045 80);
-  --color-warning-text: oklch(0.390 0.085 75);
+  --color-warning: oklch(0.8 0.15 80);
+  --color-warning-bg: oklch(0.28 0.05 80);
+  --color-warning-text: oklch(0.87 0.13 80);
 
-  --color-danger: oklch(0.540 0.170 25);
-  --color-danger-bg: oklch(0.955 0.040 25);
-  --color-danger-text: oklch(0.370 0.130 25);
+  --color-danger: oklch(0.65 0.185 25);
+  --color-danger-bg: oklch(0.28 0.07 25);
+  --color-danger-text: oklch(0.8 0.15 25);
 
-  --color-critical: oklch(0.320 0.120 330);
-  --color-critical-bg: oklch(0.940 0.030 330);
-  --color-critical-text: oklch(0.300 0.115 330);
+  --color-critical: oklch(0.62 0.16 330);
+  --color-critical-bg: oklch(0.27 0.06 330);
+  --color-critical-text: oklch(0.82 0.13 330);
 
-  --color-info: oklch(0.520 0.110 245);
-  --color-info-bg: oklch(0.955 0.030 245);
-  --color-info-text: oklch(0.340 0.090 245);
+  --color-info: oklch(0.68 0.12 245);
+  --color-info-bg: oklch(0.27 0.05 245);
+  --color-info-text: oklch(0.82 0.1 245);
 }
 ```
 
 ## Uso del color
 
-- Primario: acciones principales, foco activo y detalles mínimos de marca.
-- Rojo de riesgo: solo cuando exista impacto real.
-- Azul técnico: información, integración y contexto de sistema.
-- Verde: éxito y acciones completadas.
-- Ámbar: revisión necesaria, advertencias y umbrales.
+- Primario (verde lima, hue 130): acciones principales, foco activo, selección y detalles de marca. Nunca indica riesgo.
+- Rojo (`danger`): riesgo alto, impacto real y alarmas (parada de emergencia). Es el único canal de peligro.
+- Azul técnico (`accent`/`info`): información, integración y contexto de sistema.
+- Verde (`success`, hue 155): éxito y acciones completadas. Hue distinto al primario para no confundir "marca" con "éxito".
+- Ámbar (`warning`): revisión necesaria, advertencias y umbrales.
+- Magenta (`critical`): severidad crítica, un escalón por encima de `danger`.
 - Neutros: estructura, tablas, navegación y lectura.
 
 ## Tipografía
@@ -154,7 +167,7 @@ Navegación principal con icono y texto:
 - Auditoría.
 - Ajustes.
 
-Debe mostrar estado activo con fondo neutro y un detalle rojo mínimo.
+Debe mostrar estado activo con fondo neutro y un detalle en primario (verde lima) mínimo.
 
 ### PageHeader
 
