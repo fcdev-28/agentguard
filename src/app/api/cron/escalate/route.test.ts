@@ -70,7 +70,10 @@ describe("POST /api/cron/escalate", () => {
 
     expect(await res.json()).toEqual({ escalated: 1 });
     expect(notify).toHaveBeenCalledTimes(1);
-    expect(notify.mock.calls[0][0]).toMatchObject({ type: "action_escalated" });
+    expect(notify.mock.calls[0][0]).toMatchObject({
+      type: "action_escalated",
+      actionId: overdueAction.id,
+    });
   });
 
   it("no notifica la acción que otro barrido ya escaló (claim count=0)", async () => {

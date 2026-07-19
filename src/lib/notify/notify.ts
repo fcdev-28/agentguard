@@ -3,7 +3,7 @@ import type { NotificationType } from "@/domain";
 import { prisma } from "@/lib/prisma";
 import { logger, metric } from "@/lib/observability/logger";
 import type { NotificationEvent } from "./events";
-import { recipientsFor } from "./recipients";
+import { recipientsFor, type Recipient } from "./recipients";
 import { notifyInApp } from "./channels/in-app";
 import { notifyEmail } from "./channels/email";
 import { notifySlack } from "./channels/slack";
@@ -14,10 +14,19 @@ import { notifySlack } from "./channels/slack";
  * fallo se registra pero nunca propaga al llamante ni bloquea los otros canales.
  */
 export async function notify(event: NotificationEvent): Promise<void> {
-  const orgUsers = await prisma.user.findMany({
-    where: { organizationId: event.organizationId },
-  });
-  const recipients = recipientsFor(event.type, orgUsers);
+  let recipients: Recipient[] = [];
+  try {
+    const orgUsers = await prisma.user.findMany({
+      where: { organizationId: event.organizationId },
+    });
+    recipients = recipientsFor(event.type, orgUsers);
+  } catch (err) {
+    logger.error("Fallo al resolver destinatarios de notificación", {
+      type: event.type,
+      err: String(err),
+    });
+    metric("notification.failed", { channel: "recipients", type: event.type });
+  }
 
   await runChannel("in-app", event.type, () => notifyInApp(event, recipients));
   await runChannel("email", event.type, () => notifyEmail(event, recipients));

@@ -73,4 +73,22 @@ describe("notify", () => {
       { channel: "email", type: "action_escalated" },
     ]);
   });
+
+  it("un fallo al resolver destinatarios degrada a lista vacía sin propagar y Slack sigue emitiendo", async () => {
+    findMany.mockRejectedValue(new Error("db down"));
+
+    await expect(notify(event)).resolves.toBeUndefined();
+
+    expect(notifySlack).toHaveBeenCalledTimes(1);
+    expect(notifyInApp).toHaveBeenCalledWith(event, []);
+    expect(notifyEmail).toHaveBeenCalledWith(event, []);
+    expect(loggerError).toHaveBeenCalledWith(
+      "Fallo al resolver destinatarios de notificación",
+      expect.objectContaining({ type: "action_escalated" }),
+    );
+    expect(metric.mock.calls).toContainEqual([
+      "notification.failed",
+      { channel: "recipients", type: "action_escalated" },
+    ]);
+  });
 });
