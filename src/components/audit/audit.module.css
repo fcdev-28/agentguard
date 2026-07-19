@@ -385,24 +385,39 @@ a.row:hover {
 .exportLinks {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-2);
   margin-block: var(--space-3);
 }
 
+/* La etiqueta lleva el peso del bloque: es la única acción que produce un
+   artefacto probatorio, así que gana presencia (ink-soft + medium) y margen
+   extra antes de los botones de formato. */
 .exportLabel {
+  margin-right: var(--space-1);
   font-size: var(--text-13);
-  color: var(--color-muted);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-soft);
 }
 
+/* Botones de formato con borde: peso de control real, no enlace al pie.
+   Neutros a propósito (el primario se reserva a riesgo/aprobación). */
 .exportLink {
-  font-size: 13px;
-  color: var(--color-ink-soft);
-  text-decoration: underline;
-  transition: color var(--duration-fast) var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-control);
+  font-size: var(--text-13);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
 }
 
 .exportLink:hover {
-  color: var(--color-ink);
+  background: var(--color-surface);
+  border-color: var(--color-ink-soft);
 }
 
 /* Definido en el módulo, no en globals.css: CSS Modules (Turbopack) hashea la
