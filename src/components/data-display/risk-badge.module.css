@@ -9,7 +9,8 @@
   white-space: nowrap;
 }
 
-/* Gradiente de severidad: neutro -> ámbar -> rojo contorno -> rojo sólido. */
+/* Gradiente de severidad: neutro -> ámbar -> rojo contorno -> rojo sólido.
+   El riesgo va por `danger` (rojo), no por el primario (lima = acción, no peligro). */
 .low {
   background: var(--color-surface);
   color: var(--color-muted);
@@ -23,8 +24,8 @@
   color: var(--color-danger-text);
 }
 .critical {
-  background: var(--color-primary);
-  color: var(--color-primary-text);
+  background: var(--color-danger);
+  color: var(--color-bg);
 }
 
 @media (max-width: 600px) {

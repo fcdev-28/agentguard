@@ -1,57 +1,63 @@
 /**
  * Tokens de diseño de AgentGuard.
  * Colores en OKLCH. Valores definidos en docs/DESIGN_SYSTEM.md.
- * El primario (rojo) se usa con intención: acción principal, foco, riesgo alto, marca.
+ * Tema oscuro. El primario (verde lima) se usa con intención: acción principal,
+ * foco, identidad de marca. El riesgo alto lo lleva `danger` (rojo), separado
+ * del primario a propósito.
  */
 
 :root {
-  /* Superficies */
-  --color-bg: oklch(1 0 0);
-  --color-bg-subtle: oklch(0.985 0 0);
-  --color-surface: oklch(0.972 0 0);
-  --color-panel: oklch(0.955 0.004 255);
+  color-scheme: dark;
 
-  /* Texto */
-  --color-ink: oklch(0.16 0.006 255);
-  --color-ink-soft: oklch(0.3 0.008 255);
-  --color-muted: oklch(0.47 0.01 255);
-  --color-faint: oklch(0.65 0.008 255);
+  /* Superficies (oscuro, por capas: base casi-negra, paneles algo más claros) */
+  --color-bg: oklch(0.17 0.008 255);
+  --color-bg-subtle: oklch(0.2 0.008 255);
+  --color-surface: oklch(0.235 0.009 255);
+  --color-panel: oklch(0.27 0.01 255);
 
-  /* Bordes */
-  --color-border: oklch(0.9 0.006 255);
-  --color-border-strong: oklch(0.82 0.008 255);
+  /* Texto (claro sobre oscuro) */
+  --color-ink: oklch(0.96 0.004 255);
+  --color-ink-soft: oklch(0.83 0.006 255);
+  --color-muted: oklch(0.66 0.008 255);
+  --color-faint: oklch(0.52 0.008 255);
 
-  /* Primario (marca / riesgo alto) */
-  --color-primary: oklch(0.58 0.17 8);
-  --color-primary-hover: oklch(0.53 0.17 8);
-  --color-primary-soft: oklch(0.955 0.03 8);
-  --color-primary-text: oklch(1 0 0);
+  /* Bordes (visibles sobre el fondo oscuro) */
+  --color-border: oklch(0.3 0.01 255);
+  --color-border-strong: oklch(0.4 0.012 255);
+
+  /* Primario (marca / acción principal / foco): verde lima.
+     Es un color claro y saturado, así que el texto encima va oscuro. */
+  --color-primary: oklch(0.82 0.19 130);
+  --color-primary-hover: oklch(0.76 0.19 130);
+  --color-primary-soft: oklch(0.28 0.06 130);
+  --color-primary-text: oklch(0.18 0.03 130);
 
   /* Acento técnico */
-  --color-accent: oklch(0.36 0.08 246);
-  --color-accent-soft: oklch(0.94 0.02 246);
-  --color-accent-text: oklch(1 0 0);
+  --color-accent: oklch(0.58 0.14 246);
+  --color-accent-soft: oklch(0.27 0.05 246);
+  --color-accent-text: oklch(0.97 0.01 246);
 
-  /* Semánticos */
-  --color-success: oklch(0.5 0.12 155);
-  --color-success-bg: oklch(0.96 0.035 155);
-  --color-success-text: oklch(0.33 0.09 155);
+  /* Semánticos: sólido (dots/indicadores, brillante) + -bg (tinte oscuro para
+     pills) + -text (brillante, para texto sobre el pill oscuro). */
+  --color-success: oklch(0.72 0.15 155);
+  --color-success-bg: oklch(0.27 0.05 155);
+  --color-success-text: oklch(0.85 0.12 155);
 
-  --color-warning: oklch(0.7 0.135 80);
-  --color-warning-bg: oklch(0.965 0.045 80);
-  --color-warning-text: oklch(0.39 0.085 75);
+  --color-warning: oklch(0.8 0.15 80);
+  --color-warning-bg: oklch(0.28 0.05 80);
+  --color-warning-text: oklch(0.87 0.13 80);
 
-  --color-danger: oklch(0.54 0.17 25);
-  --color-danger-bg: oklch(0.955 0.04 25);
-  --color-danger-text: oklch(0.37 0.13 25);
+  --color-danger: oklch(0.65 0.185 25);
+  --color-danger-bg: oklch(0.28 0.07 25);
+  --color-danger-text: oklch(0.8 0.15 25);
 
-  --color-critical: oklch(0.32 0.12 330);
-  --color-critical-bg: oklch(0.94 0.03 330);
-  --color-critical-text: oklch(0.3 0.115 330);
+  --color-critical: oklch(0.62 0.16 330);
+  --color-critical-bg: oklch(0.27 0.06 330);
+  --color-critical-text: oklch(0.82 0.13 330);
 
-  --color-info: oklch(0.52 0.11 245);
-  --color-info-bg: oklch(0.955 0.03 245);
-  --color-info-text: oklch(0.34 0.09 245);
+  --color-info: oklch(0.68 0.12 245);
+  --color-info-bg: oklch(0.27 0.05 245);
+  --color-info-text: oklch(0.82 0.1 245);
 
   /* Tipografía */
   --font-sans:
