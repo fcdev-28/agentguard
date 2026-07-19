@@ -9,7 +9,9 @@ import type { NotificationEvent } from "../events";
 export async function notifySlack(event: NotificationEvent): Promise<void> {
   const url = process.env.SLACK_WEBHOOK_URL;
   if (!url) {
-    logger.info("Slack sin configurar: SLACK_WEBHOOK_URL ausente", {
+    // `debug`, no `info`: sin webhook es el caso por defecto y se emitiría en
+    // cada notificación, ensuciando el log estructurado del despliegue común.
+    logger.debug("Slack sin configurar: SLACK_WEBHOOK_URL ausente", {
       type: event.type,
     });
     return;
