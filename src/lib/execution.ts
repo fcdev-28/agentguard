@@ -17,6 +17,7 @@ export interface SendResult {
   ok: boolean;
   providerId?: string;
   error?: string;
+  retryable?: boolean; // solo relevante cuando ok === false
 }
 
 const EXECUTABLE: ReadonlySet<ActionStatus> = new Set<ActionStatus>([

@@ -6,6 +6,7 @@
  * persiste el runner, para que sean intercambiables y testeables sin BD.
  */
 import type { EmailMessage, SendResult } from "@/lib/execution";
+import { isRetryableHttpStatus } from "@/lib/execution/retry";
 import { logger } from "@/lib/observability/logger";
 
 export interface EmailTransport {
@@ -51,7 +52,11 @@ export class SmtpTransport implements EmailTransport {
         }),
       });
       if (!res.ok) {
-        return { ok: false, error: `Resend respondió ${res.status}` };
+        return {
+          ok: false,
+          error: `Resend respondió ${res.status}`,
+          retryable: isRetryableHttpStatus(res.status),
+        };
       }
       const data = (await res.json()) as { id?: string };
       return { ok: true, providerId: data.id };
@@ -59,6 +64,7 @@ export class SmtpTransport implements EmailTransport {
       return {
         ok: false,
         error: err instanceof Error ? err.message : "error de red",
+        retryable: true,
       };
     }
   }
