@@ -26,7 +26,7 @@ export async function notify(event: NotificationEvent): Promise<void> {
 
 /** Ejecuta un canal aislado: éxito → metric `sent`; fallo → log + metric `failed`. Nunca lanza. */
 async function runChannel(
-  channel: string,
+  channel: "in-app" | "email" | "slack",
   type: NotificationType,
   fn: () => Promise<void>,
 ): Promise<void> {

@@ -54,4 +54,9 @@ describe("notifyEmail", () => {
     await notifyEmail(event, [user("a", "")]);
     expect(send).not.toHaveBeenCalled();
   });
+
+  it("rechaza cuando el transporte devuelve ok:false", async () => {
+    send.mockResolvedValue({ ok: false, error: "boom" });
+    await expect(notifyEmail(event, [user("a", "a@x.com")])).rejects.toThrow();
+  });
 });

@@ -12,6 +12,13 @@ export async function notifyEmail(
   const subject = `AgentGuard · ${notificationTypeLabel[event.type]}`;
   for (const u of recipients) {
     if (!u.email) continue;
-    await transport.send({ to: u.email, subject, body: event.message });
+    const result = await transport.send({
+      to: u.email,
+      subject,
+      body: event.message,
+    });
+    if (result.ok === false) {
+      throw new Error(result.error ?? "envío de email falló");
+    }
   }
 }
