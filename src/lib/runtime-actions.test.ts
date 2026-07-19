@@ -43,6 +43,11 @@ vi.mock("next/cache", () => ({
   revalidatePath: vi.fn(),
 }));
 
+const mockNotify = vi.fn();
+vi.mock("@/lib/notify/notify", () => ({
+  notify: (...args: unknown[]) => mockNotify(...args),
+}));
+
 import { revalidatePath } from "next/cache";
 import {
   engageEmergencyStop,
@@ -60,6 +65,7 @@ beforeEach(() => {
   mockTransaction.mockImplementation((ops: unknown[]) => Promise.all(ops));
   vi.mocked(revalidatePath).mockClear();
   mockRequireCan.mockReset().mockResolvedValue({ user: adminUser });
+  mockNotify.mockReset().mockResolvedValue(undefined);
 });
 
 describe("engageEmergencyStop", () => {
@@ -82,6 +88,13 @@ describe("engageEmergencyStop", () => {
         eventType: "emergency_stop_engaged",
       }),
     });
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "emergency_stop",
+        organizationId: "org_acme",
+        actionId: null,
+      }),
+    );
     expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
   });
 });

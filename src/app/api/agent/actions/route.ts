@@ -9,6 +9,7 @@ import { randomUUID } from "node:crypto";
 import type { AgentAction } from "@/domain";
 import { prisma } from "@/lib/prisma";
 import { logger, metric } from "@/lib/observability/logger";
+import { notify } from "@/lib/notify/notify";
 import { Prisma } from "@/generated/prisma/client";
 import { authenticateAgent } from "@/lib/auth/agent-keys-db";
 import { validateIngestInput } from "@/lib/ingest/contract";
@@ -158,6 +159,15 @@ export async function POST(request: Request): Promise<NextResponse> {
     status,
     effect: evaluation.effect,
   });
+
+  if (created.status === "needs_approval") {
+    await notify({
+      type: "approval_requested",
+      organizationId: created.organizationId,
+      actionId: created.id,
+      message: `Nueva acción pendiente de aprobación: ${created.title}.`,
+    });
+  }
 
   if (status === "allowed") {
     try {

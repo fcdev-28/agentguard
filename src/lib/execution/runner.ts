@@ -26,6 +26,7 @@ import { resolveTransport } from "@/lib/execution/transport";
 import { canExecute } from "@/lib/emergency";
 import { planNextAttempt } from "@/lib/execution/retry";
 import { metric } from "@/lib/observability/logger";
+import { notify } from "@/lib/notify/notify";
 
 type RunResult = { ok: true; status: ActionStatus } | { error: string };
 
@@ -145,6 +146,12 @@ async function runAttempt(
       toolType: "email",
       transport: transport.name,
       reason: result.error ?? "unknown",
+    });
+    await notify({
+      type: "agent_error",
+      organizationId: action.organizationId,
+      actionId: action.id,
+      message: `La ejecución de la acción falló definitivamente: ${result.error ?? "error desconocido"}.`,
     });
   }
 
