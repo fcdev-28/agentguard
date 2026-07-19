@@ -17,6 +17,21 @@
   min-width: 0;
 }
 
+.resultCount {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.detailFilterNotice {
+  margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-size: var(--text-13);
+}
+
 @media (max-width: 900px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
@@ -76,6 +91,10 @@
 
 .filterReset:hover {
   color: var(--color-ink);
+}
+
+.filterResetHidden {
+  visibility: hidden;
 }
 
 /* Línea de tiempo: filas enlazadas, mismo lenguaje visual que la cola de revisión. */
@@ -144,6 +163,22 @@ a.row:hover {
   background: var(--color-border-strong);
 }
 
+.dotNeutral {
+  background: var(--color-muted);
+}
+.dotSuccess {
+  background: var(--color-success);
+}
+.dotWarning {
+  background: var(--color-warning);
+}
+.dotDanger {
+  background: var(--color-danger);
+}
+.dotInfo {
+  background: var(--color-info);
+}
+
 .rowMain {
   min-width: 0;
   display: flex;
@@ -166,6 +201,9 @@ a.row:hover {
   font-size: var(--text-13);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rowMessage {
@@ -344,8 +382,14 @@ a.row:hover {
 
 .exportLinks {
   display: flex;
+  align-items: center;
   gap: var(--space-3);
   margin-block: var(--space-3);
+}
+
+.exportLabel {
+  font-size: var(--text-13);
+  color: var(--color-muted);
 }
 
 .exportLink {

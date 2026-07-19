@@ -15,22 +15,31 @@ function exportQuery(
 }
 
 /** Enlaces de descarga del registro de auditoría (CSV/JSON) con los filtros activos. */
-export function AuditExportLinks({ filters }: { filters: AuditFilterValues }) {
+export function AuditExportLinks({
+  filters,
+  count,
+}: {
+  filters: AuditFilterValues;
+  count: number;
+}) {
   return (
     <div className={styles.exportLinks}>
+      <span className={styles.exportLabel}>
+        Exportar {count} {count === 1 ? "evento" : "eventos"}:
+      </span>
       <a
         className={styles.exportLink}
         href={`/api/audit/export?${exportQuery(filters, "csv")}`}
         download
       >
-        Exportar CSV
+        CSV
       </a>
       <a
         className={styles.exportLink}
         href={`/api/audit/export?${exportQuery(filters, "json")}`}
         download
       >
-        Exportar JSON
+        JSON
       </a>
     </div>
   );
