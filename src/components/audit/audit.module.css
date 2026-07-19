@@ -98,6 +98,28 @@
   transition:
     background var(--duration-fast) var(--ease-out),
     border-color var(--duration-fast) var(--ease-out);
+  /* Entrada escalonada: cada fila entra con un pequeño retardo según su
+     posición (--row-index desde el componente), tope a 10 para que las listas
+     largas no arrastren la cascada. `both` mantiene el estado inicial antes de
+     arrancar y el final al terminar. El bloque global de prefers-reduced-motion
+     la neutraliza. */
+  animation: rowEnter var(--duration-base) var(--ease-out) both;
+  animation-delay: calc(min(var(--row-index, 0), 10) * 40ms);
+}
+
+/* Definido aquí, en el módulo, no en globals.css: CSS Modules (Turbopack)
+   hashea el nombre en la referencia `animation: rowEnter` de arriba, así que el
+   @keyframes debe vivir en el mismo módulo para que el nombre coincida. Un
+   keyframe global (rowEnter a secas) no casaría con la referencia hasheada. */
+@keyframes rowEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .timeline .row:last-child {

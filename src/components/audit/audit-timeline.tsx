@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { MouseEvent } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import type { Agent, AuditEvent, User } from "@/domain";
 import { auditEventTypeLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
@@ -83,12 +83,13 @@ export function AuditTimeline({
           />
         ) : (
           <div className={styles.timeline}>
-            {filtered.map((event) => (
+            {filtered.map((event, index) => (
               <Link
                 key={event.id}
                 href={`/audit/${event.id}`}
                 onClick={(clickEvent) => handleClick(clickEvent, event.id)}
                 className={`${styles.row} ${event.id === selectedId ? styles.rowSelected : ""}`}
+                style={{ "--row-index": index } as CSSProperties}
               >
                 <span
                   className={`${styles.dot} ${auditEventTypeClass[event.eventType]}`}
