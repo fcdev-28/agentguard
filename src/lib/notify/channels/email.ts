@@ -1,12 +1,12 @@
-import type { User } from "@/domain";
 import { notificationTypeLabel } from "@/domain";
 import { resolveTransport } from "@/lib/execution/transport";
 import type { NotificationEvent } from "../events";
+import type { Recipient } from "../recipients";
 
 /** Envía un email por cada destinatario que tenga dirección. Reutiliza el transporte de ejecución. */
 export async function notifyEmail(
   event: NotificationEvent,
-  recipients: User[],
+  recipients: Recipient[],
 ): Promise<void> {
   const transport = resolveTransport();
   const subject = `AgentGuard · ${notificationTypeLabel[event.type]}`;
