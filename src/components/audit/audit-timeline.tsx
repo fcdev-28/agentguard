@@ -12,6 +12,7 @@ import {
   filterAuditEvents,
   getAuditEventById,
   getAuditEvents,
+  toAuditEventFilters,
 } from "@/lib/audit";
 import {
   AuditFilters,
@@ -19,6 +20,7 @@ import {
   type AuditFilterValues,
 } from "./audit-filters";
 import { AuditDetail } from "./audit-detail";
+import { AuditExportLinks } from "./audit-export-links";
 import { auditEventTypeClass } from "./audit-style";
 import styles from "./audit.module.css";
 
@@ -43,12 +45,7 @@ export function AuditTimeline({
   const agentName = (id: string) => agents.find((a) => a.id === id)?.name ?? id;
 
   const sorted = getAuditEvents(events);
-  const filtered = filterAuditEvents(sorted, {
-    agentId: filters.agentId || undefined,
-    eventType: filters.eventType || undefined,
-    from: filters.from ? `${filters.from}T00:00:00.000Z` : undefined,
-    to: filters.to ? `${filters.to}T23:59:59.999Z` : undefined,
-  });
+  const filtered = filterAuditEvents(sorted, toAuditEventFilters(filters));
 
   const selectedEvent = selectedId
     ? getAuditEventById(events, selectedId)
@@ -77,6 +74,7 @@ export function AuditTimeline({
     <div className={styles.layout}>
       <div className={styles.timelinePane}>
         <AuditFilters agents={agents} values={filters} onChange={setFilters} />
+        <AuditExportLinks filters={filters} />
 
         {filtered.length === 0 ? (
           <EmptyState

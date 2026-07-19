@@ -39,6 +39,29 @@ export function getAuditEventById(
   return events.find((e) => e.id === id);
 }
 
+/**
+ * Convierte los valores de filtro crudos (de la UI o de query params) a
+ * `AuditEventFilters` de dominio: descarta cadenas vacías, valida `eventType`
+ * contra los tipos conocidos, y expande `from`/`to` a límites de día ISO
+ * inclusivos. Fuente única de la conversión, compartida por el timeline y la
+ * ruta de exportación.
+ */
+export function toAuditEventFilters(raw: {
+  agentId?: string;
+  eventType?: string;
+  from?: string;
+  to?: string;
+}): AuditEventFilters {
+  const filters: AuditEventFilters = {};
+  if (raw.agentId) filters.agentId = raw.agentId;
+  if (raw.eventType && raw.eventType in auditEventTypeLabel) {
+    filters.eventType = raw.eventType as AuditEventType;
+  }
+  if (raw.from) filters.from = `${raw.from}T00:00:00.000Z`;
+  if (raw.to) filters.to = `${raw.to}T23:59:59.999Z`;
+  return filters;
+}
+
 /** Fila plana de un evento de auditoría, lista para una futura exportación (CSV/JSON). */
 export interface AuditExportRow {
   id: string;
