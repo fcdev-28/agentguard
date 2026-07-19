@@ -4,6 +4,7 @@ import {
   getAuditEvents,
   filterAuditEvents,
   getAuditEventById,
+  toAuditEventFilters,
   toAuditExportRow,
 } from "@/lib/audit";
 
@@ -184,5 +185,33 @@ describe("toAuditExportRow", () => {
     const e = event({ agentId: "agt1", actorUserId: null });
     const row = toAuditExportRow(e, { agents: [agent({})], users: [] });
     expect(row.actorName).toBeNull();
+  });
+});
+
+describe("toAuditEventFilters", () => {
+  it("cadenas vacías o ausentes → sin filtros", () => {
+    expect(toAuditEventFilters({})).toEqual({});
+    expect(
+      toAuditEventFilters({ agentId: "", eventType: "", from: "", to: "" }),
+    ).toEqual({});
+  });
+
+  it("convierte from/to a límites de día ISO inclusivos", () => {
+    expect(
+      toAuditEventFilters({ from: "2026-07-19", to: "2026-07-20" }),
+    ).toEqual({
+      from: "2026-07-19T00:00:00.000Z",
+      to: "2026-07-20T23:59:59.999Z",
+    });
+  });
+
+  it("pasa agentId y eventType tal cual cuando están presentes", () => {
+    expect(
+      toAuditEventFilters({ agentId: "agt_a", eventType: "action_blocked" }),
+    ).toEqual({ agentId: "agt_a", eventType: "action_blocked" });
+  });
+
+  it("ignora un eventType que no es un AuditEventType válido", () => {
+    expect(toAuditEventFilters({ eventType: "no_existe" })).toEqual({});
   });
 });
