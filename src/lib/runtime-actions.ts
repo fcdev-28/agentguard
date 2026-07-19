@@ -8,6 +8,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireCan } from "@/lib/auth/authz";
+import { notify } from "@/lib/notify/notify";
 
 /** Resultado uniforme de una mutación: éxito o motivo por el que no procede. */
 type ActionResult = { ok: true } | { error: string };
@@ -50,6 +51,14 @@ export async function engageEmergencyStop(): Promise<ActionResult> {
       },
     }),
   ]);
+
+  await notify({
+    type: "emergency_stop",
+    organizationId: user.organizationId,
+    actionId: null,
+    message:
+      "Parada de emergencia activada: todas las ejecuciones quedan bloqueadas.",
+  });
 
   revalidateEmergencyStop();
   return { ok: true };

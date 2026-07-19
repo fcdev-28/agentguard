@@ -36,6 +36,11 @@ vi.mock("@/lib/observability/logger", () => ({
   logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn(), debug: vi.fn() },
 }));
 
+const notify = vi.fn();
+vi.mock("@/lib/notify/notify", () => ({
+  notify: (...a: unknown[]) => notify(...a),
+}));
+
 import { getActionById } from "@/data/actions";
 import { canExecute } from "@/lib/emergency";
 import { metric } from "@/lib/observability/logger";
@@ -58,6 +63,7 @@ beforeEach(() => {
   toolFindUnique.mockResolvedValue({ type: "email" });
   agentActionFindUnique.mockResolvedValue({ attempts: 0 });
   updateMany.mockResolvedValue({ count: 1 });
+  notify.mockReset().mockResolvedValue(undefined);
 });
 
 afterEach(() => vi.clearAllMocks());
@@ -78,6 +84,9 @@ describe("executeAction — reintentos", () => {
     const data = updateMany.mock.calls[0][0].data;
     expect(data.status).toBe("failed");
     expect(data.nextRetryAt).toBeNull();
+    expect(notify).toHaveBeenCalledWith(
+      expect.objectContaining({ type: "agent_error", actionId: "a1" }),
+    );
   });
 
   it("marca executed y limpia nextRetryAt en éxito", async () => {

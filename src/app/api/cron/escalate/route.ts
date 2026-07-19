@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { getActions } from "@/data/actions";
 import { findOverdue } from "@/lib/sla";
 import { metric } from "@/lib/observability/logger";
+import { notify } from "@/lib/notify/notify";
 
 function authorized(header: string | null): boolean {
   const secret = process.env.CRON_SECRET;
@@ -32,7 +33,7 @@ export async function POST(request: Request): Promise<NextResponse> {
   }
 
   const byId = new Map(actions.map((a) => [a.id, a]));
-  let escalated = 0;
+  const escalatedIds: string[] = [];
   await prisma.$transaction(async (tx) => {
     for (const id of overdue) {
       const res = await tx.agentAction.updateMany({
@@ -40,7 +41,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         data: { status: "escalated" },
       });
       if (res.count === 0) continue; // salió de needs_approval en la ventana de carrera
-      escalated += 1;
+      escalatedIds.push(id);
       const a = byId.get(id)!;
       await tx.auditEvent.create({
         data: {
@@ -55,7 +56,18 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
   });
 
-  metric("action.escalated", { count: escalated });
+  metric("action.escalated", { count: escalatedIds.length });
 
-  return NextResponse.json({ escalated });
+  // Notificar fuera de la transacción (I/O de red no debe alargar el commit).
+  for (const id of escalatedIds) {
+    const a = byId.get(id)!;
+    await notify({
+      type: "action_escalated",
+      organizationId: a.organizationId,
+      actionId: id,
+      message: `Acción escalada automáticamente por vencimiento de SLA: ${a.title}.`,
+    });
+  }
+
+  return NextResponse.json({ escalated: escalatedIds.length });
 }
