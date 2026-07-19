@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { MouseEvent } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import type { Agent, AuditEvent, User } from "@/domain";
 import { auditEventTypeLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
@@ -21,7 +21,7 @@ import {
 } from "./audit-filters";
 import { AuditDetail } from "./audit-detail";
 import { AuditExportLinks } from "./audit-export-links";
-import { auditEventTypeClass } from "./audit-style";
+import { auditEventDotClass, auditEventTypeClass } from "./audit-style";
 import styles from "./audit.module.css";
 
 /** Ancho de pantalla a partir del que la línea de tiempo convive con el panel lateral. */
@@ -42,7 +42,10 @@ export function AuditTimeline({
   const router = useRouter();
   const [filters, setFilters] = useState<AuditFilterValues>(emptyAuditFilters);
 
-  const agentName = (id: string) => agents.find((a) => a.id === id)?.name ?? id;
+  const agentNameById = useMemo(
+    () => new Map(agents.map((a) => [a.id, a.name])),
+    [agents],
+  );
 
   const sorted = getAuditEvents(events);
   const filtered = filterAuditEvents(sorted, toAuditEventFilters(filters));
@@ -50,6 +53,8 @@ export function AuditTimeline({
   const selectedEvent = selectedId
     ? getAuditEventById(events, selectedId)
     : undefined;
+  const selectedInFiltered =
+    selectedId != null && filtered.some((e) => e.id === selectedId);
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>, eventId: string) {
     // Clics para abrir en pestaña nueva o pantallas sin panel: navegación normal a /audit/[eventId].
@@ -74,7 +79,13 @@ export function AuditTimeline({
     <div className={styles.layout}>
       <div className={styles.timelinePane}>
         <AuditFilters agents={agents} values={filters} onChange={setFilters} />
-        <AuditExportLinks filters={filters} />
+        <AuditExportLinks filters={filters} count={filtered.length} />
+
+        <p className={styles.resultCount} aria-live="polite">
+          {filtered.length === sorted.length
+            ? `${sorted.length} ${sorted.length === 1 ? "evento" : "eventos"}`
+            : `${filtered.length} de ${sorted.length} ${sorted.length === 1 ? "evento" : "eventos"}`}
+        </p>
 
         {filtered.length === 0 ? (
           <EmptyState
@@ -83,15 +94,17 @@ export function AuditTimeline({
           />
         ) : (
           <div className={styles.timeline}>
-            {filtered.map((event) => (
+            {filtered.map((event, index) => (
               <Link
                 key={event.id}
                 href={`/audit/${event.id}`}
                 onClick={(clickEvent) => handleClick(clickEvent, event.id)}
                 className={`${styles.row} ${event.id === selectedId ? styles.rowSelected : ""}`}
+                style={{ "--row-index": index } as CSSProperties}
+                aria-current={event.id === selectedId ? "true" : undefined}
               >
                 <span
-                  className={`${styles.dot} ${auditEventTypeClass[event.eventType]}`}
+                  className={`${styles.dot} ${auditEventDotClass[event.eventType]}`}
                   aria-hidden="true"
                 />
                 <div className={styles.rowMain}>
@@ -106,9 +119,13 @@ export function AuditTimeline({
                     </span>
                   </div>
                   <span className={styles.rowAgent}>
-                    {event.agentId ? agentName(event.agentId) : "Sistema"}
+                    {event.agentId
+                      ? (agentNameById.get(event.agentId) ?? event.agentId)
+                      : "Sistema"}
                   </span>
-                  <span className={styles.rowMessage}>{event.message}</span>
+                  <span className={styles.rowMessage} title={event.message}>
+                    {event.message}
+                  </span>
                 </div>
               </Link>
             ))}
@@ -118,6 +135,11 @@ export function AuditTimeline({
 
       {selectedEvent ? (
         <div className={styles.detailPane}>
+          {!selectedInFiltered ? (
+            <p className={styles.detailFilterNotice} role="status">
+              Este evento ya no coincide con los filtros aplicados.
+            </p>
+          ) : null}
           <AuditDetail event={selectedEvent} agents={agents} users={users} />
         </div>
       ) : null}

@@ -79,17 +79,6 @@ video {
   outline-offset: 2px;
 }
 
-/* Pulso de los bloques skeleton (loading.tsx de cada ruta). Global para no
-   duplicar el mismo @keyframes en cada .module.css que lo usa. */
-@keyframes skeletonPulse {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.55;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

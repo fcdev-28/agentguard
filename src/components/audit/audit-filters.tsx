@@ -107,15 +107,15 @@ export function AuditFilters({
         />
       </div>
 
-      {hasActiveFilters ? (
-        <button
-          type="button"
-          className={styles.filterReset}
-          onClick={() => onChange(emptyAuditFilters)}
-        >
-          Limpiar filtros
-        </button>
-      ) : null}
+      <button
+        type="button"
+        className={`${styles.filterReset} ${hasActiveFilters ? "" : styles.filterResetHidden}`}
+        onClick={() => onChange(emptyAuditFilters)}
+        tabIndex={hasActiveFilters ? undefined : -1}
+        aria-hidden={!hasActiveFilters}
+      >
+        Limpiar filtros
+      </button>
     </div>
   );
 }

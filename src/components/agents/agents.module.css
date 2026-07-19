@@ -266,3 +266,15 @@ a.panelRow:hover {
     justify-content: flex-start;
   }
 }
+
+/* Definido en el módulo, no en globals.css: CSS Modules (Turbopack) hashea la
+   referencia `animation: skeletonPulse`, así que el keyframe debe vivir en el
+   mismo módulo para que el nombre coincida. */
+@keyframes skeletonPulse {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.55;
+  }
+}
