@@ -1,11 +1,12 @@
-/* Banner de parada de emergencia: ancho completo, inconfundible (color primario). */
+/* Banner de parada de emergencia: ancho completo, inconfundible. Alarma = danger
+   (rojo), no el primario (lima = acción principal, no peligro). */
 .banner {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-6);
-  background: var(--color-primary);
-  color: var(--color-primary-text);
+  background: var(--color-danger);
+  color: var(--color-bg);
 }
 
 .message {
