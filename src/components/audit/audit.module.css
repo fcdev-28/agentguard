@@ -319,3 +319,20 @@ a.row:hover {
 .backLink:hover {
   color: var(--color-ink);
 }
+
+.exportLinks {
+  display: flex;
+  gap: var(--space-3);
+  margin-block: var(--space-3);
+}
+
+.exportLink {
+  font-size: 13px;
+  color: var(--color-ink-soft);
+  text-decoration: underline;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.exportLink:hover {
+  color: var(--color-ink);
+}

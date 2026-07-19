@@ -20,6 +20,7 @@ import {
   type AuditFilterValues,
 } from "./audit-filters";
 import { AuditDetail } from "./audit-detail";
+import { AuditExportLinks } from "./audit-export-links";
 import { auditEventTypeClass } from "./audit-style";
 import styles from "./audit.module.css";
 
@@ -73,6 +74,7 @@ export function AuditTimeline({
     <div className={styles.layout}>
       <div className={styles.timelinePane}>
         <AuditFilters agents={agents} values={filters} onChange={setFilters} />
+        <AuditExportLinks filters={filters} />
 
         {filtered.length === 0 ? (
           <EmptyState
