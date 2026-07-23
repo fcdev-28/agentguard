@@ -1,6 +1,7 @@
 import type { User, UserRole, UserStatus } from "@/domain";
 import { userRoleLabel, userStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { Select } from "@/components/forms/select";
 import { getUsers } from "@/lib/users";
 import styles from "./settings.module.css";
 
@@ -41,20 +42,15 @@ export function UsersSection({
           <span className={`${styles.statusBadge} ${statusClass[user.status]}`}>
             {userStatusLabel[user.status]}
           </span>
-          <select
-            className={styles.select}
+          <Select
             value={user.role}
-            aria-label={`Rol de ${user.name}`}
-            onChange={(event) =>
-              onChangeRole(user.id, event.target.value as UserRole)
-            }
-          >
-            {Object.entries(userRoleLabel).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            ariaLabel={`Rol de ${user.name}`}
+            onChange={(value) => onChangeRole(user.id, value as UserRole)}
+            options={Object.entries(userRoleLabel).map(([value, label]) => ({
+              value,
+              label,
+            }))}
+          />
         </div>
       ))}
     </div>

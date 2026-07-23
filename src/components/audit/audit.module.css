@@ -52,14 +52,13 @@
   color: var(--color-muted);
 }
 
-.filterSelect,
 .filterInput {
-  padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-control);
   color: var(--color-ink);
   background: var(--color-bg);
   font-size: var(--text-13);
+  padding: var(--space-2) var(--space-3);
 }
 
 .filterReset {
@@ -94,10 +93,7 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
-  border-left: 2px solid transparent;
-  transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-out);
 }
 
 .timeline .row:last-child {
@@ -109,8 +105,7 @@ a.row:hover {
 }
 
 .rowSelected {
-  background: var(--color-surface);
-  border-left-color: var(--color-primary);
+  background: var(--color-primary-soft);
 }
 
 .dot {

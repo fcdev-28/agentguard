@@ -2,6 +2,7 @@
 
 import type { Agent, AuditEventType } from "@/domain";
 import { auditEventTypeLabel } from "@/domain";
+import { Select } from "@/components/forms/select";
 import styles from "./audit.module.css";
 
 /** Valores de filtro del registro de auditoría; cadena vacía = sin filtrar por esa clave. */
@@ -45,40 +46,35 @@ export function AuditFilters({
         <label className={styles.filterLabel} htmlFor="audit-filter-agent">
           Agente
         </label>
-        <select
+        <Select
           id="audit-filter-agent"
-          className={styles.filterSelect}
           value={values.agentId}
-          onChange={(event) => update({ agentId: event.target.value })}
-        >
-          <option value="">Todos</option>
-          {agents.map((agent) => (
-            <option key={agent.id} value={agent.id}>
-              {agent.name}
-            </option>
-          ))}
-        </select>
+          onChange={(value) => update({ agentId: value })}
+          options={[
+            { value: "", label: "Todos" },
+            ...agents.map((agent) => ({ value: agent.id, label: agent.name })),
+          ]}
+        />
       </div>
 
       <div className={styles.filterField}>
         <label className={styles.filterLabel} htmlFor="audit-filter-type">
           Tipo de evento
         </label>
-        <select
+        <Select
           id="audit-filter-type"
-          className={styles.filterSelect}
           value={values.eventType}
-          onChange={(event) =>
-            update({ eventType: event.target.value as AuditEventType | "" })
+          onChange={(value) =>
+            update({ eventType: value as AuditEventType | "" })
           }
-        >
-          <option value="">Todos</option>
-          {Object.entries(auditEventTypeLabel).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
+          options={[
+            { value: "", label: "Todos" },
+            ...Object.entries(auditEventTypeLabel).map(([value, label]) => ({
+              value,
+              label,
+            })),
+          ]}
+        />
       </div>
 
       <div className={styles.filterField}>

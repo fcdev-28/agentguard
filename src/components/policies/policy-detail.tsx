@@ -13,6 +13,7 @@ import type {
 import { policyEffectLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
+import { Select } from "@/components/forms/select";
 import { getAffectedActions } from "@/lib/policies";
 import { formatRelativeTime } from "@/lib/format";
 import {
@@ -258,20 +259,14 @@ export function PolicyDetail({
                   <label className={styles.fieldLabel} htmlFor="condition-tool">
                     Herramienta
                   </label>
-                  <select
+                  <Select
                     id="condition-tool"
-                    className={styles.fieldSelect}
                     value={String(edited.conditions.tool ?? "")}
-                    onChange={(event) =>
-                      setCondition("tool", event.target.value)
-                    }
-                  >
-                    {Object.entries(toolTypeLabel).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setCondition("tool", value)}
+                    options={Object.entries(toolTypeLabel).map(
+                      ([value, label]) => ({ value, label }),
+                    )}
+                  />
                 </div>
               ) : null}
               {hasScopeCondition ? (
@@ -282,20 +277,14 @@ export function PolicyDetail({
                   >
                     Alcance
                   </label>
-                  <select
+                  <Select
                     id="condition-scope"
-                    className={styles.fieldSelect}
                     value={String(edited.conditions.scope ?? "")}
-                    onChange={(event) =>
-                      setCondition("scope", event.target.value)
-                    }
-                  >
-                    {Object.entries(scopeLabel).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setCondition("scope", value)}
+                    options={Object.entries(scopeLabel).map(
+                      ([value, label]) => ({ value, label }),
+                    )}
+                  />
                 </div>
               ) : null}
             </div>
@@ -330,23 +319,20 @@ export function PolicyDetail({
               <label className={styles.fieldLabel} htmlFor="policy-effect">
                 Efecto
               </label>
-              <select
+              <Select
                 id="policy-effect"
-                className={styles.fieldSelect}
                 value={edited.effect}
-                onChange={(event) =>
+                onChange={(value) =>
                   setEdited((prev) => ({
                     ...prev,
-                    effect: event.target.value as PolicyEffect,
+                    effect: value as PolicyEffect,
                   }))
                 }
-              >
-                {EFFECT_OPTIONS.map((value) => (
-                  <option key={value} value={value}>
-                    {policyEffectLabel[value]}
-                  </option>
-                ))}
-              </select>
+                options={EFFECT_OPTIONS.map((value) => ({
+                  value,
+                  label: policyEffectLabel[value],
+                }))}
+              />
             </div>
             <div className={styles.field}>
               <label className={styles.fieldLabel} htmlFor="policy-sla">

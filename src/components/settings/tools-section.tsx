@@ -2,15 +2,9 @@ import type { Tool, ToolStatus } from "@/domain";
 import { toolStatusLabel, toolTypeLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { RiskBadge } from "@/components/data-display/risk-badge";
+import { Select } from "@/components/forms/select";
 import { getTools } from "@/lib/tools";
 import styles from "./settings.module.css";
-
-/** Clase de color por estado de herramienta. */
-const statusClass: Record<ToolStatus, string> = {
-  active: styles.statusActive,
-  paused: styles.statusPaused,
-  disabled: styles.statusDisabled,
-};
 
 /** Listado de herramientas conectadas con cambio de estado (estado local, no persistido). */
 export function ToolsSection({
@@ -40,20 +34,15 @@ export function ToolsSection({
             <span className={styles.meta}>{toolTypeLabel[tool.type]}</span>
           </div>
           <RiskBadge level={tool.riskLevel} />
-          <select
-            className={`${styles.select} ${statusClass[tool.status]}`}
+          <Select
             value={tool.status}
-            aria-label={`Estado de ${tool.name}`}
-            onChange={(event) =>
-              onChangeStatus(tool.id, event.target.value as ToolStatus)
-            }
-          >
-            {Object.entries(toolStatusLabel).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            ariaLabel={`Estado de ${tool.name}`}
+            onChange={(value) => onChangeStatus(tool.id, value as ToolStatus)}
+            options={Object.entries(toolStatusLabel).map(([value, label]) => ({
+              value,
+              label,
+            }))}
+          />
         </div>
       ))}
     </div>

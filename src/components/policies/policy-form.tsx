@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Permission, PolicyEffect, Tool } from "@/domain";
 import { policyEffectLabel } from "@/domain";
 import { createPolicy } from "@/lib/policy-actions";
+import { Select } from "@/components/forms/select";
 import { EFFECT_OPTIONS, scopeLabel, toolTypeLabel } from "./policy-detail";
 import styles from "./policies.module.css";
 
@@ -93,18 +94,15 @@ export function PolicyForm({ canWrite }: { canWrite: boolean }) {
           <label className={styles.fieldLabel} htmlFor="policy-effect">
             Efecto
           </label>
-          <select
+          <Select
             id="policy-effect"
-            className={styles.fieldSelect}
             value={effect}
-            onChange={(event) => setEffect(event.target.value as PolicyEffect)}
-          >
-            {EFFECT_OPTIONS.map((value) => (
-              <option key={value} value={value}>
-                {policyEffectLabel[value]}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setEffect(value as PolicyEffect)}
+            options={EFFECT_OPTIONS.map((value) => ({
+              value,
+              label: policyEffectLabel[value],
+            }))}
+          />
         </div>
         <div className={styles.field}>
           <label className={styles.fieldLabel} htmlFor="policy-sla">
@@ -139,17 +137,15 @@ export function PolicyForm({ canWrite }: { canWrite: boolean }) {
           Condición por herramienta
         </label>
         {includeTool ? (
-          <select
-            className={styles.fieldSelect}
+          <Select
+            ariaLabel="Herramienta"
             value={tool}
-            onChange={(event) => setTool(event.target.value as Tool["type"])}
-          >
-            {Object.entries(toolTypeLabel).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setTool(value as Tool["type"])}
+            options={Object.entries(toolTypeLabel).map(([value, label]) => ({
+              value,
+              label,
+            }))}
+          />
         ) : null}
       </div>
 
@@ -163,19 +159,15 @@ export function PolicyForm({ canWrite }: { canWrite: boolean }) {
           Condición por alcance
         </label>
         {includeScope ? (
-          <select
-            className={styles.fieldSelect}
+          <Select
+            ariaLabel="Alcance"
             value={scope}
-            onChange={(event) =>
-              setScope(event.target.value as Permission["scope"])
-            }
-          >
-            {Object.entries(scopeLabel).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
+            onChange={(value) => setScope(value as Permission["scope"])}
+            options={Object.entries(scopeLabel).map(([value, label]) => ({
+              value,
+              label,
+            }))}
+          />
         ) : null}
       </div>
 
