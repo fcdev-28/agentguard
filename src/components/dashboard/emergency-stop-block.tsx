@@ -8,6 +8,7 @@ import {
   engageEmergencyStop,
   releaseEmergencyStop,
 } from "@/lib/runtime-actions";
+import { MotionButton } from "@/components/forms/motion-button";
 import styles from "./dashboard.module.css";
 
 /** Control de nivel organización: congela toda ejecución de agentes al instante (ver docs/FEATURES.md). */
@@ -53,25 +54,25 @@ export function EmergencyStopBlock({
               : "Se detendrá toda ejecución de agentes en la organización de forma inmediata. ¿Confirmas?"}
           </p>
           <div className={styles.emergencyActions}>
-            <button
+            <MotionButton
               type="button"
               className={styles.emergencyButtonGhost}
               onClick={() => setPendingConfirm(false)}
             >
               Cancelar
-            </button>
-            <button
+            </MotionButton>
+            <MotionButton
               type="button"
               className={styles.emergencyButton}
               onClick={confirm}
             >
               Confirmar
-            </button>
+            </MotionButton>
           </div>
         </div>
       ) : (
         <div className={styles.emergencyActions}>
-          <button
+          <MotionButton
             type="button"
             className={styles.emergencyButton}
             onClick={() => setPendingConfirm(true)}
@@ -79,7 +80,7 @@ export function EmergencyStopBlock({
             {emergencyStop.active
               ? "Liberar parada"
               : "Activar parada de emergencia"}
-          </button>
+          </MotionButton>
         </div>
       )}
     </DashboardBlock>
