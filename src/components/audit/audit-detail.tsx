@@ -1,16 +1,10 @@
 import Link from "next/link";
 import type { Agent, AuditEvent, User } from "@/domain";
 import { auditEventTypeLabel } from "@/domain";
+import { KeyValueView } from "@/components/data-display/key-value-view";
 import { formatRelativeTime } from "@/lib/format";
 import { auditEventTypeClass } from "./audit-style";
 import styles from "./audit.module.css";
-
-/** Metadata formateada como JSON legible, o null si el evento no trae ninguna. */
-function formatMetadata(metadata: Record<string, unknown>): string | null {
-  return Object.keys(metadata).length === 0
-    ? null
-    : JSON.stringify(metadata, null, 2);
-}
 
 /** Momento absoluto en castellano, fijado a UTC para que coincida entre servidor y cliente. */
 function formatAbsoluteTime(iso: string): string {
@@ -37,7 +31,7 @@ export function AuditDetail({
   const actor = event.actorUserId
     ? users.find((u) => u.id === event.actorUserId)
     : undefined;
-  const metadata = formatMetadata(event.metadata);
+  const hasMetadata = Object.keys(event.metadata).length > 0;
 
   return (
     <div className={styles.detail}>
@@ -72,8 +66,8 @@ export function AuditDetail({
 
       <section className={styles.detailSection}>
         <h3 className={styles.detailSectionTitle}>Metadata</h3>
-        {metadata ? (
-          <pre className={styles.metadataBlock}>{metadata}</pre>
+        {hasMetadata ? (
+          <KeyValueView data={event.metadata} />
         ) : (
           <p className={styles.hint}>Sin datos adicionales.</p>
         )}

@@ -3,6 +3,7 @@
 import { useOptimistic, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { MotionButton } from "@/components/forms/motion-button";
 import { getPendingActions } from "@/lib/dashboard";
 import type {
   ActionComment,
@@ -78,7 +79,7 @@ export function ReviewScreen({
   const requestedId = searchParams.get("selected");
   const selectedId = pending.some((a) => a.id === requestedId)
     ? requestedId
-    : (pending[0]?.id ?? null);
+    : null;
 
   function toggleSelect(actionId: string) {
     setSelectedIds((prev) => {
@@ -146,30 +147,30 @@ export function ReviewScreen({
               aria-label="Motivo de la decisión por lote"
             />
             <div className={styles.selectionActions}>
-              <button
+              <MotionButton
                 type="button"
                 className={`${styles.decisionButton} ${styles.approve}`}
                 onClick={() => applyBatch("approved")}
                 disabled={emergencyStop.active}
               >
                 Aprobar
-              </button>
-              <button
+              </MotionButton>
+              <MotionButton
                 type="button"
                 className={`${styles.decisionButton} ${styles.reject}`}
                 onClick={() => applyBatch("rejected")}
                 disabled={reasonMissing}
               >
                 Rechazar
-              </button>
-              <button
+              </MotionButton>
+              <MotionButton
                 type="button"
                 className={styles.decisionButton}
                 onClick={() => applyBatch("changes_requested")}
                 disabled={reasonMissing}
               >
                 Pedir cambios
-              </button>
+              </MotionButton>
             </div>
             {emergencyStop.active ? (
               <p className={styles.hint}>

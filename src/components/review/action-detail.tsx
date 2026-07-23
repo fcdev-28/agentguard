@@ -15,6 +15,7 @@ import {
   type User,
 } from "@/domain";
 import { RiskBadge } from "@/components/data-display/risk-badge";
+import { MotionButton } from "@/components/forms/motion-button";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
@@ -23,12 +24,30 @@ import { addComment, decideAction, escalateAction } from "@/lib/review-actions";
 import { actionStatusClass } from "./status-style";
 import { eligibleEscalationTargets, type ReviewDecision } from "@/lib/review";
 import { commentsForAction, isValidCommentBody } from "@/lib/comments";
+import { KeyValueView } from "@/components/data-display/key-value-view";
 import styles from "./review.module.css";
 
-/** Representación legible de un valor del payload (sin volcar JSON crudo). */
+/** Orden preferido de las claves del payload al mostrarlo; las no listadas van
+ *  después, conservando su orden original. Controla la vista, no el dato. */
+const PAYLOAD_KEY_ORDER = [
+  "amount",
+  "reason",
+  "currency",
+  "customer",
+  "invoiceId",
+];
+
+function orderPayloadEntries(payload: Record<string, unknown>) {
+  const rank = (key: string) => {
+    const index = PAYLOAD_KEY_ORDER.indexOf(key);
+    return index === -1 ? PAYLOAD_KEY_ORDER.length : index;
+  };
+  return Object.entries(payload).sort(([a], [b]) => rank(a) - rank(b));
+}
+
+/** Representación legible de un valor primitivo del payload (sin volcar JSON crudo). */
 function formatPayloadValue(value: unknown): string {
   if (value === null || value === undefined) return "—";
-  if (typeof value === "object") return JSON.stringify(value);
   return String(value);
 }
 
@@ -93,7 +112,7 @@ export function ActionDetail({
     ? policies.find((p) => p.id === policyEvaluation.policyId)
     : null;
   const visibleComments = commentsForAction(optimisticComments, action.id);
-  const payloadEntries = Object.entries(action.payload);
+  const payloadEntries = orderPayloadEntries(action.payload);
   const resolvedActionId = action.id;
   const escalationTargets = eligibleEscalationTargets(users, currentUserId);
 
@@ -190,11 +209,21 @@ export function ActionDetail({
           <p className={styles.hint}>Sin datos adicionales.</p>
         ) : (
           <div className={styles.metaRow}>
-            {payloadEntries.map(([key, value]) => (
-              <span key={key} className={styles.metaItem}>
-                {key}: <strong>{formatPayloadValue(value)}</strong>
-              </span>
-            ))}
+            {payloadEntries.map(([key, value]) =>
+              typeof value === "object" && value !== null ? (
+                <div
+                  key={key}
+                  className={`${styles.metaItem} ${styles.metaItemBlock}`}
+                >
+                  <span className={styles.blockKey}>{key}</span>
+                  <KeyValueView data={value} />
+                </div>
+              ) : (
+                <span key={key} className={styles.metaItem}>
+                  {key}: <strong>{formatPayloadValue(value)}</strong>
+                </span>
+              ),
+            )}
           </div>
         )}
       </section>
@@ -250,7 +279,7 @@ export function ActionDetail({
             <div className={styles.reasonActions}>
               <button
                 type="button"
-                className={styles.decisionButton}
+                className={`${styles.decisionButton} ${styles.commentButton}`}
                 onClick={submitComment}
                 disabled={!isValidCommentBody(commentBody)}
               >
@@ -266,28 +295,28 @@ export function ActionDetail({
           {pendingDecision === null ? (
             <>
               <div className={styles.decisionBar}>
-                <button
+                <MotionButton
                   type="button"
                   className={`${styles.decisionButton} ${styles.approve}`}
                   onClick={() => startDecision("approved")}
                   disabled={emergencyStop.active}
                 >
                   Aprobar
-                </button>
-                <button
+                </MotionButton>
+                <MotionButton
                   type="button"
                   className={`${styles.decisionButton} ${styles.reject}`}
                   onClick={() => startDecision("rejected")}
                 >
                   Rechazar
-                </button>
-                <button
+                </MotionButton>
+                <MotionButton
                   type="button"
                   className={styles.decisionButton}
                   onClick={() => startDecision("changes_requested")}
                 >
                   Pedir cambios
-                </button>
+                </MotionButton>
               </div>
               {emergencyStop.active ? (
                 <p className={styles.hint}>
@@ -296,13 +325,13 @@ export function ActionDetail({
               ) : null}
               {escalationTargets.length > 0 ? (
                 <div className={styles.escalateRow}>
-                  <button
+                  <MotionButton
                     type="button"
                     className={styles.decisionButtonGhost}
                     onClick={confirmEscalate}
                   >
                     Escalar a un responsable
-                  </button>
+                  </MotionButton>
                 </div>
               ) : null}
             </>
@@ -330,14 +359,14 @@ export function ActionDetail({
                 >
                   Cancelar
                 </button>
-                <button
+                <MotionButton
                   type="button"
                   className={`${styles.decisionButton} ${styles.reject}`}
                   onClick={confirmDecision}
                   disabled={!reason.trim()}
                 >
                   Confirmar
-                </button>
+                </MotionButton>
               </div>
             </div>
           )}
