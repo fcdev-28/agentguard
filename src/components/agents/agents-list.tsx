@@ -46,6 +46,14 @@ export function AgentsList({
 
   return (
     <div className={styles.list}>
+      <div className={styles.header}>
+        <span>Agente</span>
+        <span>Responsable</span>
+        <span>Estado</span>
+        <span>Modo</span>
+        <span>Riesgo</span>
+        <span>Actividad</span>
+      </div>
       {sorted.map((agent) => {
         const risk = getAgentRecentRisk(actions, agent.id);
         const lastActivityAt = getAgentLastActivityAt(actions, agent.id);
@@ -66,11 +74,13 @@ export function AgentsList({
               {agentStatusLabel[status]}
             </span>
             <span className={styles.mode}>{agentModeLabel[agent.mode]}</span>
-            {risk ? (
-              <RiskBadge level={risk} />
-            ) : (
-              <span className={styles.noRisk}>—</span>
-            )}
+            <div className={styles.riskCell}>
+              {risk ? (
+                <RiskBadge level={risk} />
+              ) : (
+                <span className={styles.noRisk}>—</span>
+              )}
+            </div>
             <span className={styles.activity}>
               {lastActivityAt
                 ? formatRelativeTime(lastActivityAt)

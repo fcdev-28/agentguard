@@ -8,13 +8,19 @@
   overflow: hidden;
 }
 
-.row {
+.row,
+.header {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto auto auto auto;
+  grid-template-columns:
+    minmax(0, 2.5fr) minmax(0, 1.4fr) 110px 130px 90px
+    130px;
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-4);
   border-bottom: 1px solid var(--color-border);
+}
+
+.row {
   transition: background var(--duration-fast) var(--ease-out);
 }
 
@@ -24,6 +30,21 @@
 
 a.row:hover {
   background: var(--color-surface);
+}
+
+/* Cabecera de la tabla: mismas columnas que .row para que alineen. */
+.header {
+  font-size: var(--text-12);
+  color: var(--color-muted);
+  font-weight: var(--weight-medium);
+  background: var(--color-surface);
+}
+
+/* Fila activa: mismo tratamiento que review/audit. No se aplica hoy porque
+   /agents/[agentId] es una página aparte, sin la lista visible a la vez
+   (ver nota en el reporte de la tarea). */
+.rowSelected {
+  background: var(--color-primary-soft);
 }
 
 .identity {
@@ -69,7 +90,14 @@ a.row:hover {
   font-size: var(--text-12);
   color: var(--color-muted);
   white-space: nowrap;
-  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Contenedor de la celda de riesgo: mismo punto de inicio tenga o no badge. */
+.riskCell {
+  display: flex;
+  align-items: center;
 }
 
 .noRisk {
@@ -81,11 +109,12 @@ a.row:hover {
 .statusBadge {
   display: inline-flex;
   align-items: center;
-  padding: 1px 8px;
+  justify-self: start;
+  padding: 2px 8px;
   border-radius: var(--radius-pill);
   font-size: var(--text-12);
   font-weight: var(--weight-medium);
-  line-height: 18px;
+  line-height: 1.4;
   white-space: nowrap;
 }
 
@@ -107,13 +136,17 @@ a.row:hover {
 }
 
 @media (max-width: 900px) {
+  .header {
+    display: none;
+  }
+
   .row {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2);
   }
 
-  .activity {
-    text-align: left;
+  .riskCell {
+    display: inline-flex;
   }
 }
 
