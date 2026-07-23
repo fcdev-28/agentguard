@@ -24,7 +24,7 @@
 
 .blockTitle {
   font-size: var(--text-14);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
   color: var(--color-ink);
 }
 
@@ -99,10 +99,11 @@ a.row:hover {
 }
 
 .metricValue {
-  font-size: var(--text-30);
-  font-weight: var(--weight-semibold);
+  font-size: var(--text-36);
+  font-weight: var(--weight-bold);
   letter-spacing: -0.02em;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .metricLabel {
@@ -159,8 +160,9 @@ a.row:hover {
 }
 
 .breakdownCount {
-  font-weight: var(--weight-semibold);
+  font-weight: var(--weight-bold);
   color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Bloque de parada de emergencia (dashboard). */

@@ -71,10 +71,12 @@
   --text-20: 1.25rem; /* títulos de sección */
   --text-24: 1.5rem; /* título de pantalla */
   --text-30: 1.875rem; /* título de dashboard */
+  --text-36: 2.25rem; /* métrica hero: el número que debe mandar */
 
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
+  --weight-bold: 700; /* títulos display y métricas: contraste real de peso */
 
   /* Espaciado (base 4px) */
   --space-1: 4px;

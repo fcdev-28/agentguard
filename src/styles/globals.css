@@ -36,8 +36,21 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: var(--weight-semibold);
   line-height: 1.25;
+  text-wrap: balance;
+}
+
+/* Títulos display: peso bold para contraste real con el cuerpo (400). */
+h1,
+h2 {
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.01em;
+}
+
+/* Títulos de sección/panel: un escalón por debajo, para preservar la jerarquía. */
+h3,
+h4 {
+  font-weight: var(--weight-semibold);
 }
 
 h1 {
@@ -77,6 +90,14 @@ video {
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Checkbox nativo con acento lima, coherente con el resto de controles. */
+input[type="checkbox"] {
+  accent-color: var(--color-primary);
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
 }
 
 /* Pulso de los bloques skeleton (loading.tsx de cada ruta). Global para no
