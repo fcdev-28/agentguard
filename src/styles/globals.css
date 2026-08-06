@@ -58,6 +58,13 @@ a {
   text-decoration: none;
 }
 
+/* Importes, duraciones, contadores, IDs y el contador de la barra de
+   parada: sin esto los dígitos bailan al actualizarse y la columna deja
+   de alinear (docs/design/IDENTITY.md §2.2). */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
 button,
 input,
 select,
