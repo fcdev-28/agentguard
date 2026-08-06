@@ -138,7 +138,7 @@
 /* Marca "Vencida" en línea, dentro de un metaItem (sin forma de pill). */
 .overdueInline {
   font-weight: var(--weight-semibold);
-  color: var(--color-danger-text);
+  color: var(--color-hold-deep);
 }
 
 /* Badge "Vencida", coherente con el bloque de pendientes del dashboard. */
@@ -150,8 +150,8 @@
   font-size: var(--text-12);
   font-weight: var(--weight-semibold);
   line-height: 18px;
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
 }
 
 /* Pill de estado de acción: misma forma que RiskBadge, paleta propia. */
@@ -171,20 +171,20 @@
   color: var(--color-ink-soft);
 }
 .statusSuccess {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusWarning {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
 }
 .statusDanger {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
 }
 .statusInfo {
-  background: var(--color-info-bg);
-  color: var(--color-info-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 
 /* Panel de detalle de acción (reutilizado por la cola y por /review/[actionId]). */
@@ -312,15 +312,21 @@
 }
 
 .approve {
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  border-color: var(--color-act);
+  background: var(--color-act);
+  color: var(--color-paper-plate);
+}
+
+/* .decisionButton:hover (más específico) pisaría el fondo a paper-plate y
+   dejaría el texto de .approve (paper-plate) ilegible; se fija aparte. */
+.approve:hover {
+  background: var(--color-act-press);
 }
 
 .reject {
-  border-color: var(--color-danger);
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  border-color: var(--color-fault);
+  background: var(--color-paper-plate);
+  color: var(--color-fault);
 }
 
 .decisionButtonGhost {

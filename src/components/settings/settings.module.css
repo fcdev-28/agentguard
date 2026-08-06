@@ -6,10 +6,10 @@
   margin-top: var(--space-4);
   padding: var(--space-3);
   border: 1px solid var(--color-ink-hair);
-  border-left: 3px solid var(--color-accent);
+  border-left: 3px solid var(--color-ink-faint);
   border-radius: var(--radius-control);
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
   font-size: var(--text-13);
 }
 
@@ -125,16 +125,16 @@
 }
 
 .statusActive {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusInvited {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusPaused {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusDisabled {
   background: var(--color-paper-plate);

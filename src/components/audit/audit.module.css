@@ -27,8 +27,8 @@
   margin: 0 0 var(--space-3);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-control);
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
   font-size: var(--text-13);
 }
 
@@ -167,18 +167,16 @@ a.row:hover {
   background: var(--color-ink-soft);
 }
 .dotSuccess {
-  background: var(--color-success);
+  background: var(--color-ink-faint);
 }
-/* Warning usa el token de texto (L más baja): el --color-warning claro (L0.7)
-   no llega a 3:1 sobre blanco para un dot de 8px (WCAG 1.4.11). */
 .dotWarning {
-  background: var(--color-warning-text);
+  background: var(--color-ink-faint);
 }
 .dotDanger {
-  background: var(--color-danger);
+  background: var(--color-fault);
 }
 .dotInfo {
-  background: var(--color-info);
+  background: var(--color-ink-faint);
 }
 
 .rowMain {
@@ -233,20 +231,20 @@ a.row:hover {
   color: var(--color-ink-soft);
 }
 .eventSuccess {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .eventWarning {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .eventDanger {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
 }
 .eventInfo {
-  background: var(--color-info-bg);
-  color: var(--color-info-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 
 @media (max-width: 600px) {

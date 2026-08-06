@@ -9,23 +9,24 @@
   white-space: nowrap;
 }
 
-/* Gradiente de severidad: neutro -> ámbar -> rojo contorno -> rojo sólido.
-   El riesgo va por `danger` (rojo), no por el primario (lima = acción, no peligro). */
+/* Neutralizado a propósito: el riesgo deja de ir por color. medium/high/critical
+   quedan idénticas entre sí hasta que se rediseñe como palabra en
+   --font-display con eje `wdth` (fase posterior). */
 .low {
   background: var(--color-paper-plate);
   color: var(--color-ink-soft);
 }
 .medium {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .high {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .critical {
-  background: var(--color-danger);
-  color: var(--color-paper-chassis);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 
 @media (max-width: 600px) {

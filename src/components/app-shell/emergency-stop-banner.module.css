@@ -1,12 +1,13 @@
-/* Banner de parada de emergencia: ancho completo, inconfundible. Alarma = danger
-   (rojo), no el primario (lima = acción principal, no peligro). */
+/* Banner de parada de emergencia: ancho completo, inconfundible. Usa
+   fault-wash, la única placa teñida del sistema — nunca una losa roja
+   sólida — con el texto en fault (tinta), no en un color claro. */
 .banner {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-6);
-  background: var(--color-danger);
-  color: var(--color-paper-chassis);
+  background: var(--color-fault-wash);
+  color: var(--color-fault);
 }
 
 .message {

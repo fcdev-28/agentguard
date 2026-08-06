@@ -56,7 +56,7 @@
 
 .errorText {
   font-size: var(--text-13);
-  color: var(--color-danger-text);
+  color: var(--color-fault);
 }
 
 .submitButton {

@@ -90,20 +90,20 @@ a.row:hover {
 }
 
 .statusActive {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusPaused {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusDisabled {
   background: var(--color-paper-plate);
   color: var(--color-ink-soft);
 }
 .statusError {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
 }
 
 @media (max-width: 900px) {
