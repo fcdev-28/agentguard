@@ -6,8 +6,8 @@
   flex-direction: column;
   gap: var(--space-6);
   padding: var(--space-4) var(--space-3);
-  border-right: 1px solid var(--color-border);
-  background: var(--color-bg-subtle);
+  border-right: 1px solid var(--color-ink-hair);
+  background: var(--color-paper-inset);
 }
 
 .brand {
@@ -18,12 +18,12 @@
 }
 
 .brandMark {
-  color: var(--color-primary);
+  color: var(--color-act);
   flex: none;
 }
 
 .brandName {
-  font-size: var(--text-16);
+  font-size: var(--text-15);
   font-weight: var(--weight-semibold);
   letter-spacing: -0.01em;
 }
@@ -42,36 +42,36 @@
   border-radius: var(--radius-control);
   color: var(--color-ink-soft);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   transition:
-    background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
+    background var(--duration-instant) var(--ease-out),
+    color var(--duration-instant) var(--ease-out);
 }
 
 .link:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   color: var(--color-ink);
 }
 
 .linkActive,
 .linkActive:hover {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+  background: var(--color-paper-inset);
+  color: var(--color-act);
 }
 
 .linkActive .icon,
 .linkActive:hover .icon {
-  color: var(--color-primary);
+  color: var(--color-act);
 }
 
 .icon {
   flex: none;
-  color: var(--color-faint);
-  transition: color var(--duration-fast) var(--ease-out);
+  color: var(--color-ink-faint);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .link:hover .icon {
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 /* La navegación lateral no se muestra en móvil: allí se accede por el drawer. */

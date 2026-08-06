@@ -2,9 +2,9 @@
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-tag);
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: 18px;
   white-space: nowrap;
 }
@@ -12,8 +12,8 @@
 /* Gradiente de severidad: neutro -> ámbar -> rojo contorno -> rojo sólido.
    El riesgo va por `danger` (rojo), no por el primario (lima = acción, no peligro). */
 .low {
-  background: var(--color-surface);
-  color: var(--color-muted);
+  background: var(--color-paper-plate);
+  color: var(--color-ink-soft);
 }
 .medium {
   background: var(--color-warning-bg);
@@ -25,7 +25,7 @@
 }
 .critical {
   background: var(--color-danger);
-  color: var(--color-bg);
+  color: var(--color-paper-chassis);
 }
 
 @media (max-width: 600px) {

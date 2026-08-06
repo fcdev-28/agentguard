@@ -8,8 +8,8 @@
   gap: var(--space-4);
   height: 56px;
   padding: 0 var(--space-6);
-  border-bottom: 1px solid var(--color-border);
-  background: color-mix(in oklab, var(--color-bg) 85%, transparent);
+  border-bottom: 1px solid var(--color-ink-hair);
+  background: color-mix(in oklab, var(--color-paper-chassis) 85%, transparent);
   backdrop-filter: blur(8px);
 }
 
@@ -31,11 +31,11 @@
   background: transparent;
   color: var(--color-ink-soft);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .menu:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .org {
@@ -45,7 +45,7 @@
 }
 
 .orgName {
-  font-size: var(--text-14);
+  font-size: var(--text-13);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
@@ -58,16 +58,16 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
-  background: var(--color-surface);
-  color: var(--color-muted);
+  background: var(--color-paper-plate);
+  color: var(--color-ink-soft);
   cursor: pointer;
-  transition: border-color var(--duration-fast) var(--ease-out);
+  transition: border-color var(--duration-instant) var(--ease-out);
 }
 
 .search:hover {
-  border-color: var(--color-border-strong);
+  border-color: var(--color-ink-hair);
   color: var(--color-ink-soft);
 }
 
@@ -77,10 +77,10 @@
 
 .searchKey {
   padding: 0 var(--space-1);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   font-size: var(--text-12);
-  color: var(--color-faint);
+  color: var(--color-ink-faint);
 }
 
 .user {
@@ -99,13 +99,13 @@
 
 .userName {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
 .userRole {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .avatar {
@@ -114,9 +114,9 @@
   width: 32px;
   height: 32px;
   flex: none;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: var(--color-paper-plate);
+  border: 1px solid var(--color-ink-hair);
   font-size: var(--text-12);
   font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
@@ -124,19 +124,19 @@
 
 .logoutButton {
   padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   background: transparent;
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   cursor: pointer;
   transition:
-    background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
+    background var(--duration-instant) var(--ease-out),
+    color var(--duration-instant) var(--ease-out);
 }
 
 .logoutButton:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   color: var(--color-ink-soft);
 }
 

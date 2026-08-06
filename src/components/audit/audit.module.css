@@ -19,7 +19,7 @@
 
 .resultCount {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   margin: 0;
 }
 
@@ -49,9 +49,9 @@
   align-items: flex-end;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
 }
 
 .filterField {
@@ -63,17 +63,17 @@
 
 .filterLabel {
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
 }
 
 .filterSelect,
 .filterInput {
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   color: var(--color-ink);
-  background: var(--color-bg);
+  background: var(--color-paper-chassis);
   font-size: var(--text-13);
 }
 
@@ -83,10 +83,10 @@
   border-radius: var(--radius-control);
   background: transparent;
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .filterReset:hover {
@@ -101,9 +101,9 @@
 .timeline {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
   overflow: hidden;
 }
 
@@ -112,17 +112,17 @@
   align-items: flex-start;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-ink-hair);
   border-left: 2px solid transparent;
   transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    background var(--duration-instant) var(--ease-out),
+    border-color var(--duration-instant) var(--ease-out);
   /* Entrada escalonada: cada fila entra con un pequeño retardo según su
      posición (--row-index desde el componente), tope a 10 para que las listas
      largas no arrastren la cascada. `both` mantiene el estado inicial antes de
      arrancar y el final al terminar. El bloque global de prefers-reduced-motion
      la neutraliza. */
-  animation: rowEnter var(--duration-base) var(--ease-out) both;
+  animation: rowEnter var(--duration-move) var(--ease-out) both;
   animation-delay: calc(min(var(--row-index, 0), 10) * 40ms);
 }
 
@@ -146,12 +146,12 @@
 }
 
 a.row:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .rowSelected {
-  background: var(--color-surface);
-  border-left-color: var(--color-primary);
+  background: var(--color-paper-plate);
+  border-left-color: var(--color-act);
 }
 
 .dot {
@@ -160,11 +160,11 @@ a.row:hover {
   height: 8px;
   margin-top: 6px;
   border-radius: 50%;
-  background: var(--color-border-strong);
+  background: var(--color-ink-hair);
 }
 
 .dotNeutral {
-  background: var(--color-muted);
+  background: var(--color-ink-soft);
 }
 .dotSuccess {
   background: var(--color-success);
@@ -196,12 +196,12 @@ a.row:hover {
 
 .rowTime {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .rowAgent {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -221,16 +221,16 @@ a.row:hover {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-tag);
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: 18px;
   white-space: nowrap;
 }
 
 .eventNeutral {
-  background: var(--color-surface);
-  color: var(--color-muted);
+  background: var(--color-paper-plate);
+  color: var(--color-ink-soft);
 }
 .eventSuccess {
   background: var(--color-success-bg);
@@ -265,9 +265,9 @@ a.row:hover {
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
 }
 
 .detailHead {
@@ -284,11 +284,11 @@ a.row:hover {
 
 .metaItem {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .metaItem strong {
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
@@ -305,19 +305,19 @@ a.row:hover {
 }
 
 .summary {
-  font-size: var(--text-14);
+  font-size: var(--text-13);
   color: var(--color-ink-soft);
 }
 
 .hint {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .metadataBlock {
   padding: var(--space-3);
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   color: var(--color-ink-soft);
   font-size: var(--text-13);
   white-space: pre-wrap;
@@ -333,18 +333,18 @@ a.row:hover {
 .relatedLink {
   display: inline-flex;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    background var(--duration-instant) var(--ease-out),
+    border-color var(--duration-instant) var(--ease-out);
 }
 
 .relatedLink:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 /* Esqueleto de carga de la línea de tiempo. */
@@ -355,9 +355,9 @@ a.row:hover {
 .skeletonLine {
   height: 12px;
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   margin-bottom: var(--space-2);
-  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+  animation: skeletonPulse var(--duration-move) var(--ease-out) infinite
     alternate;
 }
 
@@ -373,9 +373,9 @@ a.row:hover {
   display: inline-flex;
   margin-top: var(--space-4);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
-  transition: color var(--duration-fast) var(--ease-out);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .backLink:hover {
@@ -395,7 +395,7 @@ a.row:hover {
 .exportLabel {
   margin-right: var(--space-1);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
@@ -405,18 +405,18 @@ a.row:hover {
   display: inline-flex;
   align-items: center;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    background var(--duration-instant) var(--ease-out),
+    border-color var(--duration-instant) var(--ease-out);
 }
 
 .exportLink:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   border-color: var(--color-ink-soft);
 }
 

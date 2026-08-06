@@ -7,28 +7,28 @@
 }
 
 .title {
-  font-size: var(--text-16);
+  font-size: var(--text-15);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
 .message {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .retry {
   margin-top: var(--space-3);
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
-  background: var(--color-bg);
+  background: var(--color-paper-chassis);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .retry:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
