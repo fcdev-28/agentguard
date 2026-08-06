@@ -1310,9 +1310,9 @@ export const actions: AgentAction[] = [
       effect: "escalate",
       reason: "Cambios de permisos se escalan.",
     },
-    approvalDueAt: at(-100),
-    createdAt: at(-160),
-    updatedAt: at(-130),
+    approvalDueAt: at(27),
+    createdAt: at(-33),
+    updatedAt: at(-25),
     executedAt: null,
   },
   {
@@ -1338,9 +1338,9 @@ export const actions: AgentAction[] = [
       effect: "escalate",
       reason: "Cambios de permisos se escalan.",
     },
-    approvalDueAt: at(-2070),
-    createdAt: at(-2100),
-    updatedAt: at(-1850),
+    approvalDueAt: at(3),
+    createdAt: at(-27),
+    updatedAt: at(-22),
     executedAt: null,
   },
   {
@@ -1616,7 +1616,7 @@ export const approvals: Approval[] = [
     reviewerId: "usr_reviewer",
     decision: "escalated",
     reason: "Cambio de rol sensible; decide un administrador.",
-    createdAt: at(-130),
+    createdAt: at(-25),
   },
   {
     id: "apr_5",
@@ -1680,7 +1680,7 @@ export const approvals: Approval[] = [
     reviewerId: "usr_reviewer2",
     decision: "escalated",
     reason: "Cambio de rol sensible; decide un administrador.",
-    createdAt: at(-1850),
+    createdAt: at(-22),
   },
   {
     id: "apr_13",
@@ -1768,7 +1768,7 @@ export const auditEvents: AuditEvent[] = [
     eventType: "action_escalated",
     message: "Cambio de permisos escalado a administración.",
     metadata: {},
-    createdAt: at(-130),
+    createdAt: at(-25),
   },
   {
     id: "aud_8",
@@ -2021,7 +2021,7 @@ export const auditEvents: AuditEvent[] = [
     eventType: "action_escalated",
     message: "Acceso temporal a nómina escalado a administración.",
     metadata: {},
-    createdAt: at(-1850),
+    createdAt: at(-22),
   },
   {
     id: "aud_31",
@@ -2231,7 +2231,7 @@ export const notifications: Notification[] = [
     actionId: "act_escalated",
     message: "Cambio de permisos escalado a ti.",
     readAt: null,
-    createdAt: at(-130),
+    createdAt: at(-25),
   },
   {
     id: "ntf_4",
@@ -2301,7 +2301,7 @@ export const notifications: Notification[] = [
     actionId: "act_escalated_2",
     message: "Acceso temporal a nómina escalado a ti.",
     readAt: null,
-    createdAt: at(-2100),
+    createdAt: at(-27),
   },
   {
     id: "ntf_11",
@@ -2372,7 +2372,7 @@ export const actionComments: ActionComment[] = [
     actionId: "act_escalated",
     authorId: "usr_admin",
     body: "Reviso el cambio de rol antes de decidir.",
-    createdAt: at(-128),
+    createdAt: at(-23),
   },
   {
     id: "cmt_5",
@@ -2414,7 +2414,7 @@ export const actionComments: ActionComment[] = [
     actionId: "act_escalated_2",
     authorId: "usr_admin2",
     body: "Reviso el acceso solicitado antes de aprobar.",
-    createdAt: at(-2080),
+    createdAt: at(-25),
   },
 ];
 

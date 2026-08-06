@@ -52,5 +52,5 @@ export function CountUp({
     };
   }, [value, durationMs]);
 
-  return <span>{display}</span>;
+  return <span className="tabular-nums">{display}</span>;
 }

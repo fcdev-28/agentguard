@@ -24,44 +24,107 @@
   }
 }
 
-/* Cola: lista de filas enlazadas, mismo criterio visual que el inventario de agentes. */
+/* Cola: "chasis y placas" (IDENTITY §4). Las filas se separan por la junta
+   de chasis de 4px, nunca por un borde; el chasis se ve en la junta. La
+   junta vive en el margin-bottom de .row (no en gap): así la fila que
+   drena puede colapsarla a cero junto con su propio alto (ver
+   .rowDraining) sin dejar una rendija de 4px hasta que se desmonta. */
 .queue {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
-  overflow: hidden;
 }
 
+/* Cada fila es una placa: sin borde de ningún tipo, radio propio. La barra
+   de parada va a sangre en su borde izquierdo (overflow:hidden la recorta
+   a las esquinas redondeadas de la placa; el mismo overflow:hidden es lo
+   que permite recortar el contenido cuando la fila colapsa al drenar). */
 .row {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  border-left: 2px solid transparent;
-  transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+  align-items: stretch;
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
+  overflow: hidden;
+  margin-bottom: var(--chassis-joint);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
-.queue .row:last-child {
-  border-bottom: none;
+.row:last-child {
+  margin-bottom: 0;
 }
 
 .row:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-inset);
 }
 
 .rowSelected {
-  background: var(--color-surface);
-  border-left-color: var(--color-primary);
+  background: var(--color-paper-inset);
 }
 
-/* Fila marcada para una acción por lote: fondo tenue de énfasis. */
+/* Filete de selección: 2px en el borde derecho, territorio de la fila (la
+   barra de parada ya ocupa el izquierdo). Pseudo-elemento, no border ni
+   box-shadow: cero sombras en la cola (IDENTITY §4). */
+.rowSelected::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-ink);
+}
+
+/* Fila marcada para una acción por lote: mismo fondo tenue que seleccionada. */
 .rowChecked {
-  background: var(--color-surface);
+  background: var(--color-paper-inset);
+}
+
+/* Fila que se resuelve: acompaña a la descarga de la barra de parada
+   (StopBar `draining`, IDENTITY §6). La descarga en sí (la losa a
+   width:0) es lo único del producto que usa --duration-settle/
+   --ease-decide (ver stop-bar.module.css); este colapso de fila es un
+   movimiento propio, en los últimos --duration-move (160ms) de esos 320,
+   con --duration-move/--ease-out — la tabla de motion de IDENTITY §5
+   asigna "colapso de fila" a --duration-move, no a settle.
+   El valor de max-height lo fija el componente en línea, en dos fases
+   (medir el alto real y luego llevarlo a 0): max-height no tiene un "auto"
+   interpolable, así que no puede fijarse aquí como valor estático — solo
+   se declara la transición. margin-bottom sí tiene siempre un valor
+   numérico de partida (4px, o 0 si ya era la última fila), así que le
+   basta con la transición para animarse solo. */
+.rowDraining {
+  transition:
+    max-height var(--duration-move) var(--ease-out)
+      calc(var(--duration-settle) / 2),
+    margin-bottom var(--duration-move) var(--ease-out)
+      calc(var(--duration-settle) / 2);
+  margin-bottom: 0;
+}
+
+/* prefers-reduced-motion (IDENTITY §5): el colapso de alto/junta ya queda
+   instantáneo por la regla global de globals.css (transition/animation-
+   duration a 0.01ms en *). Lo que se excepciona aquí es la representación:
+   en vez de desvanecerse de golpe, la fila hace un paso de opacidad
+   legible en --duration-instant — el cambio de estado (el timer de 320ms
+   en JS) no depende de esto, solo su representación visual. La regla del
+   módulo gana a la de globals.css por especificidad (selector de clase >
+   universal) aunque ambas lleven !important. */
+@media (prefers-reduced-motion: reduce) {
+  .rowDraining {
+    transition: opacity var(--duration-instant) var(--ease-out) !important;
+    opacity: 0;
+  }
+}
+
+/* Contenido tras la barra de parada: checkbox + enlace + riesgo, con el
+   padding que la barra (a sangre) no lleva. */
+.rowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
 }
 
 /* Casilla de selección por lote; ancho fijo para alinear las filas. */
@@ -77,10 +140,10 @@
   width: 15px;
   height: 15px;
   cursor: pointer;
-  accent-color: var(--color-primary);
+  accent-color: var(--color-act);
 }
 
-/* Enlace a la acción: ocupa el resto de la fila con el layout main/aside. */
+/* Enlace a la acción: ocupa el resto de la fila con el layout título/riesgo. */
 .rowLink {
   flex: 1;
   min-width: 0;
@@ -99,29 +162,66 @@
   gap: 2px;
 }
 
+/* Línea 1: título + tag de estado en línea (patrón Dependabot, IDENTITY §7). */
+.rowTitleLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
 .rowTitle {
-  font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-size: var(--text-15);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
+/* Tag de estado local a la cola: no es .statusBadge (eso es del panel de
+   detalle). Cuadrado, Plex Mono, caja normal. */
+.rowTag {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-tag);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.rowTagNeutral {
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
+}
+
+.rowTagHold {
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
+}
+
+.rowTagFault {
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
+}
+
+/* Línea 2: metadatos, un único peso por debajo del título (dos pesos por
+   superficie, nunca tres — IDENTITY §3). */
 .rowMeta {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-12);
-  color: var(--color-muted);
+  font-weight: var(--weight-regular);
+  color: var(--color-ink-soft);
 }
 
-.rowAside {
+.rowRisk {
   flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-1);
 }
 
 @media (max-width: 600px) {
@@ -130,28 +230,16 @@
     align-items: flex-start;
   }
 
-  .rowAside {
-    align-items: flex-start;
+  .rowRisk {
+    align-self: flex-start;
   }
 }
 
-/* Marca "Vencida" en línea, dentro de un metaItem (sin forma de pill). */
+/* Marca "Vencida" en línea, dentro de un metaItem (sin forma de pill).
+   Sigue en uso por action-detail.tsx: no se toca. */
 .overdueInline {
-  font-weight: var(--weight-medium);
-  color: var(--color-danger-text);
-}
-
-/* Badge "Vencida", coherente con el bloque de pendientes del dashboard. */
-.overdue {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-pill);
-  font-size: var(--text-12);
-  font-weight: var(--weight-medium);
-  line-height: 18px;
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  font-weight: var(--weight-semibold);
+  color: var(--color-hold-deep);
 }
 
 /* Pill de estado de acción: misma forma que RiskBadge, paleta propia. */
@@ -159,32 +247,32 @@
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-tag);
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: 18px;
   white-space: nowrap;
 }
 
 .statusNeutral {
-  background: var(--color-surface);
-  color: var(--color-muted);
+  background: var(--color-paper-plate);
+  color: var(--color-ink-soft);
 }
 .statusSuccess {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusWarning {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
 }
 .statusDanger {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
 }
 .statusInfo {
-  background: var(--color-info-bg);
-  color: var(--color-info-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 
 /* Panel de detalle de acción (reutilizado por la cola y por /review/[actionId]). */
@@ -193,9 +281,9 @@
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
 }
 
 .detailHead {
@@ -213,11 +301,11 @@
 
 .metaItem {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .metaItem strong {
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
@@ -234,18 +322,18 @@
 }
 
 .summary {
-  font-size: var(--text-14);
+  font-size: var(--text-13);
   color: var(--color-ink-soft);
 }
 
 .hint {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .policyEffect {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
@@ -262,12 +350,12 @@
   gap: 2px;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .commentAuthor {
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
@@ -278,7 +366,7 @@
 
 .commentTime {
   font-size: var(--text-12);
-  color: var(--color-faint);
+  color: var(--color-ink-faint);
 }
 
 /* Acciones de decisión. */
@@ -290,20 +378,20 @@
 
 .decisionButton {
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
-  background: var(--color-bg);
+  background: var(--color-paper-chassis);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   cursor: pointer;
   transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    background var(--duration-instant) var(--ease-out),
+    border-color var(--duration-instant) var(--ease-out);
 }
 
 .decisionButton:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .decisionButton:disabled {
@@ -312,15 +400,21 @@
 }
 
 .approve {
-  border-color: var(--color-success);
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  border-color: var(--color-act);
+  background: var(--color-act);
+  color: var(--color-paper-plate);
+}
+
+/* .decisionButton:hover (más específico) pisaría el fondo a paper-plate y
+   dejaría el texto de .approve (paper-plate) ilegible; se fija aparte. */
+.approve:hover {
+  background: var(--color-act-press);
 }
 
 .reject {
-  border-color: var(--color-danger);
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  border-color: var(--color-fault);
+  background: var(--color-paper-plate);
+  color: var(--color-fault);
 }
 
 .decisionButtonGhost {
@@ -329,10 +423,10 @@
   border-radius: var(--radius-control);
   background: transparent;
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .decisionButtonGhost:hover {
@@ -349,7 +443,7 @@
 
 .escalateLabel {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
@@ -357,9 +451,9 @@
   flex: 1;
   min-width: 180px;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
-  background: var(--color-bg);
+  background: var(--color-paper-chassis);
   font-size: var(--text-13);
   color: var(--color-ink);
   cursor: pointer;
@@ -372,9 +466,9 @@
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   margin-bottom: var(--space-3);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  background: var(--color-surface);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-plate);
 }
 
 .selectionHead {
@@ -386,7 +480,7 @@
 
 .selectionCount {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
@@ -404,16 +498,16 @@
 
 .reasonLabel {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
 .reasonInput {
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   color: var(--color-ink);
-  background: var(--color-bg);
+  background: var(--color-paper-chassis);
   resize: vertical;
 }
 
@@ -425,10 +519,10 @@
 
 .decisionNote {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   padding: var(--space-3);
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 /* Esqueleto de carga de la cola. */
@@ -439,9 +533,9 @@
 .skeletonLine {
   height: 12px;
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   margin-bottom: var(--space-2);
-  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+  animation: skeletonPulse var(--duration-move) var(--ease-out) infinite
     alternate;
 }
 
@@ -457,9 +551,9 @@
   display: inline-flex;
   margin-top: var(--space-4);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
-  transition: color var(--duration-fast) var(--ease-out);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .backLink:hover {

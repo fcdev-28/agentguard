@@ -299,6 +299,35 @@ Solo ahora tiene sentido añadir motion fino y microinteracciones. Antes de esto
 
 ---
 
+## 3.bis. Estado al cerrar la rama `feature/identidad-visual`
+
+Fases 5 a 8 completadas. Commits, en orden:
+
+| Commit | Fase |
+|---|---|
+| `feat(design): tokens según identidad visual` | 5 |
+| `feat(design): tipografía Archivo e IBM Plex` | 6 |
+| `refactor(design): literales a tokens` | 7a.1 |
+| `refactor(design): familias semánticas a la identidad nueva` | 7a.2 |
+| `feat(design): rediseño de la cola de acciones` | 7b |
+| `feat(design): descarga de la barra de parada y pulido de motion` | 8 |
+| `fix(data): repartir el llenado del SLA en las acciones pendientes` | 8 |
+
+### Correcciones al diagnóstico de este plan
+
+- **§1 "Deuda de estilo, ya cuantificada" quedó obsoleto.** Se escribió en `5d08342`, antes de que la fase 5 renombrara el vocabulario. La fase 7 no fueron "~40 literales": fueron **466 referencias a tokens inexistentes** en 20 archivos, más 66 de familias cromáticas. Por eso 7 se partió en dos commits.
+- **§1 "Cero colores hardcodeados" era falso.** Había cuatro `oklch` literales heredados del tema oscuro (dos velos y dos sombras). Cerrados con `--color-scrim` y `--shadow-panel`.
+- **§1 "Motion ya está resuelto" era falso.** Las tres duraciones existían, pero ninguna servía para el elemento firma. `IDENTITY.md` las sustituyó por `instant`/`move`/`settle`.
+
+### Qué queda fuera de esta rama
+
+- **Cinco pantallas sin migrar**: dashboard, agentes, políticas, auditoría y ajustes. Siguen con `RiskBadge` (pill de color) en vez de la palabra en Archivo, y con el patrón de fila antiguo. Es deliberado: la Fase 7 dice "una sola pantalla, no las hagas todas". Rama aparte, una pantalla por commit.
+- **`review-queue.tsx` mide ~270 líneas** (antes 100). La animación de salida necesita retener filas, medir su alto y coordinar timers, y `eslint-plugin-react-hooks@7.1.1` con reglas de React Compiler impide el patrón directo de ajustar estado durante el render. Funciona y está comentado, pero es el archivo más frágil de la rama.
+- **`--shadow-panel` lleva el nombre del único panel que no lo usa.** El panel de detalle de `/review` es una columna del grid, no una capa superpuesta, así que por la regla "sombra = solapamiento" no la lleva. Renombrarlo a `--shadow-overlay` sería más honesto.
+- **La barra de parada es estática.** Se calcula contra `demoNow`, un reloj fijo en `src/data/demo-data.ts`. No avanza sola: al llegar el tiempo real (fase 10 del roadmap de producto) habrá que decidir si el contador refresca en cliente.
+
+---
+
 ## 4. Reglas transversales
 
 - **Una fase, una sesión, un commit.** Las sesiones largas degradan el resultado.

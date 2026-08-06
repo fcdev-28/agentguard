@@ -14,7 +14,7 @@
   inset: 0;
   border: 0;
   padding: 0;
-  background: oklch(0.16 0.006 255 / 0.35);
+  background: var(--color-scrim);
   cursor: pointer;
 }
 
@@ -24,16 +24,17 @@
   flex-direction: column;
   width: min(560px, 92vw);
   max-height: min(70vh, 480px);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
-  box-shadow: 0 20px 60px oklch(0.16 0.006 255 / 0.25);
+  /* Placa que solapa: sin contorno (ninguna placa lo lleva) y con la única
+     sombra del sistema. El velo hace el resto del trabajo de separación. */
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-plate);
+  box-shadow: var(--shadow-panel);
   overflow: hidden;
 }
 
 .inputRow {
   flex: none;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-ink-hair);
 }
 
 .input {
@@ -41,7 +42,7 @@
   padding: var(--space-4);
   border: 0;
   background: transparent;
-  font-size: var(--text-16);
+  font-size: var(--text-15);
   color: var(--color-ink);
 }
 
@@ -76,7 +77,7 @@
   padding: var(--space-2) var(--space-3) var(--space-1);
   font-size: var(--text-12);
   font-weight: var(--weight-semibold);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .item {
@@ -95,34 +96,34 @@
 }
 
 .itemActive {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+  background: var(--color-paper-inset);
+  color: var(--color-act);
 }
 
 .itemIcon {
   flex: none;
   display: flex;
-  color: var(--color-faint);
+  color: var(--color-ink-faint);
 }
 
 .itemActive .itemIcon {
-  color: var(--color-primary);
+  color: var(--color-act);
 }
 
 .itemLabel {
   flex: none;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
 }
 
 .itemHint {
   flex: 1;
   min-width: 0;
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .itemActive .itemHint {
-  color: var(--color-primary);
+  color: var(--color-act);
 }

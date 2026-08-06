@@ -15,11 +15,11 @@
   background: transparent;
   color: var(--color-ink-soft);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .bell:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .badge {
@@ -31,9 +31,9 @@
   min-width: 16px;
   height: 16px;
   padding: 0 3px;
-  border-radius: var(--radius-pill);
-  background: var(--color-primary);
-  color: var(--color-primary-text);
+  border-radius: 50%;
+  background: var(--color-act);
+  color: var(--color-paper-plate);
   font-size: 10px;
   font-weight: var(--weight-semibold);
   line-height: 1;
@@ -58,10 +58,11 @@
   flex-direction: column;
   width: min(360px, 90vw);
   max-height: min(70vh, 420px);
-  border: 1px solid var(--color-border-strong);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
-  box-shadow: 0 20px 60px oklch(0.16 0.006 255 / 0.25);
+  /* Placa que solapa: sin contorno y con la única sombra del sistema. Este
+     desplegable no lleva velo, así que la sombra es lo que lo despega. */
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-plate);
+  box-shadow: var(--shadow-panel);
   overflow: hidden;
 }
 
@@ -76,11 +77,11 @@
   gap: var(--space-2);
   flex: none;
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-ink-hair);
 }
 
 .title {
-  font-size: var(--text-14);
+  font-size: var(--text-13);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
@@ -90,7 +91,7 @@
   background: transparent;
   padding: 0;
   font-size: var(--text-12);
-  color: var(--color-primary);
+  color: var(--color-act);
   cursor: pointer;
 }
 
@@ -99,7 +100,7 @@
 }
 
 .markAll:disabled {
-  color: var(--color-faint);
+  color: var(--color-ink-faint);
   cursor: not-allowed;
 }
 
@@ -123,11 +124,11 @@
   background: transparent;
   text-align: left;
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .item:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .itemDot {
@@ -135,12 +136,12 @@
   width: 6px;
   height: 6px;
   margin-top: 6px;
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   background: transparent;
 }
 
 .itemUnread .itemDot {
-  background: var(--color-primary);
+  background: var(--color-act);
 }
 
 .itemBody {
@@ -156,10 +157,10 @@
 }
 
 .itemUnread .itemMessage {
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
 }
 
 .itemMeta {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }

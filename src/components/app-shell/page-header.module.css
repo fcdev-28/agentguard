@@ -11,7 +11,7 @@
 }
 
 .title {
-  font-size: var(--text-30);
+  font-size: var(--text-24);
   font-weight: var(--weight-semibold);
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -19,8 +19,8 @@
 
 .description {
   margin-top: var(--space-2);
-  color: var(--color-muted);
-  font-size: var(--text-14);
+  color: var(--color-ink-soft);
+  font-size: var(--text-13);
 }
 
 .actions {

@@ -3,5 +3,5 @@
   place-items: center;
   min-height: 100vh;
   padding: var(--space-6);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
