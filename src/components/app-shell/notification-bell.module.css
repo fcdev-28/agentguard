@@ -58,10 +58,11 @@
   flex-direction: column;
   width: min(360px, 90vw);
   max-height: min(70vh, 420px);
-  border: 1px solid var(--color-ink-hair);
+  /* Placa que solapa: sin contorno y con la única sombra del sistema. Este
+     desplegable no lleva velo, así que la sombra es lo que lo despega. */
   border-radius: var(--radius-plate);
-  background: var(--color-paper-chassis);
-  box-shadow: 0 20px 60px oklch(0.16 0.006 255 / 0.25);
+  background: var(--color-paper-plate);
+  box-shadow: var(--shadow-panel);
   overflow: hidden;
 }
 

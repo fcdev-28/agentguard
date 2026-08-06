@@ -165,7 +165,8 @@ Estrategia única: valor de superficie + junta de chasis. Cero desenfoque, cero 
 ```css
 :root {
   --chassis-joint: 4px; /* separa placas adyacentes; ninguna placa lleva contorno */
-  --shadow-panel: -16px 0 32px -8px oklch(0.24 0.045 265 / 0.08); /* única sombra del producto: el panel de detalle */
+  --shadow-panel: -16px 0 32px -8px oklch(0.24 0.045 265 / 0.08); /* única definición de sombra del producto */
+  --color-scrim: oklch(0.24 0.045 265 / 0.35); /* velo de overlays: ink al 35% */
 }
 ```
 
@@ -174,8 +175,12 @@ Reglas:
 1. Las capas se separan por la junta de chasis (4px), jamás por un borde. Placas adyacentes comparten junta.
 2. `--color-ink-hair` solo existe *dentro* de una placa, para separar filas. Nunca para delimitarla.
 3. Sin biseles, brillos ni texturas.
-4. `--shadow-panel` es la única sombra en todo el producto: la lleva solo el panel de detalle, porque es lo único que solapa de verdad a otra cosa. Sombra = solapamiento.
-5. Sin tarjeta dentro de tarjeta.
+4. **Sombra = solapamiento.** `--shadow-panel` es la única definición de sombra del producto, y la llevan únicamente las superficies que se superponen a otra cosa: la paleta de comandos y el desplegable de notificaciones. Si no solapa, no lleva sombra — por eso el panel de detalle de `/review` no la tiene: es una columna del grid, no una capa encima de la cola.
+
+   > `docs/design/IDENTITY.md` §4 dice que el panel de detalle "es lo único que solapa de verdad". Es un descuido: la paleta de comandos y el desplegable de notificaciones también solapan, y el panel de detalle acabó siendo una columna. La regla que manda es el principio, no el ejemplo.
+
+5. Los overlays con foco modal (paleta de comandos, navegación móvil) atenúan la página con `--color-scrim` en lugar de delimitarse con un contorno.
+6. Sin tarjeta dentro de tarjeta.
 
 ## Radios
 

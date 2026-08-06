@@ -5,62 +5,110 @@
  * `paper` es el papel (fondo y superficies). El color satura solo para dos
  * cosas: `hold` (una acción espera a una persona) y `fault` (algo se rompió).
  * Todo lo demás — incluido "resuelto"/éxito — es neutro a propósito.
+ *
+ * Los comentarios van encima de cada token, no al final de la línea: con
+ * `oklch()` de por medio, un comentario en línea se pasa del ancho de
+ * Prettier y el formateador parte el color en cuatro líneas.
  */
 
 :root {
-  /* Tinta y papel: estructura, lectura, tablas, navegación y todos los
-     estados resueltos. Es la familia por defecto — si algo no interrumpe,
-     es neutro. */
-  --color-paper-chassis: oklch(0.93 0.004 265); /* fondo de página: la junta entre placas */
-  --color-paper-plate: oklch(0.985 0.003 265); /* paneles, tablas, filas: la superficie de trabajo */
-  --color-paper-inset: oklch(0.895 0.005 265); /* payloads, inputs, trazas: más oscuro que el chasis */
+  /* ── Tinta y papel ──────────────────────────────────────────────────
+     Estructura, lectura, tablas, navegación y todos los estados
+     resueltos. Es la familia por defecto: si algo no interrumpe, es
+     neutro. */
 
-  --color-ink: oklch(0.24 0.045 265); /* texto principal y relleno de la acción primaria */
-  --color-ink-soft: oklch(0.43 0.02 265); /* metadatos, cabeceras de columna, labels */
-  --color-ink-faint: oklch(0.6 0.012 265); /* deshabilitado, placeholder, guiones — nunca contenido */
-  --color-ink-hair: oklch(0.86 0.006 265); /* única línea del sistema: separa filas dentro de una placa, nunca delimita una placa */
+  /* Fondo de página: la junta que se ve entre placas. */
+  --color-paper-chassis: oklch(0.93 0.004 265);
+  /* Paneles, tablas, filas: la superficie de trabajo. */
+  --color-paper-plate: oklch(0.985 0.003 265);
+  /* Payloads, inputs, trazas. Más oscuro que el chasis. */
+  --color-paper-inset: oklch(0.895 0.005 265);
 
-  /* `hold`: el único color saturado de la pantalla. needs_approval y
-     escalated. Nada más. Ámbar por convención — es lo único que un
-     revisor de guardia debe leer pre-atentivamente. */
-  --color-hold: oklch(0.78 0.17 62); /* relleno sólido de la barra de parada; texto encima en ink */
-  --color-hold-deep: oklch(0.56 0.15 55); /* tick de cabeza de la barra; texto hold sobre papel cuando no cabe la barra */
+  /* Texto principal y relleno de la acción primaria. Negro azulado, no
+     gris neutro: el botón primario es un bloque sólido de esto y tiene
+     que leerse como decisión. */
+  --color-ink: oklch(0.24 0.045 265);
+  /* Metadatos, cabeceras de columna, labels. */
+  --color-ink-soft: oklch(0.43 0.02 265);
+  /* Deshabilitado, placeholder, guiones. Nunca contenido. */
+  --color-ink-faint: oklch(0.6 0.012 265);
+  /* Única línea del sistema: separa filas dentro de una placa, nunca
+     delimita una placa. */
+  --color-ink-hair: oklch(0.86 0.006 265);
 
-  /* `fault`: se rompió de verdad. Se comporta como tinta, no como relleno:
-     texto, glifo y filete. Nunca hay una losa roja — así se distingue de
-     `hold` por estructura, no solo por tono, y cubre daltonismo. */
-  --color-fault: oklch(0.45 0.17 25); /* texto, glifo, filete de 2px al borde izquierdo del bloque */
-  --color-fault-wash: oklch(0.93 0.03 25); /* única placa teñida del producto: el bloque de error de ejecución */
+  /* ── hold: está parado esperando a una persona ──────────────────────
+     El único color saturado de la pantalla. `needs_approval` y
+     `escalated`, nada más. Ámbar por convención: es lo único que un
+     revisor de guardia debe leer sin mirar. */
 
-  /* `act`: la afirmación. No hay color de marca cromático — la identidad la
-     llevan la cara display, el chasis y la barra de parada. */
-  --color-act: var(--color-ink); /* relleno del botón primario, texto en paper-plate */
-  --color-act-press: oklch(0.18 0.04 265); /* estado activo */
+  /* Relleno sólido de la barra de parada; el texto encima va en ink. */
+  --color-hold: oklch(0.78 0.17 62);
+  /* Tick de cabeza de la barra, y texto hold sobre papel cuando no cabe
+     la barra entera. */
+  --color-hold-deep: oklch(0.56 0.15 55);
 
-  /* Foco: no es una familia semántica, es una affordance de accesibilidad.
-     Se declara aparte a propósito porque tiene que distinguirse tanto de
-     hold como de fault. */
+  /* ── fault: se rompió de verdad ─────────────────────────────────────
+     Se comporta como tinta, no como relleno. Nunca hay una losa roja: así
+     se distingue de `hold` por estructura y no solo por tono, lo que
+     además cubre daltonismo. */
+
+  /* Texto, glifo y filete de 2px al borde izquierdo del bloque. */
+  --color-fault: oklch(0.45 0.17 25);
+  /* Única placa teñida del producto: el bloque de error de ejecución. */
+  --color-fault-wash: oklch(0.93 0.03 25);
+
+  /* ── act: la afirmación ─────────────────────────────────────────────
+     No hay color de marca cromático. La identidad la llevan la cara
+     display, el chasis y la barra de parada. */
+
+  /* Relleno del botón primario; su texto va en paper-plate. */
+  --color-act: var(--color-ink);
+  /* Estado activo (pulsado). */
+  --color-act-press: oklch(0.18 0.04 265);
+
+  /* Foco: no es una familia semántica sino una affordance de
+     accesibilidad. Se declara aparte a propósito, porque tiene que
+     distinguirse tanto de hold como de fault. */
   --color-focus: oklch(0.62 0.17 255);
 
-  /* Tipografía: tres caras, todas en next/font/google. Las variables se
-     declaran aquí; la carga de las fuentes llega en la Fase 6. */
-  --font-display: Archivo, "Helvetica Neue", Arial, sans-serif; /* títulos de pantalla, cabecera de sección, la palabra de riesgo */
-  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; /* cuerpo de interfaz, filas de cola, tablas, formularios, navegación */
+  /* ── Tipografía ─────────────────────────────────────────────────────
+     Tres caras, cargadas en src/app/layout.tsx con next/font/google. */
+
+  /* Títulos de pantalla, cabeceras de sección y la palabra de riesgo.
+     Archivo se carga con el eje `wdth`: el riesgo escala por ancho. */
+  --font-display: Archivo, "Helvetica Neue", Arial, sans-serif;
+  /* Cuerpo de interfaz, filas de cola, tablas, formularios, navegación. */
+  --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  /* Payloads, ids, hashes, timestamps, contador de la barra de parada. */
   --font-mono:
     "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas,
-    monospace; /* payloads, ids, hashes, timestamps, contador de la barra de parada */
+    monospace;
 
-  --text-12: 0.75rem; /* metadatos, línea inferior de fila, cabeceras de columna, timestamps */
-  --text-13: 0.813rem; /* caballo de batalla: filas de cola, tablas, controles, payloads */
-  --text-15: 0.938rem; /* título de acción en la fila, texto de formulario */
-  --text-18: 1.125rem; /* cabecera de sección (Archivo, wdth 100) */
-  --text-24: 1.5rem; /* título de pantalla (Archivo, wdth 118, peso 700) */
+  /* Escala de 5 pasos. No hay 11px ni 16/20/30: la jerarquía la sostienen
+     peso y ancho, no más tamaños. */
 
-  --weight-regular: 400; /* todo lo que se lee */
-  --weight-semibold: 600; /* título de acción, cabecera de columna, label de control */
-  --weight-bold: 700; /* título de pantalla, siempre con wdth 118 en Archivo */
+  /* Metadatos, línea inferior de fila, cabeceras de columna, timestamps. */
+  --text-12: 0.75rem;
+  /* Caballo de batalla: filas de cola, tablas, controles, payloads. */
+  --text-13: 0.813rem;
+  /* Título de acción en la fila, texto de formulario. */
+  --text-15: 0.938rem;
+  /* Cabecera de sección (Archivo, wdth 100). */
+  --text-18: 1.125rem;
+  /* Título de pantalla (Archivo, wdth 118, peso 700). */
+  --text-24: 1.5rem;
 
-  /* Espaciado (base 4px) */
+  /* Dos pesos por superficie, nunca tres. Sin 500: a 13px la diferencia
+     400/500 desaparece; 400/600 es un escalón real. */
+
+  /* Todo lo que se lee. */
+  --weight-regular: 400;
+  /* Título de acción, cabecera de columna, label de control. */
+  --weight-semibold: 600;
+  /* Título de pantalla, siempre con wdth 118 en Archivo. */
+  --weight-bold: 700;
+
+  /* ── Espaciado (base 4px) ───────────────────────────────────────── */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -69,32 +117,54 @@
   --space-8: 32px;
   --space-12: 48px;
 
-  /* Elevación: "chasis y placas". Valor de superficie (paper-*) + junta de
-     chasis. Cero desenfoque, cero borde de delimitación: las placas se
-     separan por esta junta, jamás por un borde. */
+  /* ── Elevación: "chasis y placas" ───────────────────────────────────
+     Valor de superficie (paper-*) más junta de chasis. Cero desenfoque y
+     cero borde de delimitación: las placas se separan por la junta,
+     jamás por un contorno. */
   --chassis-joint: 4px;
 
-  /* Sombra: una sola en todo el producto. Solo la lleva el panel de
-     detalle, porque es lo único que solapa de verdad a otra cosa. */
+  /* Sombra: una sola definición en todo el producto. La regla es
+     "sombra = solapamiento", así que solo la llevan las superficies que
+     se superponen a otra cosa: la paleta de comandos y el desplegable de
+     notificaciones. El panel de detalle de /review no la lleva, porque
+     acabó siendo una columna del grid y no una capa encima de la cola.
+     (IDENTITY §4 dice que ese panel es el único que solapa; es un
+     descuido del documento. Manda el principio, no el ejemplo.) */
   --shadow-panel: -16px 0 32px -8px oklch(0.24 0.045 265 / 0.08);
 
-  /* Radios */
+  /* Velo de los overlays con foco modal: atenúa la página para que la
+     placa de encima se lea sin necesitar contorno. Es `ink` al 35%. */
+  --color-scrim: oklch(0.24 0.045 265 / 0.35);
+
+  /* ── Radios ─────────────────────────────────────────────────────────
+     Sin pill de 999px: es lenguaje de tarjeta de producto, no de panel de
+     control. El radio 0 se reserva a la barra de parada, el único
+     elemento que quiere leerse como objeto físico. */
   --radius-plate: 4px;
   --radius-control: 3px;
   --radius-inset: 3px;
   --radius-tag: 2px;
   --radius-stop-bar: 0;
 
-  /* Motion: sin ease-in-out — es la curva de "mírame". */
-  --duration-instant: 90ms; /* selección de fila, checkbox, foco, navegación por teclado */
-  --duration-move: 160ms; /* panel de detalle, subrayado de tab, disclosure, colapso de fila */
-  --duration-settle: 320ms; /* solo la descarga de la barra de parada: el acuse de recibo */
+  /* ── Motion ─────────────────────────────────────────────────────────
+     Sin ease-in-out en ningún sitio: es la curva de "mírame". */
 
-  --ease-out: cubic-bezier(0.2, 0, 0, 1); /* todo lo que entra o responde */
-  --ease-decide: cubic-bezier(0.32, 0.72, 0, 1); /* solo settle: sin rebote, deceleración larga */
+  /* Selección de fila, checkbox, foco, navegación por teclado. */
+  --duration-instant: 90ms;
+  /* Panel de detalle, subrayado de tab, disclosure, colapso de fila. */
+  --duration-move: 160ms;
+  /* Solo la descarga de la barra de parada: es el acuse de recibo. */
+  --duration-settle: 320ms;
 
-  /* Anchuras de layout fijo */
+  /* Todo lo que entra o responde. Frontal duro, cola larga. */
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  /* Solo para settle: sin rebote, deceleración larga, para que la salida
+     siga siendo legible cuando se despachan diez seguidas. */
+  --ease-decide: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* ── Anchuras de layout fijo ────────────────────────────────────── */
   --width-sidebar: 240px;
   --width-detail-panel: 420px;
-  --width-stop-bar-track: 56px; /* pista de la barra de parada; la losa crece dentro de este ancho */
+  /* Pista de la barra de parada; la losa crece dentro de este ancho. */
+  --width-stop-bar-track: 56px;
 }

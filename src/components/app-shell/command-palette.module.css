@@ -14,7 +14,7 @@
   inset: 0;
   border: 0;
   padding: 0;
-  background: oklch(0.16 0.006 255 / 0.35);
+  background: var(--color-scrim);
   cursor: pointer;
 }
 
@@ -24,10 +24,11 @@
   flex-direction: column;
   width: min(560px, 92vw);
   max-height: min(70vh, 480px);
-  border: 1px solid var(--color-ink-hair);
+  /* Placa que solapa: sin contorno (ninguna placa lo lleva) y con la única
+     sombra del sistema. El velo hace el resto del trabajo de separación. */
   border-radius: var(--radius-plate);
-  background: var(--color-paper-chassis);
-  box-shadow: 0 20px 60px oklch(0.16 0.006 255 / 0.25);
+  background: var(--color-paper-plate);
+  box-shadow: var(--shadow-panel);
   overflow: hidden;
 }
 

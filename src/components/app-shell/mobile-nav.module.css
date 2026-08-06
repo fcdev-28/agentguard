@@ -16,7 +16,7 @@
   inset: 0;
   border: 0;
   padding: 0;
-  background: oklch(0.16 0.006 255 / 0.35);
+  background: var(--color-scrim);
   opacity: 0;
   cursor: pointer;
   transition: opacity var(--duration-move) var(--ease-out);
