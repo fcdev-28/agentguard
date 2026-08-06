@@ -13,17 +13,21 @@ function clamp01(value: number): number {
  * lleva parada como objeto físico, a sangre en el borde izquierdo de la fila.
  * Solo se llena en estados "hold" (needs_approval, escalated) con SLA
  * conocido; el resto de filas muestran la pista vacía para mantener la
- * columna alineada. Estática: la animación de descarga (settle, 320ms)
- * pertenece a la fase de pulido, no a este rediseño.
+ * columna alineada. Al resolver, `draining` fuerza la losa a `width: 0`:
+ * es la descarga (settle, 320ms), único movimiento del producto que usa
+ * --duration-settle/--ease-decide (ver .slab en stop-bar.module.css).
  */
 export function StopBar({
   status,
   createdAt,
   approvalDueAt,
+  draining = false,
 }: {
   status: ActionStatus;
   createdAt: string;
   approvalDueAt: string | null;
+  /** true mientras la fila drena tras resolverse: la losa va a 0 aunque el fill calculado sea mayor. */
+  draining?: boolean;
 }) {
   const isHold = status === "needs_approval" || status === "escalated";
   const hasSla = approvalDueAt !== null;
@@ -58,7 +62,10 @@ export function StopBar({
       title={trackLabel}
     >
       {showSlab ? (
-        <div className={styles.slab} style={{ width: `${fill * 100}%` }}>
+        <div
+          className={styles.slab}
+          style={{ width: draining ? "0%" : `${fill * 100}%` }}
+        >
           <div className={styles.tick} />
         </div>
       ) : null}

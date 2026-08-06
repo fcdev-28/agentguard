@@ -25,16 +25,19 @@
 }
 
 /* Cola: "chasis y placas" (IDENTITY §4). Las filas se separan por la junta
-   de chasis de 4px, nunca por un borde; el chasis se ve en la junta. */
+   de chasis de 4px, nunca por un borde; el chasis se ve en la junta. La
+   junta vive en el margin-bottom de .row (no en gap): así la fila que
+   drena puede colapsarla a cero junto con su propio alto (ver
+   .rowDraining) sin dejar una rendija de 4px hasta que se desmonta. */
 .queue {
   display: flex;
   flex-direction: column;
-  gap: var(--chassis-joint);
 }
 
 /* Cada fila es una placa: sin borde de ningún tipo, radio propio. La barra
    de parada va a sangre en su borde izquierdo (overflow:hidden la recorta
-   a las esquinas redondeadas de la placa). */
+   a las esquinas redondeadas de la placa; el mismo overflow:hidden es lo
+   que permite recortar el contenido cuando la fila colapsa al drenar). */
 .row {
   position: relative;
   display: flex;
@@ -42,7 +45,12 @@
   background: var(--color-paper-plate);
   border-radius: var(--radius-plate);
   overflow: hidden;
+  margin-bottom: var(--chassis-joint);
   transition: background var(--duration-instant) var(--ease-out);
+}
+
+.row:last-child {
+  margin-bottom: 0;
 }
 
 .row:hover {
@@ -69,6 +77,43 @@
 /* Fila marcada para una acción por lote: mismo fondo tenue que seleccionada. */
 .rowChecked {
   background: var(--color-paper-inset);
+}
+
+/* Fila que se resuelve: acompaña a la descarga de la barra de parada
+   (StopBar `draining`, IDENTITY §6). La descarga en sí (la losa a
+   width:0) es lo único del producto que usa --duration-settle/
+   --ease-decide (ver stop-bar.module.css); este colapso de fila es un
+   movimiento propio, en los últimos --duration-move (160ms) de esos 320,
+   con --duration-move/--ease-out — la tabla de motion de IDENTITY §5
+   asigna "colapso de fila" a --duration-move, no a settle.
+   El valor de max-height lo fija el componente en línea, en dos fases
+   (medir el alto real y luego llevarlo a 0): max-height no tiene un "auto"
+   interpolable, así que no puede fijarse aquí como valor estático — solo
+   se declara la transición. margin-bottom sí tiene siempre un valor
+   numérico de partida (4px, o 0 si ya era la última fila), así que le
+   basta con la transición para animarse solo. */
+.rowDraining {
+  transition:
+    max-height var(--duration-move) var(--ease-out)
+      calc(var(--duration-settle) / 2),
+    margin-bottom var(--duration-move) var(--ease-out)
+      calc(var(--duration-settle) / 2);
+  margin-bottom: 0;
+}
+
+/* prefers-reduced-motion (IDENTITY §5): el colapso de alto/junta ya queda
+   instantáneo por la regla global de globals.css (transition/animation-
+   duration a 0.01ms en *). Lo que se excepciona aquí es la representación:
+   en vez de desvanecerse de golpe, la fila hace un paso de opacidad
+   legible en --duration-instant — el cambio de estado (el timer de 320ms
+   en JS) no depende de esto, solo su representación visual. La regla del
+   módulo gana a la de globals.css por especificidad (selector de clase >
+   universal) aunque ambas lleven !important. */
+@media (prefers-reduced-motion: reduce) {
+  .rowDraining {
+    transition: opacity var(--duration-instant) var(--ease-out) !important;
+    opacity: 0;
+  }
 }
 
 /* Contenido tras la barra de parada: checkbox + enlace + riesgo, con el

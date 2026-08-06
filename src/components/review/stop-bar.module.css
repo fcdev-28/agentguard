@@ -9,13 +9,16 @@
   overflow: hidden;
 }
 
-/* Losa sólida: crece contra el SLA, no contra el reloj. */
+/* Losa sólida: crece contra el SLA, no contra el reloj. Al resolver, drena a
+   width:0 (elemento firma, IDENTITY §6): único uso de --duration-settle/
+   --ease-decide en todo el producto. */
 .slab {
   position: absolute;
   top: 0;
   bottom: 0;
   left: 0;
   background: var(--color-hold);
+  transition: width var(--duration-settle) var(--ease-decide);
 }
 
 /* Tick de cabeza: 2px en el borde derecho de la losa (su cabeza de avance). */
