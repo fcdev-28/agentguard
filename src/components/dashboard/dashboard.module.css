@@ -8,9 +8,9 @@
 .block {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
 }
 
 .blockHead {
@@ -19,21 +19,21 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-4) var(--space-4) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-ink-hair);
 }
 
 .blockTitle {
-  font-size: var(--text-14);
+  font-size: var(--text-13);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
 }
 
 .blockAction {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
   white-space: nowrap;
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .blockAction:hover {
@@ -51,11 +51,11 @@
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-control);
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 a.row:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .rowMain {
@@ -68,7 +68,7 @@ a.row:hover {
 
 .rowTitle {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -80,7 +80,7 @@ a.row:hover {
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .rowAside {
@@ -99,7 +99,7 @@ a.row:hover {
 }
 
 .metricValue {
-  font-size: var(--text-30);
+  font-size: var(--text-24);
   font-weight: var(--weight-semibold);
   letter-spacing: -0.02em;
   line-height: 1;
@@ -107,7 +107,7 @@ a.row:hover {
 
 .metricLabel {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 @media (max-width: 900px) {
@@ -121,12 +121,12 @@ a.row:hover {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-tag);
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: 18px;
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
 }
 
 /* Punto de estado (agente activo). */
@@ -134,8 +134,8 @@ a.row:hover {
   flex: none;
   width: 8px;
   height: 8px;
-  border-radius: var(--radius-pill);
-  background: var(--color-success);
+  border-radius: 50%;
+  background: var(--color-ink-faint);
 }
 
 /* Desglose de riesgo por nivel. */
@@ -151,11 +151,11 @@ a.row:hover {
   justify-content: space-between;
   padding: var(--space-2) 0;
   font-size: var(--text-13);
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-ink-hair);
 }
 
 .breakdownLabel {
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .breakdownCount {
@@ -180,12 +180,12 @@ a.row:hover {
   flex: none;
   width: 8px;
   height: 8px;
-  border-radius: var(--radius-pill);
-  background: var(--color-success);
+  border-radius: 50%;
+  background: var(--color-ink-faint);
 }
 
 .emergencyDotActive {
-  background: var(--color-primary);
+  background: var(--color-act);
 }
 
 .emergencyConfirm {
@@ -209,18 +209,18 @@ a.row:hover {
 
 .emergencyButton {
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-primary);
+  border: 1px solid var(--color-act);
   border-radius: var(--radius-control);
-  background: var(--color-primary);
+  background: var(--color-act);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-primary-text);
+  font-weight: var(--weight-semibold);
+  color: var(--color-paper-plate);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .emergencyButton:hover {
-  background: var(--color-primary-hover);
+  background: var(--color-act-press);
 }
 
 .emergencyButtonGhost {
@@ -229,10 +229,10 @@ a.row:hover {
   border-radius: var(--radius-control);
   background: transparent;
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
   cursor: pointer;
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .emergencyButtonGhost:hover {
@@ -248,9 +248,9 @@ a.row:hover {
 .skeletonLine {
   height: 12px;
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   margin-bottom: var(--space-3);
-  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+  animation: skeletonPulse var(--duration-move) var(--ease-out) infinite
     alternate;
 }
 

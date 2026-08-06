@@ -10,7 +10,7 @@
 .hint {
   margin-top: 2px;
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 @media (max-width: 600px) {

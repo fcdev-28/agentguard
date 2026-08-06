@@ -2,9 +2,9 @@
 .list {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
   overflow: hidden;
 }
 
@@ -14,8 +14,8 @@
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-  transition: background var(--duration-fast) var(--ease-out);
+  border-bottom: 1px solid var(--color-ink-hair);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .list .row:last-child {
@@ -23,7 +23,7 @@
 }
 
 a.row:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .identity {
@@ -34,8 +34,8 @@ a.row:hover {
 }
 
 .name {
-  font-size: var(--text-14);
-  font-weight: var(--weight-medium);
+  font-size: var(--text-13);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -44,7 +44,7 @@ a.row:hover {
 
 .description {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -52,13 +52,13 @@ a.row:hover {
 
 .version {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   white-space: nowrap;
 }
 
 .sla {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
   white-space: nowrap;
   text-align: right;
 }
@@ -68,24 +68,24 @@ a.row:hover {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-tag);
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: 18px;
   white-space: nowrap;
 }
 
 .statusActive {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusDraft {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .statusArchived {
-  background: var(--color-surface);
-  color: var(--color-muted);
+  background: var(--color-paper-plate);
+  color: var(--color-ink-soft);
 }
 
 /* Pill de efecto de política, coloreada por severidad. */
@@ -93,28 +93,28 @@ a.row:hover {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-tag);
   font-size: var(--text-12);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   line-height: 18px;
   white-space: nowrap;
 }
 
 .effectAllow {
-  background: var(--color-success-bg);
-  color: var(--color-success-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .effectRequireApproval {
-  background: var(--color-warning-bg);
-  color: var(--color-warning-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .effectEscalate {
-  background: var(--color-info-bg);
-  color: var(--color-info-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 .effectBlock {
-  background: var(--color-danger-bg);
-  color: var(--color-danger-text);
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
 }
 
 @media (max-width: 900px) {
@@ -136,9 +136,9 @@ a.row:hover {
 .skeletonLine {
   height: 12px;
   border-radius: var(--radius-control);
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
   margin-bottom: var(--space-2);
-  animation: skeletonPulse var(--duration-panel) var(--ease-in-out) infinite
+  animation: skeletonPulse var(--duration-move) var(--ease-out) infinite
     alternate;
 }
 
@@ -154,9 +154,9 @@ a.row:hover {
   display: inline-flex;
   margin-top: var(--space-4);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-muted);
-  transition: color var(--duration-fast) var(--ease-out);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink-soft);
+  transition: color var(--duration-instant) var(--ease-out);
 }
 
 .backLink:hover {
@@ -182,11 +182,11 @@ a.row:hover {
 
 .metaItem {
   font-size: var(--text-13);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .metaItem strong {
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
@@ -203,19 +203,19 @@ a.row:hover {
   align-items: center;
   justify-content: center;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-primary);
+  border: 1px solid var(--color-act);
   border-radius: var(--radius-control);
-  background: var(--color-primary);
+  background: var(--color-act);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
-  color: var(--color-primary-text);
+  font-weight: var(--weight-semibold);
+  color: var(--color-paper-plate);
   text-decoration: none;
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .primaryButton:hover {
-  background: var(--color-primary-hover);
+  background: var(--color-act-press);
 }
 
 .primaryButton:disabled {
@@ -225,18 +225,18 @@ a.row:hover {
 
 .ghostButton {
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
-  background: var(--color-bg);
+  background: var(--color-paper-chassis);
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
   cursor: pointer;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .ghostButton:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .ghostButton:disabled {
@@ -248,7 +248,7 @@ a.row:hover {
 .errorText {
   margin-top: var(--space-3);
   font-size: var(--text-13);
-  color: var(--color-danger-text);
+  color: var(--color-fault);
 }
 
 /* Enlace/botón para crear una política nueva, alineado sobre el listado. */
@@ -279,7 +279,7 @@ a.row:hover {
 }
 
 .sectionTitle {
-  font-size: var(--text-16);
+  font-size: var(--text-15);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
   margin-bottom: var(--space-3);
@@ -291,9 +291,9 @@ a.row:hover {
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
 }
 
 .field {
@@ -305,23 +305,23 @@ a.row:hover {
 
 .fieldLabel {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink-soft);
 }
 
 .fieldHint {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .fieldInput,
 .fieldSelect {
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-control);
   color: var(--color-ink);
-  background: var(--color-bg);
-  font-size: var(--text-14);
+  background: var(--color-paper-chassis);
+  font-size: var(--text-13);
 }
 
 .fieldRow {
@@ -332,9 +332,9 @@ a.row:hover {
 
 /* Panel de filas reutilizado para acciones afectadas (mismo patrón que agents/review). */
 .panel {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-panel);
-  background: var(--color-bg);
+  border: 1px solid var(--color-ink-hair);
+  border-radius: var(--radius-plate);
+  background: var(--color-paper-chassis);
   overflow: hidden;
 }
 
@@ -344,7 +344,7 @@ a.row:hover {
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-ink-hair);
 }
 
 .panel .panelRow:last-child {
@@ -352,7 +352,7 @@ a.row:hover {
 }
 
 a.panelRow:hover {
-  background: var(--color-surface);
+  background: var(--color-paper-plate);
 }
 
 .panelRowMain {
@@ -364,7 +364,7 @@ a.panelRow:hover {
 
 .panelRowTitle {
   font-size: var(--text-13);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
@@ -373,7 +373,7 @@ a.panelRow:hover {
 
 .panelRowMeta {
   font-size: var(--text-12);
-  color: var(--color-muted);
+  color: var(--color-ink-soft);
 }
 
 .panelRowAside {

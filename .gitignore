@@ -41,6 +41,8 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
-graphify-out/cost.json
+# Grafo de conocimiento de graphify: cada quien genera el suyo en local
+# (ver CLAUDE.md). Se ignora el directorio entero, no solo cost.json.
+graphify-out/
 .claude/settings.local.json
 docs/design/refs/github-dependabot-cola.png

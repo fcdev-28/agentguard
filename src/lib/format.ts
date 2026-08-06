@@ -34,6 +34,25 @@ export function formatRelativeTime(
   return past ? `hace ${value} ${unit}` : `en ${value} ${unit}`;
 }
 
+/**
+ * Tiempo transcurrido en forma compacta para caber en 56px ("8m", "3h", "2d").
+ * Mismo criterio de salto de unidad que formatRelativeTime: <60 min, <24 h, resto.
+ * Usado por el contador de la barra de parada (StopBar).
+ */
+export function formatElapsedCompact(
+  iso: string,
+  reference: Date = demoNow,
+): string {
+  const diffMinutes = Math.max(
+    0,
+    Math.round((reference.getTime() - new Date(iso).getTime()) / 60_000),
+  );
+
+  if (diffMinutes < 60) return `${diffMinutes}m`;
+  if (diffMinutes < 60 * 24) return `${Math.round(diffMinutes / 60)}h`;
+  return `${Math.round(diffMinutes / (60 * 24))}d`;
+}
+
 /** ¿La fecha ISO es anterior al reloj simulado? (aprobación vencida). */
 export function isOverdue(
   iso: string | null,
