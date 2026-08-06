@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import type { MouseEvent } from "react";
 import type { Agent, AgentAction } from "@/domain";
 import { actionStatusLabel } from "@/domain";
-import { RiskBadge } from "@/components/data-display/risk-badge";
 import { isPendingReview } from "@/lib/dashboard";
-import { formatRelativeTime, isOverdue } from "@/lib/format";
-import { actionStatusClass } from "./status-style";
+import { formatRelativeTime } from "@/lib/format";
+import { StopBar } from "./stop-bar";
+import { RiskWord } from "./risk-word";
+import { queueStatusClass } from "./queue-status";
 import styles from "./review.module.css";
 
 /** Ancho de pantalla a partir del que la cola convive con el panel lateral. */
@@ -50,41 +51,47 @@ export function ReviewQueue({
           key={action.id}
           className={`${styles.row} ${action.id === selectedId ? styles.rowSelected : ""} ${selectedIds.has(action.id) ? styles.rowChecked : ""}`}
         >
-          <span className={styles.rowCheckboxCell}>
-            {canDecide && isPendingReview(action.status) ? (
-              <input
-                type="checkbox"
-                className={styles.rowCheckbox}
-                checked={selectedIds.has(action.id)}
-                onChange={() => onToggleSelect(action.id)}
-                aria-label={`Seleccionar acción ${action.title}`}
-              />
-            ) : null}
-          </span>
-          <Link
-            href={`/review/${action.id}`}
-            onClick={(event) => handleClick(event, action.id)}
-            className={styles.rowLink}
-          >
-            <div className={styles.rowMain}>
-              <span className={styles.rowTitle}>{action.title}</span>
-              <span className={styles.rowMeta}>
-                {agentName(action.agentId)} ·{" "}
-                {formatRelativeTime(action.createdAt)}
-              </span>
-              <span
-                className={`${styles.statusBadge} ${actionStatusClass[action.status]}`}
-              >
-                {actionStatusLabel[action.status]}
-              </span>
-            </div>
-            <div className={styles.rowAside}>
-              {isOverdue(action.approvalDueAt) ? (
-                <span className={styles.overdue}>Vencida</span>
+          <StopBar
+            status={action.status}
+            createdAt={action.createdAt}
+            approvalDueAt={action.approvalDueAt}
+          />
+          <div className={styles.rowBody}>
+            <span className={styles.rowCheckboxCell}>
+              {canDecide && isPendingReview(action.status) ? (
+                <input
+                  type="checkbox"
+                  className={styles.rowCheckbox}
+                  checked={selectedIds.has(action.id)}
+                  onChange={() => onToggleSelect(action.id)}
+                  aria-label={`Seleccionar acción ${action.title}`}
+                />
               ) : null}
-              <RiskBadge level={action.riskLevel} />
-            </div>
-          </Link>
+            </span>
+            <Link
+              href={`/review/${action.id}`}
+              onClick={(event) => handleClick(event, action.id)}
+              className={styles.rowLink}
+            >
+              <div className={styles.rowMain}>
+                <span className={styles.rowTitleLine}>
+                  <span className={styles.rowTitle}>{action.title}</span>
+                  <span
+                    className={`${styles.rowTag} ${queueStatusClass[action.status]}`}
+                  >
+                    {actionStatusLabel[action.status]}
+                  </span>
+                </span>
+                <span className={styles.rowMeta}>
+                  {agentName(action.agentId)} ·{" "}
+                  {formatRelativeTime(action.createdAt)}
+                </span>
+              </div>
+              <span className={styles.rowRisk}>
+                <RiskWord level={action.riskLevel} />
+              </span>
+            </Link>
+          </div>
         </div>
       ))}
     </div>

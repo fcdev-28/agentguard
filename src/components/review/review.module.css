@@ -24,44 +24,62 @@
   }
 }
 
-/* Cola: lista de filas enlazadas, mismo criterio visual que el inventario de agentes. */
+/* Cola: "chasis y placas" (IDENTITY §4). Las filas se separan por la junta
+   de chasis de 4px, nunca por un borde; el chasis se ve en la junta. */
 .queue {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-ink-hair);
-  border-radius: var(--radius-plate);
-  background: var(--color-paper-chassis);
-  overflow: hidden;
+  gap: var(--chassis-joint);
 }
 
+/* Cada fila es una placa: sin borde de ningún tipo, radio propio. La barra
+   de parada va a sangre en su borde izquierdo (overflow:hidden la recorta
+   a las esquinas redondeadas de la placa). */
 .row {
+  position: relative;
   display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-ink-hair);
-  border-left: 2px solid transparent;
-  transition:
-    background var(--duration-instant) var(--ease-out),
-    border-color var(--duration-instant) var(--ease-out);
-}
-
-.queue .row:last-child {
-  border-bottom: none;
+  align-items: stretch;
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
+  overflow: hidden;
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
 .row:hover {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
 }
 
 .rowSelected {
-  background: var(--color-paper-plate);
-  border-left-color: var(--color-act);
+  background: var(--color-paper-inset);
 }
 
-/* Fila marcada para una acción por lote: fondo tenue de énfasis. */
+/* Filete de selección: 2px en el borde derecho, territorio de la fila (la
+   barra de parada ya ocupa el izquierdo). Pseudo-elemento, no border ni
+   box-shadow: cero sombras en la cola (IDENTITY §4). */
+.rowSelected::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-ink);
+}
+
+/* Fila marcada para una acción por lote: mismo fondo tenue que seleccionada. */
 .rowChecked {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
+}
+
+/* Contenido tras la barra de parada: checkbox + enlace + riesgo, con el
+   padding que la barra (a sangre) no lleva. */
+.rowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
 }
 
 /* Casilla de selección por lote; ancho fijo para alinear las filas. */
@@ -80,7 +98,7 @@
   accent-color: var(--color-act);
 }
 
-/* Enlace a la acción: ocupa el resto de la fila con el layout main/aside. */
+/* Enlace a la acción: ocupa el resto de la fila con el layout título/riesgo. */
 .rowLink {
   flex: 1;
   min-width: 0;
@@ -99,29 +117,66 @@
   gap: 2px;
 }
 
+/* Línea 1: título + tag de estado en línea (patrón Dependabot, IDENTITY §7). */
+.rowTitleLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
 .rowTitle {
-  font-size: var(--text-13);
+  font-size: var(--text-15);
   font-weight: var(--weight-semibold);
   color: var(--color-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
 }
 
+/* Tag de estado local a la cola: no es .statusBadge (eso es del panel de
+   detalle). Cuadrado, Plex Mono, caja normal. */
+.rowTag {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-tag);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+.rowTagNeutral {
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
+}
+
+.rowTagHold {
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
+}
+
+.rowTagFault {
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
+}
+
+/* Línea 2: metadatos, un único peso por debajo del título (dos pesos por
+   superficie, nunca tres — IDENTITY §3). */
 .rowMeta {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-12);
+  font-weight: var(--weight-regular);
   color: var(--color-ink-soft);
 }
 
-.rowAside {
+.rowRisk {
   flex: none;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: var(--space-1);
 }
 
 @media (max-width: 600px) {
@@ -130,27 +185,15 @@
     align-items: flex-start;
   }
 
-  .rowAside {
-    align-items: flex-start;
+  .rowRisk {
+    align-self: flex-start;
   }
 }
 
-/* Marca "Vencida" en línea, dentro de un metaItem (sin forma de pill). */
+/* Marca "Vencida" en línea, dentro de un metaItem (sin forma de pill).
+   Sigue en uso por action-detail.tsx: no se toca. */
 .overdueInline {
   font-weight: var(--weight-semibold);
-  color: var(--color-hold-deep);
-}
-
-/* Badge "Vencida", coherente con el bloque de pendientes del dashboard. */
-.overdue {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-tag);
-  font-size: var(--text-12);
-  font-weight: var(--weight-semibold);
-  line-height: 18px;
-  background: var(--color-paper-inset);
   color: var(--color-hold-deep);
 }
 

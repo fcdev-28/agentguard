@@ -1,0 +1,52 @@
+/* Barra de parada (elemento firma, IDENTITY §6): pista a sangre, ancho fijo,
+   radio 0 — el único elemento que quiere leerse como objeto físico. */
+.track {
+  position: relative;
+  flex: none;
+  align-self: stretch;
+  width: var(--width-stop-bar-track);
+  border-radius: var(--radius-stop-bar);
+  overflow: hidden;
+}
+
+/* Losa sólida: crece contra el SLA, no contra el reloj. */
+.slab {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--color-hold);
+}
+
+/* Tick de cabeza: 2px en el borde derecho de la losa (su cabeza de avance). */
+.tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 2px;
+  background: var(--color-hold-deep);
+}
+
+/* Contador: siempre por encima de la losa, alineado a la derecha. */
+.counter {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.counterHold {
+  color: var(--color-ink);
+}
+
+.counterIdle {
+  color: var(--color-ink-faint);
+}

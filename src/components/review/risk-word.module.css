@@ -1,0 +1,28 @@
+/* El riesgo escrito (IDENTITY §3): Archivo, caja normal, escala por wdth + peso. */
+.riskWord {
+  font-family: var(--font-display);
+  font-size: var(--text-13);
+  color: var(--color-ink);
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.low {
+  font-variation-settings: "wdth" 100;
+  font-weight: 400;
+}
+
+.medium {
+  font-variation-settings: "wdth" 100;
+  font-weight: 600;
+}
+
+.high {
+  font-variation-settings: "wdth" 118;
+  font-weight: 600;
+}
+
+.critical {
+  font-variation-settings: "wdth" 118;
+  font-weight: 700;
+}
