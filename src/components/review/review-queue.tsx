@@ -10,7 +10,7 @@ import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
 import { StopBar } from "./stop-bar";
 import { RiskWord } from "./risk-word";
-import { queueStatusClass } from "./queue-status";
+import { queueStatusClass, showsQueueTag } from "./queue-status";
 import styles from "./review.module.css";
 
 /** Ancho de pantalla a partir del que la cola convive con el panel lateral. */
@@ -254,11 +254,13 @@ export function ReviewQueue({
                 <div className={styles.rowMain}>
                   <span className={styles.rowTitleLine}>
                     <span className={styles.rowTitle}>{action.title}</span>
-                    <span
-                      className={`${styles.rowTag} ${queueStatusClass[action.status]}`}
-                    >
-                      {actionStatusLabel[action.status]}
-                    </span>
+                    {showsQueueTag(action.status) ? (
+                      <span
+                        className={`${styles.rowTag} ${queueStatusClass[action.status]}`}
+                      >
+                        {actionStatusLabel[action.status]}
+                      </span>
+                    ) : null}
                   </span>
                   <span className={styles.rowMeta}>
                     {agentName(action.agentId)} ·{" "}
