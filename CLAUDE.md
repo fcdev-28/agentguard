@@ -135,3 +135,15 @@ El movimiento aclara cambios de estado, no entretiene. Hay skills locales de ani
 Trabajo en ramas enfocadas (`feature/`, `bugfix/`, `hotfix/`). Sin commits directos a `main`. PRs obligatorias con capturas para cambios de UI.
 
 Ejemplos de rama: `feature/setup-proyecto`, `feature/dashboard-control`, `feature/revision-acciones`.
+
+## graphify
+
+Este proyecto tiene un grafo de conocimiento en `graphify-out/` con nodos
+principales, estructura de comunidades y relaciones entre archivos.
+
+Reglas:
+- Para preguntas sobre el código, ejecuta primero `graphify query "<pregunta>"` si existe `graphify-out/graph.json`. Usa `graphify path "<A>" "<B>"` para relaciones y `graphify explain "<concepto>"` para conceptos concretos. Devuelven un subgrafo acotado, normalmente mucho más pequeño que `GRAPH_REPORT.md` o la salida de grep.
+- Si existe `graphify-out/wiki/index.md`, úsalo para navegación general en lugar de explorar el código fuente directamente.
+- Lee `graphify-out/GRAPH_REPORT.md` solo para revisión amplia de arquitectura, o cuando query/path/explain no den suficiente contexto.
+- Después de modificar código, ejecuta `graphify update .` para mantener el grafo actualizado (solo AST, sin coste de API).
+- Si `graphify-out/` no existe, ejecuta `graphify update .` para generarlo. No está versionado: cada quien genera el suyo en local.
