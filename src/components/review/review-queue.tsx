@@ -8,6 +8,7 @@ import type { Agent, AgentAction } from "@/domain";
 import { actionStatusLabel } from "@/domain";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
+import { readMotionToken } from "@/lib/motion";
 import { StopBar } from "./stop-bar";
 import { RiskWord } from "./risk-word";
 import { queueStatusClass, showsQueueTag } from "./queue-status";
@@ -16,10 +17,9 @@ import styles from "./review.module.css";
 /** Ancho de pantalla a partir del que la cola convive con el panel lateral. */
 const DESKTOP_BREAKPOINT = "(min-width: 900px)";
 
-/** Debe coincidir con --duration-settle (tokens.css): la descarga de la
- * barra de parada dura 320ms; la fila que sale se retiene ese mismo tiempo
- * antes de quitarla del todo (IDENTITY §6). */
-const DRAIN_MS = 320;
+/** Duración de la descarga si no se puede leer el token (SSR o token
+ * ausente). El valor real manda desde --duration-settle en tokens.css. */
+const DRAIN_MS_FALLBACK = 320;
 
 /** Cola priorizada de acciones pendientes: fila enlazable con selección compartida por URL. */
 export function ReviewQueue({
@@ -156,6 +156,10 @@ export function ReviewQueue({
   const timersRef = useRef(new Map<string, ReturnType<typeof setTimeout>>());
 
   useEffect(() => {
+    // La fila se retiene exactamente lo que dura la descarga en CSS. Se lee
+    // el token en vez de repetir el número aquí: si --duration-settle cambia,
+    // el temporizador cambia con él y la animación no se corta a medias.
+    const drainMs = readMotionToken("--duration-settle", DRAIN_MS_FALLBACK);
     for (const id of drainingIds) {
       if (timersRef.current.has(id)) continue;
       const timer = setTimeout(() => {
@@ -181,7 +185,7 @@ export function ReviewQueue({
           return next;
         });
         setRenderList((prev) => prev.filter((a) => a.id !== id));
-      }, DRAIN_MS);
+      }, drainMs);
       timersRef.current.set(id, timer);
     }
   }, [drainingIds]);
