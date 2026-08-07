@@ -1,5 +1,6 @@
 import type { Permission, Tool } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { StatusTag } from "@/components/data-display/status-tag";
 import { getAgentTools } from "@/lib/agents";
 import styles from "./agents.module.css";
 
@@ -28,7 +29,7 @@ export function AgentTools({
                 <span className={styles.panelRowTitle}>{tool.name}</span>
                 <span className={styles.panelRowMeta}>Alcance: {scope}</span>
               </div>
-              <span className={styles.panelRowMeta}>{status}</span>
+              <StatusTag>{status}</StatusTag>
             </div>
           ))}
         </div>

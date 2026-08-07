@@ -4,7 +4,9 @@ import Link from "next/link";
 import type { Agent, AgentAction, User } from "@/domain";
 import { agentModeLabel, agentStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { RiskBadge } from "@/components/data-display/risk-badge";
+import { RiskWord } from "@/components/data-display/risk-word";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { agentStatusVariant } from "./agent-status";
 import {
   getAgents,
   getAgentLastActivityAt,
@@ -12,14 +14,6 @@ import {
 } from "@/lib/agents";
 import { formatRelativeTime } from "@/lib/format";
 import styles from "./agents.module.css";
-
-/** Clase de color por estado de agente, coherente con la severidad del inventario. */
-const statusClass: Record<Agent["status"], string> = {
-  active: styles.statusActive,
-  paused: styles.statusPaused,
-  disabled: styles.statusDisabled,
-  error: styles.statusError,
-};
 
 /** Inventario de agentes: fila enlazada al detalle con estado, riesgo y actividad. */
 export function AgentsList({
@@ -62,12 +56,14 @@ export function AgentsList({
               <span className={styles.description}>{agent.description}</span>
             </div>
             <span className={styles.owner}>{ownerName(agent.ownerId)}</span>
-            <span className={`${styles.statusBadge} ${statusClass[status]}`}>
-              {agentStatusLabel[status]}
+            <span className={styles.statusCell}>
+              <StatusTag variant={agentStatusVariant[status]}>
+                {agentStatusLabel[status]}
+              </StatusTag>
             </span>
             <span className={styles.mode}>{agentModeLabel[agent.mode]}</span>
             {risk ? (
-              <RiskBadge level={risk} />
+              <RiskWord level={risk} />
             ) : (
               <span className={styles.noRisk}>—</span>
             )}

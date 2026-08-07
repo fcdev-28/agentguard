@@ -2,7 +2,9 @@ import Link from "next/link";
 import type { AgentAction } from "@/domain";
 import { actionStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { RiskBadge } from "@/components/data-display/risk-badge";
+import { RiskWord } from "@/components/data-display/risk-word";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { actionStatusVariant } from "@/components/data-display/action-status";
 import { getAgentActions } from "@/lib/agents";
 import { formatRelativeTime } from "@/lib/format";
 import styles from "./agents.module.css";
@@ -33,14 +35,21 @@ export function AgentActions({
               className={styles.panelRow}
             >
               <div className={styles.panelRowMain}>
-                <span className={styles.panelRowTitle}>{action.title}</span>
+                {/* Título y estado en línea, como en la cola: aquí no hay
+                    barra de parada que diga el estado, así que el tag no es
+                    redundante y se muestra siempre. */}
+                <span className={styles.panelRowTitleLine}>
+                  <span className={styles.panelRowTitle}>{action.title}</span>
+                  <StatusTag variant={actionStatusVariant[action.status]}>
+                    {actionStatusLabel[action.status]}
+                  </StatusTag>
+                </span>
                 <span className={styles.panelRowMeta}>
-                  {actionStatusLabel[action.status]} ·{" "}
                   {formatRelativeTime(action.createdAt)}
                 </span>
               </div>
               <div className={styles.panelRowAside}>
-                <RiskBadge level={action.riskLevel} />
+                <RiskWord level={action.riskLevel} />
               </div>
             </Link>
           ))}
