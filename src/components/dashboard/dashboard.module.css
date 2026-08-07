@@ -5,6 +5,14 @@
   align-items: start;
 }
 
+/* Bloque a ancho completo: la decisión es el momento crítico del producto
+   (BRIEF §1), así que las acciones pendientes no compiten en una celda con
+   los bloques de contexto. También le da a la fila el ancho que la barra de
+   parada necesita para leerse. */
+.blockWide {
+  grid-column: 1 / -1;
+}
+
 .block {
   display: flex;
   flex-direction: column;
@@ -44,18 +52,50 @@
   padding: var(--space-2);
 }
 
-/* Filas de lista dentro de un bloque (sin tarjetas anidadas). */
+/* Filas de lista dentro de un bloque: placas sobre el chasis, mismo patrón
+   que la cola de /review (sin tarjetas anidadas: la placa es un solo nivel
+   dentro del chasis, no una tarjeta con su propio borde). */
 .row {
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-control);
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
+  margin-bottom: var(--chassis-joint);
   transition: background var(--duration-instant) var(--ease-out);
 }
 
+.row:last-child {
+  margin-bottom: 0;
+}
+
 a.row:hover {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
+}
+
+/* Fila de acción: la barra de parada va a sangre en el borde izquierdo, así
+   que la fila no lleva padding propio — lo pone .actionRowBody. */
+.actionRow {
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.actionRowBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+}
+
+/* La palabra de riesgo, alineada a la derecha de la fila. */
+.rowRisk {
+  flex: none;
 }
 
 .rowMain {
@@ -116,19 +156,6 @@ a.row:hover {
   }
 }
 
-/* Badge "Vencida" para aprobaciones que superaron approvalDueAt. */
-.overdue {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-tag);
-  font-size: var(--text-12);
-  font-weight: var(--weight-semibold);
-  line-height: 18px;
-  background: var(--color-paper-inset);
-  color: var(--color-hold-deep);
-}
-
 /* Punto de estado (agente activo). */
 .dot {
   flex: none;
@@ -152,10 +179,6 @@ a.row:hover {
   padding: var(--space-2) 0;
   font-size: var(--text-13);
   border-top: 1px solid var(--color-ink-hair);
-}
-
-.breakdownLabel {
-  color: var(--color-ink-soft);
 }
 
 .breakdownCount {

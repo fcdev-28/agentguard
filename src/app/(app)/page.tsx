@@ -34,8 +34,8 @@ export default async function Home() {
       />
       <div className={styles.grid}>
         <PendingActionsBlock actions={actions} agents={agents} />
-        <ActiveAgentsBlock agents={agents} />
         <RiskBlock actions={actions} />
+        <ActiveAgentsBlock agents={agents} />
         <RecentPoliciesBlock policies={policies} />
         <EmergencyStopBlock
           canEmergencyStop={can(currentUser, "runtime:emergency_stop")}

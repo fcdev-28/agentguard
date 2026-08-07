@@ -2,9 +2,10 @@ import Link from "next/link";
 import type { Agent, AgentAction } from "@/domain";
 import { DashboardBlock } from "./dashboard-block";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { RiskBadge } from "@/components/data-display/risk-badge";
+import { RiskWord } from "@/components/data-display/risk-word";
+import { StopBar } from "@/components/data-display/stop-bar";
 import { getPendingActions } from "@/lib/dashboard";
-import { formatRelativeTime, isOverdue } from "@/lib/format";
+import { formatRelativeTime } from "@/lib/format";
 import styles from "./dashboard.module.css";
 
 /** Bloque: acciones a la espera de decisión, las más urgentes primero. */
@@ -21,6 +22,7 @@ export function PendingActionsBlock({
   return (
     <DashboardBlock
       title="Acciones pendientes"
+      wide
       action={
         <Link href="/review" className={styles.blockAction}>
           Ver cola →
@@ -34,20 +36,27 @@ export function PendingActionsBlock({
           <Link
             key={action.id}
             href={`/review/${action.id}`}
-            className={styles.row}
+            className={`${styles.row} ${styles.actionRow}`}
           >
-            <div className={styles.rowMain}>
-              <span className={styles.rowTitle}>{action.title}</span>
-              <span className={styles.rowMeta}>
-                {agentName(action.agentId)} ·{" "}
-                {formatRelativeTime(action.createdAt)}
+            {/* Misma barra que la cola: el tiempo parado se lee igual en las
+                dos pantallas. El vencimiento ya lo dice la barra llena, así
+                que aquí no hay badge "Vencida" que lo repita. */}
+            <StopBar
+              status={action.status}
+              createdAt={action.createdAt}
+              approvalDueAt={action.approvalDueAt}
+            />
+            <div className={styles.actionRowBody}>
+              <div className={styles.rowMain}>
+                <span className={styles.rowTitle}>{action.title}</span>
+                <span className={styles.rowMeta}>
+                  {agentName(action.agentId)} ·{" "}
+                  {formatRelativeTime(action.createdAt)}
+                </span>
+              </div>
+              <span className={styles.rowRisk}>
+                <RiskWord level={action.riskLevel} />
               </span>
-            </div>
-            <div className={styles.rowAside}>
-              {isOverdue(action.approvalDueAt) ? (
-                <span className={styles.overdue}>Vencida</span>
-              ) : null}
-              <RiskBadge level={action.riskLevel} />
             </div>
           </Link>
         ))
