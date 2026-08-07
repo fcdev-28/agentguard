@@ -9,8 +9,8 @@ import { actionStatusLabel } from "@/domain";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime } from "@/lib/format";
 import { readMotionToken } from "@/lib/motion";
-import { StopBar } from "./stop-bar";
-import { RiskWord } from "./risk-word";
+import { StopBar } from "@/components/data-display/stop-bar";
+import { RiskWord } from "@/components/data-display/risk-word";
 import { queueStatusClass, showsQueueTag } from "./queue-status";
 import styles from "./review.module.css";
 
