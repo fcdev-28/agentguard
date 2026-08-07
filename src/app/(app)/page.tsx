@@ -1,22 +1,24 @@
 import { redirect } from "next/navigation";
 import { PageHeader } from "@/components/app-shell/page-header";
 import { PendingActionsBlock } from "@/components/dashboard/pending-actions-block";
-import { ActiveAgentsBlock } from "@/components/dashboard/active-agents-block";
+import { AgentsBlock } from "@/components/dashboard/agents-block";
 import { RiskBlock } from "@/components/dashboard/risk-block";
 import { RecentPoliciesBlock } from "@/components/dashboard/recent-policies-block";
 import { EmergencyStopBlock } from "@/components/dashboard/emergency-stop-block";
 import { getAgents } from "@/data/agents";
 import { getActions } from "@/data/actions";
 import { getPolicies } from "@/data/policies";
+import { getTools } from "@/data/tools";
 import { getCurrentUser } from "@/lib/session-db";
 import { can } from "@/lib/permissions";
 import styles from "@/components/dashboard/dashboard.module.css";
 
 export default async function Home() {
-  const [agents, actions, policies, currentUser] = await Promise.all([
+  const [agents, actions, policies, tools, currentUser] = await Promise.all([
     getAgents(),
     getActions(),
     getPolicies(),
+    getTools(),
     getCurrentUser(),
   ]);
 
@@ -33,9 +35,9 @@ export default async function Home() {
         description="Estado operativo y prioridades del sistema."
       />
       <div className={styles.grid}>
-        <PendingActionsBlock actions={actions} agents={agents} />
+        <PendingActionsBlock actions={actions} agents={agents} tools={tools} />
         <RiskBlock actions={actions} />
-        <ActiveAgentsBlock agents={agents} />
+        <AgentsBlock agents={agents} />
         <RecentPoliciesBlock policies={policies} />
         <EmergencyStopBlock
           canEmergencyStop={can(currentUser, "runtime:emergency_stop")}

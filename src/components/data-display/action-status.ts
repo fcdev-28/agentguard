@@ -6,6 +6,21 @@ import type { StatusTagVariant } from "./status-tag";
  * cola: la cola, el detalle de agente y (más adelante) auditoría muestran
  * los mismos estados y deben colorearlos igual.
  */
+/**
+ * ¿Se escribe el tag cuando la fila ya lleva barra de parada? `needs_approval`
+ * no: la barra *es* ese estado (IDENTITY §6 la define como indicador de estado
+ * además de clave de ordenación), así que el tag repetía la información — la
+ * misma redundancia que el pill "Vencida" que se quitó de la fila. Y costaba
+ * caro: "Pendiente de aprobación" son 22 caracteres en Plex Mono, que en un
+ * panel de cola de 380px dejaban el título en "N..".
+ *
+ * Donde no hay barra (detalle de agente, auditoría) el estado se escribe
+ * siempre: allí nada más lo cuenta.
+ */
+export function showsStatusTag(status: ActionStatus): boolean {
+  return status !== "needs_approval";
+}
+
 export const actionStatusVariant: Record<ActionStatus, StatusTagVariant> = {
   proposed: "neutral",
   allowed: "neutral",

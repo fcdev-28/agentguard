@@ -12,8 +12,10 @@ import { readMotionToken } from "@/lib/motion";
 import { StopBar } from "@/components/data-display/stop-bar";
 import { RiskWord } from "@/components/data-display/risk-word";
 import { StatusTag } from "@/components/data-display/status-tag";
-import { actionStatusVariant } from "@/components/data-display/action-status";
-import { showsQueueTag } from "./queue-status";
+import {
+  actionStatusVariant,
+  showsStatusTag,
+} from "@/components/data-display/action-status";
 import styles from "./review.module.css";
 
 /** Ancho de pantalla a partir del que la cola convive con el panel lateral. */
@@ -260,7 +262,7 @@ export function ReviewQueue({
                 <div className={styles.rowMain}>
                   <span className={styles.rowTitleLine}>
                     <span className={styles.rowTitle}>{action.title}</span>
-                    {showsQueueTag(action.status) ? (
+                    {showsStatusTag(action.status) ? (
                       <StatusTag variant={actionStatusVariant[action.status]}>
                         {actionStatusLabel[action.status]}
                       </StatusTag>

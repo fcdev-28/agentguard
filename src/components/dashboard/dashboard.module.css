@@ -74,23 +74,54 @@ a.row:hover {
   background: var(--color-paper-inset);
 }
 
-/* Fila de acción: la barra de parada va a sangre en el borde izquierdo, así
-   que la fila no lleva padding propio — lo pone .actionRowBody. */
-.actionRow {
-  align-items: stretch;
-  gap: 0;
-  padding: 0;
-  overflow: hidden;
+/* Las columnas viven en la lista y cada fila las hereda con subgrid: a
+   ancho completo, título y riesgo quedan a 700px el uno del otro, y sin
+   pistas comunes el estado y la herramienta bailarían de fila en fila. */
+.actionList {
+  display: grid;
+  grid-template-columns:
+    var(--width-stop-bar-track) minmax(0, 1fr)
+    auto auto auto;
+  column-gap: var(--space-3);
+  row-gap: var(--chassis-joint);
 }
 
-.actionRowBody {
-  flex: 1;
+/* La fila no lleva padding propio: la barra de parada va a sangre contra el
+   borde izquierdo de la placa. El aire lo ponen las celdas. */
+.actionRow {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: center;
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
+  overflow: hidden;
+  transition: background var(--duration-instant) var(--ease-out);
+}
+
+.actionRow:hover {
+  background: var(--color-paper-inset);
+}
+
+.actionMain {
   min-width: 0;
   display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) 0;
+}
+
+.actionStatus,
+.actionTool {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-12);
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+.actionRow .rowRisk {
+  padding-right: var(--space-3);
 }
 
 /* La palabra de riesgo, alineada a la derecha de la fila. */
@@ -154,15 +185,6 @@ a.row:hover {
   .grid {
     grid-template-columns: minmax(0, 1fr);
   }
-}
-
-/* Punto de estado (agente activo). */
-.dot {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-ink-faint);
 }
 
 /* Desglose de riesgo por nivel. */
