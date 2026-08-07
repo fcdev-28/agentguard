@@ -2,11 +2,12 @@ import Link from "next/link";
 import type { Policy } from "@/domain";
 import { policyEffectLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { StatusTag } from "@/components/data-display/status-tag";
 import { getPolicies } from "@/lib/policies";
 import {
-  policyStatusClass,
   policyStatusLabel,
-  policyEffectClass,
+  policyStatusVariant,
+  policyEffectVariant,
 } from "./policies-style";
 import styles from "./policies.module.css";
 
@@ -46,15 +47,15 @@ export function PoliciesList({
                 <span className={styles.name}>{policy.name}</span>
                 <span className={styles.description}>{policy.description}</span>
               </div>
-              <span
-                className={`${styles.statusBadge} ${policyStatusClass[policy.status]}`}
-              >
-                {policyStatusLabel[policy.status]}
+              <span className={styles.tagCell}>
+                <StatusTag variant={policyStatusVariant[policy.status]}>
+                  {policyStatusLabel[policy.status]}
+                </StatusTag>
               </span>
-              <span
-                className={`${styles.effectBadge} ${policyEffectClass[policy.effect]}`}
-              >
-                {policyEffectLabel[policy.effect]}
+              <span className={styles.tagCell}>
+                <StatusTag variant={policyEffectVariant[policy.effect]}>
+                  {policyEffectLabel[policy.effect]}
+                </StatusTag>
               </span>
               <span className={styles.version}>v{policy.version}</span>
               <span className={styles.sla}>

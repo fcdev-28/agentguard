@@ -10,9 +10,11 @@ import type {
   PolicyEffect,
   Tool,
 } from "@/domain";
-import { policyEffectLabel } from "@/domain";
+import { actionStatusLabel, policyEffectLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { RiskBadge } from "@/components/data-display/risk-badge";
+import { RiskWord } from "@/components/data-display/risk-word";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { actionStatusVariant } from "@/components/data-display/action-status";
 import { getAffectedActions } from "@/lib/policies";
 import { formatRelativeTime } from "@/lib/format";
 import {
@@ -21,9 +23,9 @@ import {
   updatePolicy,
 } from "@/lib/policy-actions";
 import {
-  policyStatusClass,
   policyStatusLabel,
-  policyEffectClass,
+  policyStatusVariant,
+  policyEffectVariant,
 } from "./policies-style";
 import styles from "./policies.module.css";
 
@@ -177,16 +179,12 @@ export function PolicyDetail({
   return (
     <div>
       <div className={styles.detailHead}>
-        <span
-          className={`${styles.statusBadge} ${policyStatusClass[policy.status]}`}
-        >
+        <StatusTag variant={policyStatusVariant[policy.status]}>
           {policyStatusLabel[policy.status]}
-        </span>
-        <span
-          className={`${styles.effectBadge} ${policyEffectClass[policy.effect]}`}
-        >
+        </StatusTag>
+        <StatusTag variant={policyEffectVariant[policy.effect]}>
           {policyEffectLabel[policy.effect]}
-        </span>
+        </StatusTag>
       </div>
 
       <div className={styles.metaRow}>
@@ -411,14 +409,21 @@ export function PolicyDetail({
                 className={styles.panelRow}
               >
                 <div className={styles.panelRowMain}>
-                  <span className={styles.panelRowTitle}>{action.title}</span>
+                  {/* Sin barra de parada en esta pantalla: el estado se
+                      escribe siempre, aquí nada más lo cuenta. */}
+                  <span className={styles.panelRowTitleLine}>
+                    <span className={styles.panelRowTitle}>{action.title}</span>
+                    <StatusTag variant={actionStatusVariant[action.status]}>
+                      {actionStatusLabel[action.status]}
+                    </StatusTag>
+                  </span>
                   <span className={styles.panelRowMeta}>
                     {agentName(action.agentId)} ·{" "}
                     {formatRelativeTime(action.createdAt)}
                   </span>
                 </div>
                 <div className={styles.panelRowAside}>
-                  <RiskBadge level={action.riskLevel} />
+                  <RiskWord level={action.riskLevel} />
                 </div>
               </Link>
             ))}
