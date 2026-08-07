@@ -14,13 +14,14 @@ import {
   type Tool,
   type User,
 } from "@/domain";
-import { RiskBadge } from "@/components/data-display/risk-badge";
+import { RiskWord } from "@/components/data-display/risk-word";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { actionStatusVariant } from "@/components/data-display/action-status";
 import { isPendingReview } from "@/lib/dashboard";
 import { formatRelativeTime, isOverdue } from "@/lib/format";
 import { evaluatePolicy } from "@/lib/policy-eval";
 import { useRuntime } from "@/components/app-shell/runtime-provider";
 import { addComment, decideAction, escalateAction } from "@/lib/review-actions";
-import { actionStatusClass } from "./status-style";
 import { eligibleEscalationTargets, type ReviewDecision } from "@/lib/review";
 import { commentsForAction, isValidCommentBody } from "@/lib/comments";
 import styles from "./review.module.css";
@@ -150,10 +151,10 @@ export function ActionDetail({
   return (
     <div className={styles.detail}>
       <div className={styles.detailHead}>
-        <span className={`${styles.statusBadge} ${actionStatusClass[status]}`}>
+        <StatusTag variant={actionStatusVariant[status]}>
           {actionStatusLabel[status]}
-        </span>
-        <RiskBadge level={action.riskLevel} />
+        </StatusTag>
+        <RiskWord level={action.riskLevel} />
       </div>
 
       <div className={styles.metaRow}>
