@@ -357,10 +357,11 @@ Las cinco pantallas que la rama anterior dejó fuera, más el panel de detalle d
 
 `RiskWord`, `StopBar`, `StatusTag` y los mapeos `actionStatusVariant` / `showsStatusTag`. Cada dominio conserva solo su propio mapeo a variante (`agent-status.ts`, `policies-style.ts`, `audit-style.ts`, `settings-status.ts`). Regla del color, ya aplicada en las seis pantallas: **ámbar** para lo que espera a una persona, **rojo** para lo que falló, neutro para todo lo demás. Bloquear no lleva color en ningún sitio.
 
+El ámbar no distingue si esa persona está dentro o fuera del producto: `changes_requested` lo lleva igual que `needs_approval`, aunque la acción esté devuelta a quien construyó el agente y no corra ningún SLA. Lo que decide es si sigue parada esperando a alguien.
+
 ### Qué sigue fuera
 
 - Las tres deudas de §3.bis siguen abiertas: `review-queue.tsx` sigue midiendo ~270 líneas, `--shadow-panel` sigue mal nombrado y la barra de parada sigue calculándose contra `demoNow`.
-- **`changes_requested` perdió el ámbar.** En el detalle de `/review` era `statusWarning`; con el mapeo compartido pasa a neutro. Es defendible (la pelota está fuera del producto, no hay SLA corriendo), pero si se decide lo contrario es una línea en `action-status.ts` y afecta a las seis pantallas a la vez.
 
 ---
 
