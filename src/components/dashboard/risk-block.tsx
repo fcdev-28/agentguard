@@ -2,8 +2,8 @@ import type { AgentAction, RiskLevel } from "@/domain";
 import { DashboardBlock } from "./dashboard-block";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { CountUp } from "@/components/data-display/count-up";
+import { RiskWord } from "@/components/data-display/risk-word";
 import { getPendingActions, getRiskBreakdown } from "@/lib/dashboard";
-import { riskLevelLabel } from "@/domain";
 import styles from "./dashboard.module.css";
 
 /** Orden de presentación del desglose: de más grave a menos. */
@@ -30,9 +30,7 @@ export function RiskBlock({ actions }: { actions: AgentAction[] }) {
           <div className={styles.breakdown}>
             {LEVELS.map((level) => (
               <div key={level} className={styles.breakdownRow}>
-                <span className={styles.breakdownLabel}>
-                  {riskLevelLabel[level]}
-                </span>
+                <RiskWord level={level} />
                 <span className={styles.breakdownCount}>
                   <CountUp value={breakdown[level]} />
                 </span>

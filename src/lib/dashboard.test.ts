@@ -4,6 +4,7 @@ import {
   isPendingReview,
   getPendingActions,
   getActiveAgents,
+  getAgentsByAttention,
   getRiskBreakdown,
   getRecentPolicies,
 } from "@/lib/dashboard";
@@ -109,6 +110,32 @@ describe("getActiveAgents", () => {
       agent({ id: "err", status: "error" }),
     ];
     expect(getActiveAgents(input).map((a) => a.id)).toEqual(["on"]);
+  });
+});
+
+describe("getAgentsByAttention", () => {
+  it("pone delante los agentes en error y detrás los desactivados", () => {
+    const input = [
+      agent({ id: "off", status: "disabled" }),
+      agent({ id: "on", status: "active" }),
+      agent({ id: "err", status: "error" }),
+      agent({ id: "hold", status: "paused" }),
+    ];
+    expect(getAgentsByAttention(input).map((a) => a.id)).toEqual([
+      "err",
+      "hold",
+      "on",
+      "off",
+    ]);
+  });
+
+  it("desempata por nombre y no muta la lista original", () => {
+    const input = [
+      agent({ id: "b", name: "Zeta", status: "active" }),
+      agent({ id: "a", name: "Alfa", status: "active" }),
+    ];
+    expect(getAgentsByAttention(input).map((a) => a.id)).toEqual(["a", "b"]);
+    expect(input.map((a) => a.id)).toEqual(["b", "a"]);
   });
 });
 

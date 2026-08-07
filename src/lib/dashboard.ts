@@ -35,6 +35,27 @@ export function getActiveAgents(agents: Agent[]): Agent[] {
   return agents.filter((a) => a.status === "active");
 }
 
+/** Orden de atención: primero lo que alguien tiene que mirar. */
+const attentionRank: Record<Agent["status"], number> = {
+  error: 0,
+  paused: 1,
+  active: 2,
+  disabled: 3,
+};
+
+/**
+ * Agentes ordenados por la atención que piden: los que fallan arriba, luego
+ * los pausados, y el resto por nombre. El dashboard no puede listar solo los
+ * activos — el agente que se cayó es justo el que no aparecería.
+ */
+export function getAgentsByAttention(agents: Agent[]): Agent[] {
+  return [...agents].sort((a, b) => {
+    const byAttention = attentionRank[a.status] - attentionRank[b.status];
+    if (byAttention !== 0) return byAttention;
+    return a.name.localeCompare(b.name, "es");
+  });
+}
+
 /** Conteo de acciones pendientes por nivel de riesgo. */
 export function getRiskBreakdown(
   pending: AgentAction[],

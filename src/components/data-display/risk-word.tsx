@@ -11,9 +11,10 @@ const riskWordClass: Record<RiskLevel, string> = {
 };
 
 /**
- * El riesgo escrito, no pintado (IDENTITY §3). Sustituye a RiskBadge dentro
- * de la cola: sin pill, sin color por severidad, escala por ancho y peso de
- * Archivo vía font-variation-settings.
+ * El riesgo escrito, no pintado (IDENTITY §3): sin pill, sin color por
+ * severidad, escala por ancho y peso de Archivo vía font-variation-settings.
+ * Único canal de riesgo del producto — sustituyó al RiskBadge de la
+ * dirección anterior, que era una pill coloreada por nivel.
  */
 export function RiskWord({ level }: { level: RiskLevel }) {
   return (

@@ -2,7 +2,8 @@ import Link from "next/link";
 import type { Agent, AuditEvent, User } from "@/domain";
 import { auditEventTypeLabel } from "@/domain";
 import { formatRelativeTime } from "@/lib/format";
-import { auditEventTypeClass } from "./audit-style";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { auditEventVariant } from "./audit-style";
 import styles from "./audit.module.css";
 
 /** Metadata formateada como JSON legible, o null si el evento no trae ninguna. */
@@ -42,11 +43,9 @@ export function AuditDetail({
   return (
     <div className={styles.detail}>
       <div className={styles.detailHead}>
-        <span
-          className={`${styles.eventBadge} ${auditEventTypeClass[event.eventType]}`}
-        >
+        <StatusTag variant={auditEventVariant[event.eventType]}>
           {auditEventTypeLabel[event.eventType]}
-        </span>
+        </StatusTag>
       </div>
 
       <div className={styles.metaRow}>

@@ -1,46 +1,29 @@
 import type { AuditEventType } from "@/domain";
-import styles from "./audit.module.css";
+import type { StatusTagVariant } from "@/components/data-display/status-tag";
 
 /**
- * Clase de color por tipo de evento de auditoría: agrupa los 14 tipos en
- * cinco severidades visuales, coherentes con las paletas ya usadas en
- * estados de acción y de política.
+ * Variante del tag por tipo de evento. En un registro histórico ya no hay
+ * nada que interrumpir —todo ha pasado ya—, así que el color se reserva a
+ * los dos hechos que alguien tendría que ir a mirar: lo que falló (fault) y
+ * lo que se quedó esperando a una persona (hold).
+ *
+ * `action_blocked` es neutro a propósito: la política cortó la acción ella
+ * sola y funcionó como debía. Misma lectura que el efecto `block` en
+ * policies-style.ts.
  */
-export const auditEventTypeClass: Record<AuditEventType, string> = {
-  agent_created: styles.eventInfo,
-  agent_paused: styles.eventWarning,
-  agent_resumed: styles.eventSuccess,
-  permission_changed: styles.eventWarning,
-  policy_published: styles.eventInfo,
-  action_proposed: styles.eventNeutral,
-  action_allowed: styles.eventSuccess,
-  action_blocked: styles.eventDanger,
-  approval_created: styles.eventSuccess,
-  action_escalated: styles.eventInfo,
-  action_executed: styles.eventSuccess,
-  action_failed: styles.eventDanger,
-  emergency_stop_engaged: styles.eventDanger,
-  emergency_stop_released: styles.eventSuccess,
-};
-
-/**
- * Clase de color del punto (dot) de severidad, mismo mapeo que
- * `auditEventTypeClass` pero con fondos sólidos: las clases pill usan
- * tintes casi blancos (`--color-*-bg`) que dejan el dot de 8px invisible.
- */
-export const auditEventDotClass: Record<AuditEventType, string> = {
-  agent_created: styles.dotInfo,
-  agent_paused: styles.dotWarning,
-  agent_resumed: styles.dotSuccess,
-  permission_changed: styles.dotWarning,
-  policy_published: styles.dotInfo,
-  action_proposed: styles.dotNeutral,
-  action_allowed: styles.dotSuccess,
-  action_blocked: styles.dotDanger,
-  approval_created: styles.dotSuccess,
-  action_escalated: styles.dotInfo,
-  action_executed: styles.dotSuccess,
-  action_failed: styles.dotDanger,
-  emergency_stop_engaged: styles.dotDanger,
-  emergency_stop_released: styles.dotSuccess,
+export const auditEventVariant: Record<AuditEventType, StatusTagVariant> = {
+  agent_created: "neutral",
+  agent_paused: "hold",
+  agent_resumed: "neutral",
+  permission_changed: "neutral",
+  policy_published: "neutral",
+  action_proposed: "neutral",
+  action_allowed: "neutral",
+  action_blocked: "neutral",
+  approval_created: "neutral",
+  action_escalated: "hold",
+  action_executed: "neutral",
+  action_failed: "fault",
+  emergency_stop_engaged: "fault",
+  emergency_stop_released: "neutral",
 };

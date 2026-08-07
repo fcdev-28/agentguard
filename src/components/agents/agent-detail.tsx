@@ -8,6 +8,8 @@ import {
   agentStatusLabel,
 } from "@/domain";
 import { PageHeader } from "@/components/app-shell/page-header";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { agentStatusVariant } from "./agent-status";
 import { pauseAgent, resumeAgent } from "@/lib/runtime-actions";
 import styles from "./agents.module.css";
 
@@ -38,9 +40,9 @@ export function AgentDetail({
     <div>
       <PageHeader title={agent.name} description={agent.description} />
       <div className={styles.metaRow}>
-        <span className={styles.metaItem}>
-          Estado: <strong>{agentStatusLabel[status]}</strong>
-        </span>
+        <StatusTag variant={agentStatusVariant[status]}>
+          {agentStatusLabel[status]}
+        </StatusTag>
         <span className={styles.metaItem}>
           Modo: <strong>{agentModeLabel[agent.mode]}</strong>
         </span>

@@ -1,29 +1,30 @@
-/* Lista de políticas: filas con grid, apiladas en móvil (mismo lenguaje que agents.module.css). */
+/* Lista de políticas: placas sobre chasis y columnas en la lista, que cada
+   fila hereda con subgrid (mismo lenguaje que agents.module.css). Con las
+   pistas por fila, estado y efecto caían en un sitio distinto en cada una. */
 .list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) auto auto auto auto;
+  column-gap: var(--space-4);
+  row-gap: var(--chassis-joint);
+  padding: var(--space-2);
   border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-plate);
   background: var(--color-paper-chassis);
-  overflow: hidden;
 }
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 2fr) auto auto auto auto;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-ink-hair);
+  padding: var(--space-3);
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
   transition: background var(--duration-instant) var(--ease-out);
 }
 
-.list .row:last-child {
-  border-bottom: none;
-}
-
 a.row:hover {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
 }
 
 .identity {
@@ -63,61 +64,17 @@ a.row:hover {
   text-align: right;
 }
 
-/* Pill de estado de política: mismo patrón que el estado de agentes. */
-.statusBadge {
+/* Estado y efecto son <StatusTag> (data-display); la celda solo los alinea. */
+.tagCell {
   display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-tag);
-  font-size: var(--text-12);
-  font-weight: var(--weight-semibold);
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.statusActive {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.statusDraft {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.statusArchived {
-  background: var(--color-paper-plate);
-  color: var(--color-ink-soft);
-}
-
-/* Pill de efecto de política, coloreada por severidad. */
-.effectBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-tag);
-  font-size: var(--text-12);
-  font-weight: var(--weight-semibold);
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.effectAllow {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.effectRequireApproval {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.effectEscalate {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.effectBlock {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
 }
 
 @media (max-width: 900px) {
+  /* Apiladas: sin columnas que alinear, la fila deja de heredar del subgrid. */
+  .list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .row {
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-2);
@@ -332,10 +289,13 @@ a.row:hover {
 
 /* Panel de filas reutilizado para acciones afectadas (mismo patrón que agents/review). */
 .panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--chassis-joint);
+  padding: var(--space-2);
   border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-plate);
   background: var(--color-paper-chassis);
-  overflow: hidden;
 }
 
 .panelRow {
@@ -343,16 +303,22 @@ a.row:hover {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-ink-hair);
+  padding: var(--space-3);
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
+  transition: background var(--duration-instant) var(--ease-out);
 }
 
-.panel .panelRow:last-child {
-  border-bottom: none;
+/* Título + tag de estado en línea (mismo patrón que la fila de la cola). */
+.panelRowTitleLine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
 }
 
 a.panelRow:hover {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
 }
 
 .panelRowMain {

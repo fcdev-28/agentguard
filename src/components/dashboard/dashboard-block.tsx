@@ -8,14 +8,17 @@ import styles from "./dashboard.module.css";
 export function DashboardBlock({
   title,
   action,
+  wide = false,
   children,
 }: {
   title: string;
   action?: ReactNode;
+  /** true para ocupar la fila entera de la rejilla en vez de una celda. */
+  wide?: boolean;
   children: ReactNode;
 }) {
   return (
-    <section className={styles.block}>
+    <section className={`${styles.block} ${wide ? styles.blockWide : ""}`}>
       <div className={styles.blockHead}>
         <h2 className={styles.blockTitle}>{title}</h2>
         {action ?? null}

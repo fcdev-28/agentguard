@@ -101,60 +101,33 @@
 .timeline {
   display: flex;
   flex-direction: column;
+  gap: var(--chassis-joint);
+  padding: var(--space-2);
   border: 1px solid var(--color-ink-hair);
   border-radius: var(--radius-plate);
   background: var(--color-paper-chassis);
-  overflow: hidden;
 }
 
 .row {
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-ink-hair);
+  padding: var(--space-3);
+  background: var(--color-paper-plate);
+  border-radius: var(--radius-plate);
   border-left: 2px solid transparent;
   transition:
     background var(--duration-instant) var(--ease-out),
     border-color var(--duration-instant) var(--ease-out);
 }
 
-.timeline .row:last-child {
-  border-bottom: none;
-}
-
 a.row:hover {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
 }
 
 .rowSelected {
-  background: var(--color-paper-plate);
+  background: var(--color-paper-inset);
   border-left-color: var(--color-act);
-}
-
-.dot {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  margin-top: 6px;
-  border-radius: 50%;
-  background: var(--color-ink-hair);
-}
-
-.dotNeutral {
-  background: var(--color-ink-soft);
-}
-.dotSuccess {
-  background: var(--color-ink-faint);
-}
-.dotWarning {
-  background: var(--color-ink-faint);
-}
-.dotDanger {
-  background: var(--color-fault);
-}
-.dotInfo {
-  background: var(--color-ink-faint);
 }
 
 .rowMain {
@@ -192,38 +165,7 @@ a.row:hover {
   text-overflow: ellipsis;
 }
 
-/* Pill de tipo de evento, coloreada por severidad (reutiliza los mismos colores en el punto de la línea). */
-.eventBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-tag);
-  font-size: var(--text-12);
-  font-weight: var(--weight-semibold);
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.eventNeutral {
-  background: var(--color-paper-plate);
-  color: var(--color-ink-soft);
-}
-.eventSuccess {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.eventWarning {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.eventDanger {
-  background: var(--color-paper-inset);
-  color: var(--color-fault);
-}
-.eventInfo {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
+/* El tipo de evento es <StatusTag> (data-display). */
 
 @media (max-width: 600px) {
   .row {

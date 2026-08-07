@@ -180,34 +180,8 @@
   min-width: 0;
 }
 
-/* Tag de estado local a la cola: no es .statusBadge (eso es del panel de
-   detalle). Cuadrado, Plex Mono, caja normal. */
-.rowTag {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 1px var(--space-2);
-  border-radius: var(--radius-tag);
-  font-family: var(--font-mono);
-  font-size: var(--text-12);
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.rowTagNeutral {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-
-.rowTagHold {
-  background: var(--color-paper-inset);
-  color: var(--color-hold-deep);
-}
-
-.rowTagFault {
-  background: var(--color-paper-inset);
-  color: var(--color-fault);
-}
+/* El tag de estado es <StatusTag> (data-display), el mismo en la fila de la
+   cola, en el panel de detalle y en el resto de pantallas. */
 
 /* Línea 2: metadatos, un único peso por debajo del título (dos pesos por
    superficie, nunca tres — IDENTITY §3). */
@@ -242,38 +216,8 @@
   color: var(--color-hold-deep);
 }
 
-/* Pill de estado de acción: misma forma que RiskBadge, paleta propia. */
-.statusBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: var(--radius-tag);
-  font-size: var(--text-12);
-  font-weight: var(--weight-semibold);
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.statusNeutral {
-  background: var(--color-paper-plate);
-  color: var(--color-ink-soft);
-}
-.statusSuccess {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-.statusWarning {
-  background: var(--color-paper-inset);
-  color: var(--color-hold-deep);
-}
-.statusDanger {
-  background: var(--color-paper-inset);
-  color: var(--color-fault);
-}
-.statusInfo {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
+/* El estado del panel de detalle es <StatusTag> (data-display), el mismo
+   que la fila de la cola. */
 
 /* Panel de detalle de acción (reutilizado por la cola y por /review/[actionId]). */
 .detail {
