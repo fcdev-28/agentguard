@@ -1,0 +1,32 @@
+/* Tag de estado: la etiqueta corta que acompaña a una fila (estado de una
+   acción, de un agente, de una herramienta). Mono, no sans: el estado es un
+   dato del sistema, no prosa — misma familia que el contador de la barra de
+   parada. */
+.tag {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-tag);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  line-height: 18px;
+  white-space: nowrap;
+}
+
+/* Tres variantes, no una por estado: el color solo distingue lo que exige
+   atención (fault) o espera una decisión (hold) del resto. */
+.neutral {
+  background: var(--color-paper-inset);
+  color: var(--color-ink-soft);
+}
+
+.hold {
+  background: var(--color-paper-inset);
+  color: var(--color-hold-deep);
+}
+
+.fault {
+  background: var(--color-paper-inset);
+  color: var(--color-fault);
+}

@@ -180,34 +180,8 @@
   min-width: 0;
 }
 
-/* Tag de estado local a la cola: no es .statusBadge (eso es del panel de
-   detalle). Cuadrado, Plex Mono, caja normal. */
-.rowTag {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  padding: 1px var(--space-2);
-  border-radius: var(--radius-tag);
-  font-family: var(--font-mono);
-  font-size: var(--text-12);
-  line-height: 18px;
-  white-space: nowrap;
-}
-
-.rowTagNeutral {
-  background: var(--color-paper-inset);
-  color: var(--color-ink-soft);
-}
-
-.rowTagHold {
-  background: var(--color-paper-inset);
-  color: var(--color-hold-deep);
-}
-
-.rowTagFault {
-  background: var(--color-paper-inset);
-  color: var(--color-fault);
-}
+/* El tag de estado de la fila es <StatusTag> (data-display), compartido con
+   el inventario de agentes. El panel de detalle mantiene su .statusBadge. */
 
 /* Línea 2: metadatos, un único peso por debajo del título (dos pesos por
    superficie, nunca tres — IDENTITY §3). */
