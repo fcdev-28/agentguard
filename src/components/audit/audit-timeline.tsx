@@ -21,7 +21,8 @@ import {
 } from "./audit-filters";
 import { AuditDetail } from "./audit-detail";
 import { AuditExportLinks } from "./audit-export-links";
-import { auditEventDotClass, auditEventTypeClass } from "./audit-style";
+import { StatusTag } from "@/components/data-display/status-tag";
+import { auditEventVariant } from "./audit-style";
 import styles from "./audit.module.css";
 
 /** Ancho de pantalla a partir del que la línea de tiempo convive con el panel lateral. */
@@ -102,20 +103,16 @@ export function AuditTimeline({
                 className={`${styles.row} ${event.id === selectedId ? styles.rowSelected : ""}`}
                 aria-current={event.id === selectedId ? "true" : undefined}
               >
-                <span
-                  className={`${styles.dot} ${auditEventDotClass[event.eventType]}`}
-                  aria-hidden="true"
-                />
                 <div className={styles.rowMain}>
                   <div className={styles.rowHead}>
                     <span className={styles.rowTime}>
                       {formatRelativeTime(event.createdAt)}
                     </span>
-                    <span
-                      className={`${styles.eventBadge} ${auditEventTypeClass[event.eventType]}`}
-                    >
+                    {/* Sin punto de severidad: repetía en color lo que el
+                        tag ya dice con palabras. */}
+                    <StatusTag variant={auditEventVariant[event.eventType]}>
                       {auditEventTypeLabel[event.eventType]}
-                    </span>
+                    </StatusTag>
                   </div>
                   <span className={styles.rowAgent}>
                     {event.agentId
