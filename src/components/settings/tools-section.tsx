@@ -1,16 +1,9 @@
 import type { Tool, ToolStatus } from "@/domain";
 import { toolStatusLabel, toolTypeLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { RiskBadge } from "@/components/data-display/risk-badge";
+import { RiskWord } from "@/components/data-display/risk-word";
 import { getTools } from "@/lib/tools";
 import styles from "./settings.module.css";
-
-/** Clase de color por estado de herramienta. */
-const statusClass: Record<ToolStatus, string> = {
-  active: styles.statusActive,
-  paused: styles.statusPaused,
-  disabled: styles.statusDisabled,
-};
 
 /** Listado de herramientas conectadas con cambio de estado (estado local, no persistido). */
 export function ToolsSection({
@@ -39,9 +32,12 @@ export function ToolsSection({
             <span className={styles.name}>{tool.name}</span>
             <span className={styles.meta}>{toolTypeLabel[tool.type]}</span>
           </div>
-          <RiskBadge level={tool.riskLevel} />
+          <RiskWord level={tool.riskLevel} />
+          {/* El select no se colorea por estado: las cuatro clases que lo
+              hacían llevaban desde la fase 7 renderizando lo mismo, y un
+              control editable no es sitio para señalar severidad. */}
           <select
-            className={`${styles.select} ${statusClass[tool.status]}`}
+            className={styles.select}
             value={tool.status}
             aria-label={`Estado de ${tool.name}`}
             onChange={(event) =>

@@ -1,15 +1,10 @@
-import type { User, UserRole, UserStatus } from "@/domain";
+import type { User, UserRole } from "@/domain";
 import { userRoleLabel, userStatusLabel } from "@/domain";
 import { EmptyState } from "@/components/feedback/empty-state";
+import { StatusTag } from "@/components/data-display/status-tag";
 import { getUsers } from "@/lib/users";
+import { userStatusVariant } from "./settings-status";
 import styles from "./settings.module.css";
-
-/** Clase de color por estado de usuario. */
-const statusClass: Record<UserStatus, string> = {
-  active: styles.statusActive,
-  invited: styles.statusInvited,
-  disabled: styles.statusDisabled,
-};
 
 /** Listado de usuarios con cambio de rol (estado local, no persistido). */
 export function UsersSection({
@@ -38,8 +33,10 @@ export function UsersSection({
             <span className={styles.name}>{user.name}</span>
             <span className={styles.meta}>{user.email}</span>
           </div>
-          <span className={`${styles.statusBadge} ${statusClass[user.status]}`}>
-            {userStatusLabel[user.status]}
+          <span className={styles.tagCell}>
+            <StatusTag variant={userStatusVariant[user.status]}>
+              {userStatusLabel[user.status]}
+            </StatusTag>
           </span>
           <select
             className={styles.select}
