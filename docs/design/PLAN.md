@@ -321,10 +321,46 @@ Fases 5 a 8 completadas. Commits, en orden:
 
 ### Qué queda fuera de esta rama
 
-- **Cinco pantallas sin migrar**: dashboard, agentes, políticas, auditoría y ajustes. Siguen con `RiskBadge` (pill de color) en vez de la palabra en Archivo, y con el patrón de fila antiguo. Es deliberado: la Fase 7 dice "una sola pantalla, no las hagas todas". Rama aparte, una pantalla por commit.
+- **Cinco pantallas sin migrar**: dashboard, agentes, políticas, auditoría y ajustes. Siguen con `RiskBadge` (pill de color) en vez de la palabra en Archivo, y con el patrón de fila antiguo. Es deliberado: la Fase 7 dice "una sola pantalla, no las hagas todas". Rama aparte, una pantalla por commit. → **Cerrado en `feature/identidad-pantallas`, ver §3.ter.**
 - **`review-queue.tsx` mide ~270 líneas** (antes 100). La animación de salida necesita retener filas, medir su alto y coordinar timers, y `eslint-plugin-react-hooks@7.1.1` con reglas de React Compiler impide el patrón directo de ajustar estado durante el render. Funciona y está comentado, pero es el archivo más frágil de la rama.
 - **`--shadow-panel` lleva el nombre del único panel que no lo usa.** El panel de detalle de `/review` es una columna del grid, no una capa superpuesta, así que por la regla "sombra = solapamiento" no la lleva. Renombrarlo a `--shadow-overlay` sería más honesto.
 - **La barra de parada es estática.** Se calcula contra `demoNow`, un reloj fijo en `src/data/demo-data.ts`. No avanza sola: al llegar el tiempo real (fase 10 del roadmap de producto) habrá que decidir si el contador refresca en cliente.
+
+---
+
+## 3.ter. Estado al cerrar la rama `feature/identidad-pantallas`
+
+Las cinco pantallas que la rama anterior dejó fuera, más el panel de detalle de `/review`, que tampoco se había migrado. Commits, en orden:
+
+| Commit | Pantalla |
+|---|---|
+| `refactor(design): stop-bar y risk-word a data-display` | — |
+| `feat(design): rediseño del dashboard` | Panel |
+| `refactor(design): tag de estado compartido en data-display` | — |
+| `feat(design): rediseño del inventario de agentes` | Agentes |
+| `fix(design): alinear las columnas del inventario de agentes` | Agentes |
+| `feat(design): el panel resume y muestra los agentes que fallan` | Panel |
+| `feat(design): rediseño de políticas` | Políticas |
+| `feat(design): rediseño del registro de auditoría` | Auditoría |
+| `feat(design): rediseño de ajustes` | Ajustes |
+| `refactor(design): jubilar RiskBadge` | Detalle de `/review` |
+
+### Lo que el plan no había visto
+
+- **La deuda de color era declarativa, no visual.** La fase 7a aplanó las paletas pero dejó vivos los mapeos que las declaraban. Políticas tenía ocho clases de estado y efecto que renderizaban dos apariencias; auditoría, dos mapeos de catorce entradas para tres; ajustes, cuatro; el detalle de `/review`, cinco. Migrar cada pantalla fue sobre todo borrar código muerto que parecía vivo.
+- **El aviso de "auditoría es la difícil" era falso.** Se dio por hecho que `audit-style.ts` mantenía un semáforo con verde. No lo mantenía: `dotSuccess` y `dotWarning` apuntaban ambos a `--color-ink-faint` desde la fase 7. La pantalla resultó mecánica.
+- **Las columnas nunca habían estado alineadas.** En agentes, políticas y ajustes, cada fila era su propio grid con pistas `auto`, así que se calculaban fila a fila. Ya pasaba antes de esta rama, pero `RiskWord` lo hizo evidente: "Crítico" va en `wdth` 118 y "Bajo" en 100. Las columnas suben al contenedor y las filas las heredan con `subgrid`.
+- **El panel listaba las 14 acciones pendientes.** Con las filas del rediseño, el doble de altas, el bloque ocupaba dos pantallas y enterraba a los otros cuatro. Ahora corta en cinco.
+- **"Agentes activos" escondía los agentes caídos.** El bloque filtraba por `status === "active"`, así que los dos agentes en error no aparecían en el panel. Pasa a listar por atención y a escribir el estado.
+
+### Vocabulario que queda en `data-display`
+
+`RiskWord`, `StopBar`, `StatusTag` y los mapeos `actionStatusVariant` / `showsStatusTag`. Cada dominio conserva solo su propio mapeo a variante (`agent-status.ts`, `policies-style.ts`, `audit-style.ts`, `settings-status.ts`). Regla del color, ya aplicada en las seis pantallas: **ámbar** para lo que espera a una persona, **rojo** para lo que falló, neutro para todo lo demás. Bloquear no lleva color en ningún sitio.
+
+### Qué sigue fuera
+
+- Las tres deudas de §3.bis siguen abiertas: `review-queue.tsx` sigue midiendo ~270 líneas, `--shadow-panel` sigue mal nombrado y la barra de parada sigue calculándose contra `demoNow`.
+- **`changes_requested` perdió el ámbar.** En el detalle de `/review` era `statusWarning`; con el mapeo compartido pasa a neutro. Es defendible (la pelota está fuera del producto, no hay SLA corriendo), pero si se decide lo contrario es una línea en `action-status.ts` y afecta a las seis pantallas a la vez.
 
 ---
 
