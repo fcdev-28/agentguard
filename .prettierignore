@@ -4,7 +4,6 @@ src/generated
 graphify-out
 package-lock.json
 public
-kanban.html
 docs
 *.md
 .claude
