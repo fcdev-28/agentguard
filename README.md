@@ -28,6 +28,26 @@ reintentos y notificaciones por email y Slack.
 - **Notificaciones**: in-app, email (Resend) y Slack (webhook).
 - **Command palette** (`⌘K`) para navegar y actuar sin ratón.
 
+## Capturas
+
+**Panel de control**: acciones pendientes ordenadas por urgencia, riesgo agregado y estado de los agentes.
+
+![Panel de control](docs/screenshots/dashboard.jpg)
+
+**Cola de revisión**: lista priorizada con el detalle de la acción, su payload, la política que la retuvo y las decisiones disponibles.
+
+![Cola de revisión](docs/screenshots/revision.jpg)
+
+**Agentes**: inventario con estado, propietario, modo y riesgo reciente; el detalle muestra herramientas conectadas y acciones recientes.
+
+![Inventario de agentes](docs/screenshots/agentes.jpg)
+
+![Detalle de agente](docs/screenshots/agente-detalle.jpg)
+
+**Políticas**: reglas con efecto (permitir, bloquear, requerir aprobación, escalar), versión y SLA.
+
+![Políticas](docs/screenshots/politicas.jpg)
+
 ## Stack
 
 - **Next.js 16** (App Router, Server Components y Server Actions) con
