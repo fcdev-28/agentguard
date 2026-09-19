@@ -45,6 +45,8 @@ next-env.d.ts
 # Grafo de conocimiento de graphify: cada quien genera el suyo en local
 # (ver CLAUDE.md). Se ignora el directorio entero, no solo cost.json.
 graphify-out/
+# Capturas de referencia de diseño: productos de terceros, solo en local
+docs/design/refs/
 # Config local de Claude Code (hooks con rutas de la máquina, permisos)
 .claude/settings.json
 .claude/settings.local.json
