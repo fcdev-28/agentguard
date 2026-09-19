@@ -63,7 +63,7 @@ Entregables:
 - Enfoque de autenticación.
 - Datos semilla.
 - Estrategia de testing.
-- Repositorio privado en GitHub.
+- Repositorio propio en GitHub.
 - Rama `main` protegida.
 - Flujo de pull requests.
 

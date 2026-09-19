@@ -2,13 +2,13 @@
 
 ## Repositorio
 
-Cuando empiece la implementación, AgentGuard debe vivir en un repositorio privado de GitHub.
+AgentGuard vive en su propio repositorio público de GitHub.
 
 Ese repositorio contendrá únicamente código y documentación específica de AgentGuard. Si más adelante iniciamos otro producto, tendrá su propio repositorio y su propia documentación.
 
 Ajustes por defecto del repositorio:
 
-- Visibilidad privada.
+- Visibilidad pública.
 - `main` como rama estable.
 - Protección de rama para `main`.
 - Pull requests obligatorias antes de fusionar.
