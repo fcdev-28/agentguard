@@ -48,6 +48,10 @@ reintentos y notificaciones por email y Slack.
 
 ![Políticas](docs/screenshots/politicas.jpg)
 
+**Auditoría**: registro filtrable por agente, tipo y fecha, con detalle de cada evento y exportación a CSV y JSON.
+
+![Auditoría](docs/screenshots/auditoria.jpg)
+
 ## Stack
 
 - **Next.js 16** (App Router, Server Components y Server Actions) con
