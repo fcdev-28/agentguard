@@ -12,7 +12,7 @@ Las "fases" del roadmap son un camino de entrega hacia ese producto completo, no
 
 ## Estado actual del repo
 
-Fase 0 del roadmap completada: proyecto Next.js andamiado (App Router, TypeScript estricto), tokens OKLCH, tipos de dominio y datos semilla. La app arranca con una página placeholder; el shell, el dashboard y las pantallas operativas llegan en las fases 1+ (ver `docs/ROADMAP.md`). El resto de la estructura descrita abajo se irá creando fase a fase.
+Las 13 fases de `docs/ROADMAP.md` están completadas: la aplicación funciona de extremo a extremo con PostgreSQL + Prisma, login con sesión JWT y control por rol, ingesta de acciones por API con clave por agente, evaluación de políticas, ejecución con reintentos, auto-escalado por SLA, notificaciones (in-app, email, Slack), exportación de auditoría, logs estructurados y CI obligatoria. El trabajo pendiente es evolutivo (nuevas integraciones, pulido), no de construcción.
 
 ## Documentación fuente
 
@@ -21,23 +21,27 @@ El detalle vive en `docs/`; CLAUDE.md solo resume. Consultar antes de implementa
 | Doc | Cuándo leerlo |
 |---|---|
 | `docs/PRODUCT.md` | Problema, usuarios objetivo, pilares |
-| `docs/WORKFLOW.md` | Fases de construcción del producto |
 | `docs/UX_ARCHITECTURE.md` | Roles, flujos, IA, modelo de estados |
 | `docs/DATA_MODEL.md` | Entidades, campos y relaciones completas |
 | `docs/APP_STRUCTURE.md` | Detalle de cada ruta y carpeta |
-| `docs/ROADMAP.md` | Pasos atómicos hasta el producto completo |
+| `docs/ROADMAP.md` | Pasos atómicos de las 13 fases (histórico de construcción) |
 | `docs/FEATURES.md` | Funcionalidades de control y velocidad del producto |
-| `docs/DESIGN.md` + `docs/DESIGN_SYSTEM.md` | Dirección visual y tokens OKLCH |
+| `docs/design/IDENTITY.md` + `docs/DESIGN_SYSTEM.md` | Dirección visual vigente y tokens OKLCH |
+| `docs/design/BRIEF.md` | Qué interrumpe de verdad al usuario; base de toda decisión visual |
+| `docs/DEPLOY.md` | Variables de entorno, crons y orden de despliegue |
 | `docs/TECHNICAL.md` | Razón del stack |
 | `docs/GIT_WORKFLOW.md` | Ramas, commits, protección de `main` |
+| `docs/WORKFLOW.md`, `docs/DESIGN.md` | Documentos fundacionales; describen intenciones iniciales, no el estado actual |
 
 ## Stack
 
-- **Framework**: Next.js con App Router, TypeScript estricto
-- **Base de datos** (fase 2): PostgreSQL + Prisma
-- **Estilos**: CSS custom con tokens en `src/styles/tokens.css`
-- **Estado**: local por pantalla, sin estado global salvo necesidad clara
-- **Datos (fase inicial)**: módulos simulados en `src/data/demo-data.ts`
+- **Framework**: Next.js 16 (App Router, Server Components, Server Actions), TypeScript estricto.
+- **Base de datos**: PostgreSQL + Prisma 7. Esquema en `prisma/schema.prisma`, migraciones en `prisma/migrations/`, seed en `prisma/seed.ts`.
+- **Auth**: sesión JWT HS256 (`jose`) en cookie; contraseñas con `bcryptjs`; claves de API por agente (hash en BD, token mostrado una vez).
+- **Estilos**: CSS Modules con tokens en `src/styles/tokens.css`. Sin librería de componentes ni de iconos.
+- **Estado**: local por pantalla, sin estado global salvo necesidad clara.
+- **Tests**: Vitest; Prisma se mockea, los tests no tocan BD.
+- **Entorno**: variables documentadas en `.env.example`; `.env` nunca se commitea.
 
 ## Comandos
 
@@ -54,12 +58,18 @@ El detalle vive en `docs/`; CLAUDE.md solo resume. Consultar antes de implementa
 
 ```
 src/
-  app/             # Rutas Next.js App Router
-  components/      # Agrupados por dominio: app-shell, data-display, feedback, forms, review, agents, policies, audit
-  data/            # Datos simulados (seed, demo-data.ts)
-  domain/          # Tipos y lógica pura: actions, agents, audit, policies, permissions, risk
-  lib/             # Utilidades: format.ts, filters.ts, navigation.ts, risk.ts, status.ts
+  app/
+    (app)/         # Pantallas autenticadas: dashboard, review, agents, policies, audit, settings
+    (auth)/        # Login
+    api/           # agent/actions (ingesta), audit/export, cron/escalate, cron/retry-executions
+  components/      # Por dominio: app-shell, dashboard, review, agents, policies, audit, settings, data-display, feedback
+  data/            # Capa de acceso a datos (Prisma → tipos de dominio); demo-data.ts alimenta el seed
+  domain/          # Tipos puros: action, agent, policy, user, audit, notification, risk…
+  lib/             # Lógica de servidor: auth/, ingest/, execution/, notify/, observability/, policy-eval, review-actions…
+  middleware.ts    # Protección de rutas
   styles/          # globals.css, tokens.css
+prisma/            # schema, migrations, seed
+scripts/           # create-agent-key.ts
 ```
 
 ## Rutas del producto
@@ -87,17 +97,7 @@ La UX está guiada por cuatro roles (detalle en `docs/UX_ARCHITECTURE.md`, valor
 
 ## Orden de construcción (roadmap)
 
-Fases incrementales; respetar el orden al implementar. El detalle está en `docs/ROADMAP.md` como pasos atómicos (uno por commit):
-
-0. Base del proyecto: scaffolding Next.js, tokens, tipos de dominio, datos semilla.
-1. Shell y navegación.
-2. Dashboard.
-3. Inventario de agentes.
-4. Revisión de acciones.
-5. Capa de políticas (evaluación simulada).
-6. Auditoría.
-7. Ajustes.
-8. Pulido: responsive, accesibilidad, motion, estados de error, copy, datos realistas.
+El producto se construyó en 13 fases incrementales (detalle en `docs/ROADMAP.md`, un paso por commit): 0 base → 1 shell → 2 dashboard → 3 agentes → 4 revisión → 5 políticas → 6 auditoría → 7 ajustes → 8 pulido → 9 control y velocidad (kill switch, SLA, lote, ⌘K, notificaciones, comentarios) → 10 persistencia real → 11 auth y roles → 12 integraciones reales → 13 producción. Todas completadas; el roadmap sirve como mapa de dónde vive cada cosa, no como lista de pendientes.
 
 ## Modelo de datos
 
@@ -109,19 +109,18 @@ Ver `docs/DATA_MODEL.md` para campos completos y relaciones.
 
 ## Sistema visual
 
-Tokens en `src/styles/tokens.css`. Colores en OKLCH. Primario: `oklch(0.580 0.170 8)` (rojo). El color primario se usa con intención: acciones principales, riesgo alto, identidad de marca, nunca como fondo general.
-
-Escala tipográfica: 12 → 13 → 14 → 16 → 20 → 24 → 30px. Familia: Inter. Espaciado base 4px.
+La dirección vigente está en `docs/design/IDENTITY.md` (sustrato claro, tinta azulada, Archivo para display e IBM Plex Sans/Mono para texto y datos) y los valores en `src/styles/tokens.css`, en OKLCH con nombres semánticos. Tesis: el color no describe, interrumpe; la jerarquía la sostienen tipografía, peso y espacio. Antes de tocar color o tipografía, leer IDENTITY.md y el brief; no introducir valores fuera de tokens.
 
 Reglas duras del diseño:
 - Sin tarjetas anidadas.
 - Sin gradientes morados.
 - Sin modales si un panel resuelve la tarea.
 - Sin tabla sin estado vacío.
+- Sin colores hardcodeados en CSS Modules: todo color pasa por tokens.
 
 Cada feature debe incluir estado vacío, estado de carga, estado de error y layout responsive.
 
-El movimiento aclara cambios de estado, no entretiene. Hay skills locales de animación/diseño en `.agents/skills/` (`animation-vocabulary`, `emil-design-eng`, `review-animations`); usarlas al construir o revisar motion.
+El movimiento aclara cambios de estado, no entretiene. Duraciones y curvas en tokens; respetar `prefers-reduced-motion`.
 
 ## Convenciones de naming
 
