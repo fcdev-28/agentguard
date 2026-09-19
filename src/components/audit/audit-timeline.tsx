@@ -51,11 +51,16 @@ export function AuditTimeline({
   const sorted = getAuditEvents(events);
   const filtered = filterAuditEvents(sorted, toAuditEventFilters(filters));
 
-  const selectedEvent = selectedId
+  // Sin selección en la URL, el panel muestra el evento más reciente de la
+  // lista filtrada (mismo criterio que /review) para no dejar la mitad de la
+  // pantalla vacía.
+  const requestedEvent = selectedId
     ? getAuditEventById(events, selectedId)
     : undefined;
+  const selectedEvent = requestedEvent ?? filtered[0];
+  const effectiveId = selectedEvent?.id ?? null;
   const selectedInFiltered =
-    selectedId != null && filtered.some((e) => e.id === selectedId);
+    effectiveId != null && filtered.some((e) => e.id === effectiveId);
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>, eventId: string) {
     // Clics para abrir en pestaña nueva o pantallas sin panel: navegación normal a /audit/[eventId].
@@ -100,8 +105,8 @@ export function AuditTimeline({
                 key={event.id}
                 href={`/audit/${event.id}`}
                 onClick={(clickEvent) => handleClick(clickEvent, event.id)}
-                className={`${styles.row} ${event.id === selectedId ? styles.rowSelected : ""}`}
-                aria-current={event.id === selectedId ? "true" : undefined}
+                className={`${styles.row} ${event.id === effectiveId ? styles.rowSelected : ""}`}
+                aria-current={event.id === effectiveId ? "true" : undefined}
               >
                 <div className={styles.rowMain}>
                   <div className={styles.rowHead}>
