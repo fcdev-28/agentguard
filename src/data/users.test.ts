@@ -10,6 +10,7 @@ describe("mapUser", () => {
       email: "lucia.marin@acme.example",
       role: "admin" as const,
       status: "active" as const,
+      passwordHash: null,
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
       updatedAt: new Date("2026-07-01T00:00:00.000Z"),
     };
@@ -34,6 +35,7 @@ describe("mapUser", () => {
       email: "pablo.nieto@acme.example",
       role: "developer" as const,
       status: "invited" as const,
+      passwordHash: null,
       createdAt: new Date("2026-01-01T00:00:00.000Z"),
       updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     };

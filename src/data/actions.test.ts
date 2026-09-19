@@ -24,6 +24,10 @@ describe("mapAgentAction", () => {
       createdAt: new Date("2026-07-12T08:00:00.000Z"),
       updatedAt: new Date("2026-07-12T08:00:00.000Z"),
       executedAt: null,
+      externalId: null,
+      attempts: 0,
+      nextRetryAt: null,
+      lastError: null,
     };
 
     expect(mapAgentAction(row)).toEqual({
@@ -68,6 +72,10 @@ describe("mapAgentAction", () => {
       createdAt: new Date("2026-07-12T08:00:00.000Z"),
       updatedAt: new Date("2026-07-12T08:00:00.000Z"),
       executedAt: null,
+      externalId: null,
+      attempts: 0,
+      nextRetryAt: null,
+      lastError: null,
     };
 
     const result = mapAgentAction(row);
